@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LokasiPatroli;
+use App\Models\KamarMandi;
 use Illuminate\Http\Request;
 use App\Support\QrPng;
 use Illuminate\Support\Facades\Storage;
@@ -15,19 +15,20 @@ class LokasiKebersihanController extends Controller
     {
         $search = $request->input('search');
 
-        $lokasiKebersihan = LokasiPatroli::query()
-            ->where('peruntukan', 'ob') // Hanya mengambil data khusus kebersihan (OB)
+        $lokasiKebersihan = KamarMandi::query()
             ->when(Auth::user()->role === 'admin', function ($query) {
                 // Filter sesuai cabang admin yang login
                 $query->where('cabang_id', Auth::user()->cabang_id);
             })
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('nama_lokasi', 'like', '%' . $search . '%')
+                    $q->where('nama_kamar_mandi', 'like', '%' . $search . '%')
+                        ->orWhere('kode_kamar_mandi', 'like', '%' . $search . '%')
+                        ->orWhere('lantai', 'like', '%' . $search . '%')
                         ->orWhere('deskripsi', 'like', '%' . $search . '%');
                 });
             })
-            ->orderBy('nama_lokasi')
+            ->orderBy('nama_kamar_mandi')
             ->paginate(10)
             ->withQueryString();
 
@@ -35,18 +36,18 @@ class LokasiKebersihanController extends Controller
     }
 
     /**
-     * Generate QR Code untuk lokasi kebersihan
+     * Generate QR Code untuk lokasi kebersihan (Kamar Mandi)
      */
-    private function generateQrCode(LokasiPatroli $lokasi): void
+    private function generateQrCode(KamarMandi $kamarMandi): void
     {
-        $url = route('patroli.create', ['lokasi' => $lokasi->id]);
+        $url = route('lokasi-kebersihan.create', ['kamar_mandi' => $kamarMandi->id]);
 
         $qrCodeImage = QrPng::make($url, 300, 2);
 
-        $filePath = "qr_codes/lokasi_{$lokasi->id}.png";
+        $filePath = "qr_codes/kamar_mandi_{$kamarMandi->id}.png";
         Storage::disk('public')->put($filePath, $qrCodeImage);
 
-        $lokasi->update([
+        $kamarMandi->update([
             'qr_code' => $filePath,
         ]);
     }
@@ -59,72 +60,73 @@ class LokasiKebersihanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_lokasi' => 'required|string|max:40',
-            'deskripsi'   => 'nullable|string|max:255',
+            'kode_kamar_mandi' => 'required|string|max:20|unique:kamar_mandi,kode_kamar_mandi',
+            'nama_kamar_mandi' => 'required|string|max:50',
+            'lantai'           => 'required|string|max:20',
+            'deskripsi'        => 'nullable|string',
         ]);
 
-        // Tambahkan cabang_id otomatis dan set peruntukan khusus OB
         $validated['cabang_id'] = Auth::user()->cabang_id;
-        $validated['peruntukan'] = 'ob';
 
-        $lokasi = LokasiPatroli::create($validated);
+        $kamarMandi = KamarMandi::create($validated);
 
-        $this->generateQrCode($lokasi);
+        $this->generateQrCode($kamarMandi);
 
         return redirect()->route('lokasi-kebersihan.index')
             ->with('success', 'Lokasi Kebersihan berhasil ditambahkan.');
     }
 
-    public function edit(LokasiPatroli $lokasiPatroli)
+    public function edit(KamarMandi $lokasiKebersihan)
     {
-        return view('admin.lokasi-kebersihan.edit', compact('lokasiPatroli'));
+        return view('admin.lokasi-kebersihan.edit', compact('lokasiKebersihan'));
     }
 
-    public function update(Request $request, LokasiPatroli $lokasiPatroli)
+    public function update(Request $request, KamarMandi $lokasiKebersihan)
     {
         $validated = $request->validate([
-            'nama_lokasi' => 'required|string|max:40',
-            'deskripsi'   => 'nullable|string|max:255',
+            'kode_kamar_mandi' => 'required|string|max:20|unique:kamar_mandi,kode_kamar_mandi,' . $lokasiKebersihan->id,
+            'nama_kamar_mandi' => 'required|string|max:50',
+            'lantai'           => 'required|string|max:20',
+            'deskripsi'        => 'nullable|string',
         ]);
 
         $validated['cabang_id'] = Auth::user()->cabang_id;
-        $validated['peruntukan'] = 'ob';
 
-        $dataLama = $lokasiPatroli->only(['nama_lokasi', 'deskripsi']);
+        $dataLama = $lokasiKebersihan->only(['kode_kamar_mandi', 'nama_kamar_mandi', 'lantai', 'deskripsi']);
 
-        $lokasiPatroli->update($validated);
+        $lokasiKebersihan->update($validated);
 
         // Regenerate QR jika ada perubahan data
         if ($dataLama != $validated) {
-            if ($lokasiPatroli->qr_code && Storage::disk('public')->exists($lokasiPatroli->qr_code)) {
-                Storage::disk('public')->delete($lokasiPatroli->qr_code);
+            if ($lokasiKebersihan->qr_code && Storage::disk('public')->exists($lokasiKebersihan->qr_code)) {
+                Storage::disk('public')->delete($lokasiKebersihan->qr_code);
             }
-            $this->generateQrCode($lokasiPatroli);
+            $this->generateQrCode($lokasiKebersihan);
         }
 
         return redirect()->route('lokasi-kebersihan.index')
             ->with('success', 'Lokasi Kebersihan berhasil diperbarui.');
     }
 
-    public function destroy(LokasiPatroli $lokasiPatroli)
+    public function destroy(KamarMandi $lokasiKebersihan)
     {
-        if ($lokasiPatroli->qr_code && Storage::disk('public')->exists($lokasiPatroli->qr_code)) {
-            Storage::disk('public')->delete($lokasiPatroli->qr_code);
+        if ($lokasiKebersihan->qr_code && Storage::disk('public')->exists($lokasiKebersihan->qr_code)) {
+            Storage::disk('public')->delete($lokasiKebersihan->qr_code);
         }
 
-        $lokasiPatroli->delete();
+        $lokasiKebersihan->delete();
 
         return redirect()->route('lokasi-kebersihan.index')
             ->with('success', 'Lokasi Kebersihan berhasil dihapus.');
     }
 
-    public function downloadQrCode(LokasiPatroli $lokasiPatroli)
+    public function downloadQrCode(KamarMandi $lokasiKebersihan)
     {
-        if (!$lokasiPatroli->qr_code || !Storage::disk('public')->exists($lokasiPatroli->qr_code)) {
+        if (!$lokasiKebersihan->qr_code || !Storage::disk('public')->exists($lokasiKebersihan->qr_code)) {
             return redirect()->back()->with('error', 'QR Code tidak ditemukan.');
         }
 
-        $qrPath = storage_path('app/public/' . $lokasiPatroli->qr_code);
+        $qrPath = storage_path('app/public/' . $lokasiKebersihan->qr_code);
 
         $manager = new ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
         $qrImage = $manager->read($qrPath);
@@ -139,7 +141,7 @@ class LokasiKebersihanController extends Controller
         $fontPath = public_path('fonts/OpenSans.ttf');
 
         if (file_exists($fontPath)) {
-            $canvas->text($lokasiPatroli->nama_lokasi, $width / 2, 30, function ($font) use ($fontPath) {
+            $canvas->text($lokasiKebersihan->nama_kamar_mandi, $width / 2, 30, function ($font) use ($fontPath) {
                 $font->filename($fontPath);
                 $font->size(24);
                 $font->color('#000000');
@@ -152,6 +154,6 @@ class LokasiKebersihanController extends Controller
 
         return response($canvas->toPng()->toString())
             ->header('Content-Type', 'image/png')
-            ->header('Content-Disposition', 'attachment; filename="qr_lokasi_kebersihan_' . $lokasiPatroli->id . '.png"');
+            ->header('Content-Disposition', 'attachment; filename="qr_kamar_mandi_' . $lokasiKebersihan->id . '.png"');
     }
 }

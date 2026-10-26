@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CabangController;
 use App\Http\Controllers\JadwalPatroliController;
 use App\Http\Controllers\KabidDukbisController;
+use App\Http\Controllers\KategoriKebersihanController;
 use App\Http\Controllers\KategoriKejadianController;
 use App\Http\Controllers\LokasiPatroliController;
 use App\Http\Controllers\LokasiKebersihanController;
@@ -98,6 +99,14 @@ Route::middleware('auth')->group(function () {
             Route::put('/{lokasiKebersihan}', [LokasiKebersihanController::class, 'update'])->name('lokasi-kebersihan.update');
             Route::delete('/{lokasiKebersihan}', [LokasiKebersihanController::class, 'destroy'])->name('lokasi-kebersihan.destroy');
             Route::get('/{lokasiKebersihan}/download-qr', [LokasiKebersihanController::class, 'downloadQrCode'])->name('lokasi-kebersihan.downloadQrCode');
+        });
+
+        // Kategori Kebersihan
+        Route::prefix('kategori-kebersihan')->group(function () {
+            Route::get('/', [KategoriKebersihanController::class, 'index'])->name('kategori-kebersihan.index');
+            Route::post('/', [KategoriKebersihanController::class, 'store'])->name('kategori-kebersihan.store');
+            Route::put('/{checklistKamarMandi}', [KategoriKebersihanController::class, 'update'])->name('kategori-kebersihan.update');
+            Route::delete('/{checklistKamarMandi}', [KategoriKebersihanController::class, 'destroy'])->name('kategori-kebersihan.destroy');
         });
 
         //Validasi Kejadian Darurat

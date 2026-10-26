@@ -148,19 +148,16 @@
                                 <td class="px-4 py-3">
                                     @if ($cek)
                                         @if ($cek->status_kondisi === 'baik')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                                <span class="w-1.5 h-1.5 mr-1.5 bg-green-600 rounded-full"></span>
+                                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                                 Baik
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                                                <span class="w-1.5 h-1.5 mr-1.5 bg-red-600 rounded-full"></span>
+                                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                                                 Perlu Tindakan
                                             </span>
                                         @endif
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                            <span class="w-1.5 h-1.5 mr-1.5 bg-gray-400 rounded-full"></span>
+                                        <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
                                             Belum Dicek
                                         </span>
                                     @endif

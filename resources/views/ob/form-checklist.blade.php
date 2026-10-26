@@ -7,8 +7,11 @@
                 <p class="text-sm text-gray-500">Isi evaluasi kebersihan dan kelengkapan fasilitas kamar mandi</p>
             </div>
             <a href="{{ route('ob.dashboard') }}"
-                class="px-3.5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg transition">
-                &larr; Batal & Kembali
+                class="inline-flex items-center px-4 py-2 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-blue-600 shadow-sm transition">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Kembali ke Dashboard
             </a>
         </div>
 
@@ -165,7 +168,7 @@
 
             <div class="flex items-center justify-end gap-3 pt-4">
                 <a href="{{ route('ob.dashboard') }}"
-                    class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-semibold rounded-lg transition">
+                    class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg shadow-sm transition">
                     Batal
                 </a>
                 <button type="submit"

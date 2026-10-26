@@ -88,6 +88,17 @@ Route::middleware('auth')->group(function () {
             Route::get('/{lokasiPatroli}/download-qr', [LokasiPatroliController::class, 'downloadQrCode'])->name('lokasi-patroli.downloadQrCode');
         });
 
+        // Lokasi Kebersihan (Untuk OB)
+        Route::prefix('lokasi-kebersihan')->group(function () {
+            Route::get('/', [LokasiPatroliController::class, 'indexKebersihan'])->name('lokasi-kebersihan.index');
+            Route::get('/create', [LokasiPatroliController::class, 'createKebersihan'])->name('lokasi-kebersihan.create');
+            Route::post('/', [LokasiPatroliController::class, 'storeKebersihan'])->name('lokasi-kebersihan.store');
+            Route::get('/{lokasiPatroli}/edit', [LokasiPatroliController::class, 'editKebersihan'])->name('lokasi-kebersihan.edit');
+            Route::put('/{lokasiPatroli}', [LokasiPatroliController::class, 'updateKebersihan'])->name('lokasi-kebersihan.update');
+            Route::delete('/{lokasiPatroli}', [LokasiPatroliController::class, 'destroyKebersihan'])->name('lokasi-kebersihan.destroy');
+            Route::get('/{lokasiPatroli}/download-qr', [LokasiPatroliController::class, 'downloadQrCodeKebersihan'])->name('lokasi-kebersihan.downloadQrCode');
+        });
+
         //Validasi Kejadian Darurat
         // Route::get('/validasi-kejadian-darurat', [PatroliController::class, 'validasiKejadianDarurat'])->name('admin.validasi-kejadian-darurat');
         // Route::put('/validasi-kejadian-darurat/{id}', [PatroliController::class, 'updateValidasiDarurat'])->name('admin.update-validasi-darurat');

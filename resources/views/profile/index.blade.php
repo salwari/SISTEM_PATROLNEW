@@ -40,7 +40,7 @@
                         class="w-full mt-1 p-3 bg-gray-100 border border-gray-200 rounded-lg" disabled>
                 </div>
                 {{-- Cabang (hanya tampil untuk role selain super_admin) --}}
-                @if (in_array(auth()->user()->role, ['admin', 'petugas_security', 'kabid_dukbis']))
+                @if (in_array(auth()->user()->role, ['admin', 'petugas_security', 'kabid_dukbis', 'sopir', 'ob']))
                     <div>
                         <label class="block text-sm font-semibold text-gray-700">Cabang</label>
                         <input type="text" value="{{ auth()->user()->cabang->nama_cabang ?? '-' }}"

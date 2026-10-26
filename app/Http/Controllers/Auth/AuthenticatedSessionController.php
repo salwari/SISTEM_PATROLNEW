@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -39,6 +40,9 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('kabid-dukbis.dashboard');
         } elseif ($user->role === 'ob') {
             return redirect()->route('ob.dashboard'); 
+        } elseif ($user->role === 'sopir' && Route::has('sopir.dashboard')) {
+            return redirect()->route('sopir.dashboard');
+
         }
 
         return redirect()->route('login');

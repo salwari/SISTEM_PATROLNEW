@@ -74,6 +74,35 @@
                     </div>
                 </div>
 
+                {{-- Area kantor untuk absen kendaraan --}}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-800">Area Kantor (absen kendaraan sopir)</h3>
+                    <p class="text-xs text-gray-500 mb-3">Opsional. Kosongkan semua bila tidak ingin membatasi lokasi absen. Koordinat bisa disalin dari Google Maps (klik kanan pada titik kantor).</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+                            <input type="text" inputmode="decimal" id="latitude" name="latitude" placeholder="-7.72841"
+                                value="{{ old('latitude', $cabang->latitude) }}"
+                                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            @error('latitude')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+                            <input type="text" inputmode="decimal" id="longitude" name="longitude" placeholder="109.01464"
+                                value="{{ old('longitude', $cabang->longitude) }}"
+                                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            @error('longitude')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <label for="radius_meter" class="block text-sm font-medium text-gray-700">Radius (meter)</label>
+                            <input type="number" id="radius_meter" name="radius_meter" min="10" max="5000" placeholder="200"
+                                value="{{ old('radius_meter', $cabang->radius_meter) }}"
+                                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            @error('radius_meter')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex justify-end gap-4 pt-2">
                     <a href="{{ route('data-cabang.index') }}"
                         class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg font-semibold">Kembali</a>

@@ -108,8 +108,11 @@
                 </ul>
             </li>
 
+
+
             {{-- ================= KENDARAAN (DROPDOWN) ================= --}}
-            @php $isKendaraanActive = request()->routeIs('kategori-kendaraan.*', 'data-kendaraan.*', 'riwayat-kendaraan.*'); @endphp
+            @php $isKendaraanActive = request()->routeIs('kendaraan.*', 'checklist-kendaraan.*', 'riwayat-kendaraan.*'); @endphp
+
             <li>
                 <button type="button" onclick="document.getElementById('dropdown-kendaraan').classList.toggle('hidden')"
                     class="flex items-center w-full p-2 text-base font-medium transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700 
@@ -128,15 +131,15 @@
                 </button>
                 <ul id="dropdown-kendaraan" class="{{ $isKendaraanActive ? '' : 'hidden' }} py-2 space-y-2">
                     <li>
-                        <a href="#" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
-                            {{ request()->routeIs('kategori-kendaraan.*') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Kategori Kendaraan</a>
+                        <a href="{{ route('kendaraan.index') }}" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
+                            {{ request()->routeIs('kendaraan.*') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Data Kendaraan</a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
-                            {{ request()->routeIs('data-kendaraan.*') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Data Kendaraan</a>
+                        <a href="{{ route('checklist-kendaraan.index') }}" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
+                            {{ request()->routeIs('checklist-kendaraan.*') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Butir Checklist Kendaraan</a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
+                        <a href="{{ route('riwayat-kendaraan.index') }}" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
                             {{ request()->routeIs('riwayat-kendaraan.*') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Riwayat Kendaraan</a>
                     </li>
                 </ul>

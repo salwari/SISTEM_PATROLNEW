@@ -6,6 +6,19 @@
         </div>
     @endif
 
+    {{-- Notifikasi kendaraan --}}
+    @if ($kendaraan['belumDicekHariIni']->count() > 0)
+        <div class="mt-4 mb-2 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg shadow-md">
+            Terdapat {{ $kendaraan['belumDicekHariIni']->count() }} kendaraan aktif yang belum dicek hari ini:
+            <span class="font-semibold">{{ $kendaraan['belumDicekHariIni']->pluck('plat_nomor')->join(', ') }}</span>.
+        </div>
+    @endif
+    @if ($kendaraan['perluTindakan']->count() > 0)
+        <div class="mt-2 mb-2 p-4 bg-red-100 border-l-4 border-red-500 text-red-800 rounded-lg shadow-md">
+            Terdapat {{ $kendaraan['perluTindakan']->count() }} kendaraan dengan hasil cek terakhir <span class="font-semibold">perlu tindakan</span>.
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2 lg:grid-cols-3">
         {{-- Card Jumlah Pengguna --}}
         <a href="{{ route('data-pengguna.index') }}">
@@ -82,6 +95,112 @@
             </div>
         </div>
     </div>
+
+    {{-- ================= KENDARAAN ================= --}}
+    <h2 class="text-xl font-bold text-gray-800 dark:text-white mt-10 mb-2">Kendaraan</h2>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <a href="{{ route('kendaraan.index', ['status' => 'aktif']) }}">
+            <div class="flex items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700">
+                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100">
+                    <svg class="w-6 h-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5 11l1.5-4.5A2 2 0 018.4 5h7.2a2 2 0 011.9 1.5L19 11h.5a1.5 1.5 0 011.5 1.5V17a1 1 0 01-1 1h-1a2 2 0 01-4 0H9a2 2 0 01-4 0H4a1 1 0 01-1-1v-4.5A1.5 1.5 0 014.5 11H5z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-base font-semibold text-gray-500">Kendaraan Aktif</h3>
+                    <p class="text-2xl font-bold text-blue-600 dark:text-white">{{ $kendaraan['jumlahAktif'] }}</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ route('riwayat-kendaraan.index', ['tanggal_dari' => now()->toDateString(), 'tanggal_sampai' => now()->toDateString()]) }}">
+            <div class="flex items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700">
+                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100">
+                    <svg class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-4 w-full">
+                    <h3 class="text-base font-semibold text-gray-500">Sudah Dicek Hari Ini</h3>
+                    <p class="text-2xl font-bold text-green-600 dark:text-white">
+                        {{ $kendaraan['sudahDicek'] }} / {{ $kendaraan['jumlahAktif'] }}
+                    </p>
+                    @php
+                        $persen = $kendaraan['jumlahAktif'] > 0 ? round($kendaraan['sudahDicek'] / $kendaraan['jumlahAktif'] * 100) : 0;
+                    @endphp
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ $persen }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ route('riwayat-kendaraan.index', ['status' => 'perlu_tindakan']) }}">
+            <div class="flex items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700">
+                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
+                    <svg class="w-6 h-6 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-base font-semibold text-gray-500">Perlu Tindakan</h3>
+                    <p class="text-2xl font-bold text-red-600 dark:text-white">{{ $kendaraan['perluTindakan']->count() }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-4">Cek Kendaraan 7 Hari Terakhir</h3>
+            <div class="relative h-72">
+                <canvas id="cekKendaraanChart" class="w-full h-full"></canvas>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-2">Kondisi Kendaraan Terkini</h3>
+            <div class="w-full max-w-xs mx-auto" style="height: 300px;">
+                <canvas id="kondisiKendaraanChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    @if ($kendaraan['perluTindakan']->count() > 0)
+        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700 mt-6">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-4">Kendaraan yang Perlu Tindakan</h3>
+            <div class="overflow-x-auto">
+                <table class="table-auto w-full text-sm text-gray-700">
+                    <thead class="bg-red-100 text-gray-800 uppercase text-xs">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Kendaraan</th>
+                            <th class="px-4 py-2 text-left">Dicek oleh</th>
+                            <th class="px-4 py-2 text-center">Tanggal</th>
+                            <th class="px-4 py-2 text-left">Catatan</th>
+                            <th class="px-4 py-2 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach ($kendaraan['perluTindakan'] as $k)
+                            <tr>
+                                <td class="px-4 py-2 whitespace-nowrap">
+                                    <span class="font-semibold">{{ $k->plat_nomor }}</span>
+                                    <div class="text-xs text-gray-500">{{ $k->jenis }}</div>
+                                </td>
+                                <td class="px-4 py-2">{{ $k->cekTerakhir->user->nama ?? '-' }}</td>
+                                <td class="px-4 py-2 text-center whitespace-nowrap">{{ $k->cekTerakhir->tanggal_cek->format('d-m-Y') }}</td>
+                                <td class="px-4 py-2">{{ \Illuminate\Support\Str::limit($k->cekTerakhir->catatan ?: '-', 60) }}</td>
+                                <td class="px-4 py-2 text-center">
+                                    <a href="{{ route('riwayat-kendaraan.show', $k->cekTerakhir->id) }}"
+                                        class="px-2 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded">Detail</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
 </x-app-layout>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -203,4 +322,60 @@
         },
         plugins: [ChartDataLabels]
     });
+    // ===== Grafik kendaraan =====
+    new Chart(document.getElementById('cekKendaraanChart'), {
+        type: 'bar',
+        data: {
+            labels: @json($kendaraan['mingguLabels']),
+            datasets: [{
+                label: 'Jumlah Cek Kendaraan',
+                data: @json($kendaraan['mingguData']),
+                backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                borderColor: 'rgba(16, 185, 129, 1)',
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    new Chart(document.getElementById('kondisiKendaraanChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Baik', 'Perlu Tindakan', 'Belum Pernah Dicek'],
+            datasets: [{
+                data: [
+                    {{ $kendaraan['kondisi']['baik'] }},
+                    {{ $kendaraan['kondisi']['perlu_tindakan'] }},
+                    {{ $kendaraan['kondisi']['belum_pernah'] }}
+                ],
+                backgroundColor: ['rgba(34,197,94,0.8)', 'rgba(239,68,68,0.8)', 'rgba(156,163,175,0.8)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '50%',
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#6B7280' } },
+                datalabels: {
+                    color: '#fff',
+                    // sembunyikan label untuk irisan 0 supaya tidak tampil "NaN%"
+                    display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0,
+                    formatter: (value, ctx) => {
+                        const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        return total ? ((value / total) * 100).toFixed(0) + '%' : '';
+                    },
+                    font: { weight: 'bold', size: 14 }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
 </script>
+

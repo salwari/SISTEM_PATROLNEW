@@ -84,7 +84,7 @@
                                 Dashboard OB
                             </a>
                         @elseif (auth()->user()->role === 'sopir')
-                            <a href="{{ route('petugas-security.dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-normal px-5 py-2 rounded-full transition">
+                            <a href="{{ route('sopir.dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-normal px-5 py-2 rounded-full transition">
                                 Dashboard Sopir
                             </a>
                         @endif 

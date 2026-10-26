@@ -54,6 +54,7 @@
                             <option value="">-- Pilih Hak Akses --</option>
                             <option value="petugas_security" {{ old('role', $user->role) == 'petugas_security' ? 'selected' : '' }}>Petugas Security</option>
                             <option value="kabid_dukbis" {{ old('role', $user->role) == 'kabid_dukbis' ? 'selected' : '' }}>Kabid Dukbis</option>
+                            <option value="sopir" {{ old('role', $user->role) == 'sopir' ? 'selected' : '' }}>Sopir</option>
                         </select>
                         @error('role')
                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>

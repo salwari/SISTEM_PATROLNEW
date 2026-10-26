@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cabang;
+use App\Models\ChecklistKendaraan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -60,6 +61,9 @@ class CabangController extends Controller
             ])->withInput();
         }
 
+        // Cabang baru langsung punya butir checklist kendaraan bawaan, supaya form cek sopir tidak kosong
+        ChecklistKendaraan::isiDefaultUntukCabang($cabang->id);
+
         // Buat admin cabang otomatis
         User::create([
             'nama' => "Admin " . $validated['nama_cabang'],
@@ -90,7 +94,13 @@ class CabangController extends Controller
             'email' => 'required|email|regex:/@gmail\.com$/|unique:users,email,' . $cabang->admin->id,
             'nomor_induk' => 'required|string|regex:/^\d+$/|max:12|unique:users,nomor_induk,' . $cabang->admin->id,
             'no_telepon' => 'required|string|regex:/^\d+$/|digits_between:6,15|unique:users,no_telepon,' . $cabang->admin->id,
+            'latitude' => 'nullable|numeric|between:-90,90|required_with:longitude,radius_meter',
+            'longitude' => 'nullable|numeric|between:-180,180|required_with:latitude,radius_meter',
+            'radius_meter' => 'nullable|integer|min:10|max:5000|required_with:latitude,longitude',
         ], [
+            'latitude.required_with' => 'Latitude, longitude, dan radius harus diisi bersamaan.',
+            'longitude.required_with' => 'Latitude, longitude, dan radius harus diisi bersamaan.',
+            'radius_meter.required_with' => 'Latitude, longitude, dan radius harus diisi bersamaan.',
             'nama_cabang.regex' => 'Nama cabang hanya boleh berisi huruf dan spasi.',
             'nama_cabang.unique' => 'Nama cabang sudah terdaftar.',
             'email.regex' => 'Email harus menggunakan domain @gmail.com.',
@@ -105,6 +115,9 @@ class CabangController extends Controller
         $cabang->update([
             'nama_cabang' => $validated['nama_cabang'],
             'alamat_cabang' => $validated['alamat_cabang'],
+            'latitude' => $validated['latitude'] ?? null,
+            'longitude' => $validated['longitude'] ?? null,
+            'radius_meter' => $validated['radius_meter'] ?? null,
         ]);
 
         // Update data admin cabang (relasi 1 cabang punya 1 admin)

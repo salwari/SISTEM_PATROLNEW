@@ -45,6 +45,18 @@
                 </a>
             </li>
 
+            {{-- Absen Kendaraan --}}
+            <li>
+                <a href="{{ route('kabid-dukbis.absen-kendaraan') }}"
+                   class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
+                   {{ request()->routeIs('kabid-dukbis.absen-kendaraan') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+                        <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
+                    </svg>
+                    <span class="ml-3">Absen Kendaraan</span>
+                </a>
+            </li>
+
             {{-- Laporan Patroli --}}
             <li>
                 <a href="{{ route('kabid-dukbis.laporan-patroli') }}"

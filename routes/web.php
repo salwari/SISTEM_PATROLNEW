@@ -13,8 +13,13 @@ use App\Http\Controllers\ObController;
 use App\Http\Controllers\PatroliController;
 use App\Http\Controllers\PetugasSecurityController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SopirController;
+use App\Http\Controllers\SopirAbsenController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\KendaraanController;
+use App\Http\Controllers\ChecklistKendaraanController;
+use App\Http\Controllers\RiwayatKendaraanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -119,6 +124,34 @@ Route::middleware('auth')->group(function () {
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');
 
         Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
+
+        // Kendaraan (modul Sopir, sisi Admin Cabang)
+        Route::prefix('kendaraan')->group(function () {
+            Route::get('/', [KendaraanController::class, 'index'])->name('kendaraan.index');
+            Route::get('/create', [KendaraanController::class, 'create'])->name('kendaraan.create');
+            Route::get('/cetak-qr', [KendaraanController::class, 'cetakQr'])->name('kendaraan.cetakQr');
+            Route::post('/', [KendaraanController::class, 'store'])->name('kendaraan.store');
+            Route::get('/{kendaraan}/edit', [KendaraanController::class, 'edit'])->name('kendaraan.edit');
+            Route::put('/{kendaraan}', [KendaraanController::class, 'update'])->name('kendaraan.update');
+            Route::delete('/{kendaraan}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy');
+            Route::get('/{kendaraan}/download-qr', [KendaraanController::class, 'downloadQrCode'])->name('kendaraan.downloadQrCode');
+        });
+
+        // Butir checklist kendaraan
+        Route::prefix('checklist-kendaraan')->group(function () {
+            Route::get('/', [ChecklistKendaraanController::class, 'index'])->name('checklist-kendaraan.index');
+            Route::get('/create', [ChecklistKendaraanController::class, 'create'])->name('checklist-kendaraan.create');
+            Route::post('/', [ChecklistKendaraanController::class, 'store'])->name('checklist-kendaraan.store');
+            Route::get('/{checklistKendaraan}/edit', [ChecklistKendaraanController::class, 'edit'])->name('checklist-kendaraan.edit');
+            Route::put('/{checklistKendaraan}', [ChecklistKendaraanController::class, 'update'])->name('checklist-kendaraan.update');
+            Route::delete('/{checklistKendaraan}', [ChecklistKendaraanController::class, 'destroy'])->name('checklist-kendaraan.destroy');
+        });
+
+        // Riwayat cek kendaraan
+        Route::prefix('riwayat-kendaraan')->group(function () {
+            Route::get('/', [RiwayatKendaraanController::class, 'index'])->name('riwayat-kendaraan.index');
+            Route::get('/{riwayatKendaraan}', [RiwayatKendaraanController::class, 'show'])->name('riwayat-kendaraan.show');
+        });
     });
 
     // PETUGAS SECURITY ROUTES
@@ -131,11 +164,25 @@ Route::middleware('auth')->group(function () {
         Route::post('/patroli/store', [PatroliController::class, 'store'])->name('patroli.store');
     });
 
+    // SOPIR ROUTES
+    Route::middleware('role:sopir')->prefix('sopir')->group(function () {
+        Route::get('/dashboard', [SopirController::class, 'dashboard'])->name('sopir.dashboard');
+        Route::get('/scan-qr', [SopirController::class, 'scanQr'])->name('sopir.scan-qr');
+
+        // Absen kendaraan (QR mengarah ke sopir.absen.create)
+        Route::get('/absen/create', [SopirAbsenController::class, 'create'])->name('sopir.absen.create');
+        // QR lama (/sopir/cek/create) tetap valid: dialihkan ke form absen.
+        Route::get('/cek/create', fn (\Illuminate\Http\Request $r) => redirect()->route('sopir.absen.create', ['kode' => $r->query('kode')]));
+        Route::post('/absen', [SopirAbsenController::class, 'store'])->name('sopir.absen.store');
+        Route::get('/riwayat-absen', [SopirAbsenController::class, 'riwayat'])->name('sopir.riwayat-absen');
+    });
+
     // KABID DUKBIS ROUTES
     Route::middleware('role:kabid_dukbis')->prefix('kabid-dukbis')->group(function () {
         Route::get('/dashboard', [KabidDukbisController::class, 'dashboard'])->name('kabid-dukbis.dashboard');
         Route::get('/data-petugas-security', [KabidDukbisController::class, 'dataPetugasSecurity'])->name('kabid-dukbis.data-petugas-security');
         Route::get('/data-lokasi-patroli', [KabidDukbisController::class, 'dataLokasiPatroli'])->name('kabid-dukbis.data-lokasi-patroli');
+        Route::get('/absen-kendaraan', [KabidDukbisController::class, 'absenKendaraan'])->name('kabid-dukbis.absen-kendaraan');
         Route::get('/laporan-patroli', [KabidDukbisController::class, 'laporanPatroli'])->name('kabid-dukbis.laporan-patroli');
         Route::get('/laporan-patroli/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporan'])->name('kabid-dukbis.cetak-laporan-patroli-redirect');
         // Route::get('/laporan-patroli/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-patroli');
@@ -160,4 +207,4 @@ Route::get('/kabid-dukbis/laporan-patroli/cetak/{token}', [KabidDukbisController
 //     ->name('verifikasi-laporan-patroli-token');
 
 
-require __DIR__ . '/auth.php';  // Menambahkan route auth
+require __DIR__ . '/auth.php';  

@@ -4,8 +4,12 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CabangController;
 use App\Http\Controllers\JadwalPatroliController;
 use App\Http\Controllers\KabidDukbisController;
+use App\Http\Controllers\KategoriKebersihanController;
 use App\Http\Controllers\KategoriKejadianController;
 use App\Http\Controllers\LokasiPatroliController;
+use App\Http\Controllers\LokasiKebersihanController;
+use App\Http\Controllers\RiwayatKebersihanController;
+use App\Http\Controllers\ObController;
 use App\Http\Controllers\PatroliController;
 use App\Http\Controllers\PetugasSecurityController;
 use App\Http\Controllers\ProfileController;
@@ -95,13 +99,21 @@ Route::middleware('auth')->group(function () {
 
         // Lokasi Kebersihan (Untuk OB)
         Route::prefix('lokasi-kebersihan')->group(function () {
-            Route::get('/', [LokasiPatroliController::class, 'indexKebersihan'])->name('lokasi-kebersihan.index');
-            Route::get('/create', [LokasiPatroliController::class, 'createKebersihan'])->name('lokasi-kebersihan.create');
-            Route::post('/', [LokasiPatroliController::class, 'storeKebersihan'])->name('lokasi-kebersihan.store');
-            Route::get('/{lokasiPatroli}/edit', [LokasiPatroliController::class, 'editKebersihan'])->name('lokasi-kebersihan.edit');
-            Route::put('/{lokasiPatroli}', [LokasiPatroliController::class, 'updateKebersihan'])->name('lokasi-kebersihan.update');
-            Route::delete('/{lokasiPatroli}', [LokasiPatroliController::class, 'destroyKebersihan'])->name('lokasi-kebersihan.destroy');
-            Route::get('/{lokasiPatroli}/download-qr', [LokasiPatroliController::class, 'downloadQrCodeKebersihan'])->name('lokasi-kebersihan.downloadQrCode');
+            Route::get('/', [LokasiKebersihanController::class, 'index'])->name('lokasi-kebersihan.index');
+            Route::get('/create', [LokasiKebersihanController::class, 'create'])->name('lokasi-kebersihan.create');
+            Route::post('/', [LokasiKebersihanController::class, 'store'])->name('lokasi-kebersihan.store');
+            Route::get('/{lokasiKebersihan}/edit', [LokasiKebersihanController::class, 'edit'])->name('lokasi-kebersihan.edit');
+            Route::put('/{lokasiKebersihan}', [LokasiKebersihanController::class, 'update'])->name('lokasi-kebersihan.update');
+            Route::delete('/{lokasiKebersihan}', [LokasiKebersihanController::class, 'destroy'])->name('lokasi-kebersihan.destroy');
+            Route::get('/{lokasiKebersihan}/download-qr', [LokasiKebersihanController::class, 'downloadQrCode'])->name('lokasi-kebersihan.downloadQrCode');
+        });
+
+        // Kategori Kebersihan
+        Route::prefix('kategori-kebersihan')->group(function () {
+            Route::get('/', [KategoriKebersihanController::class, 'index'])->name('kategori-kebersihan.index');
+            Route::post('/', [KategoriKebersihanController::class, 'store'])->name('kategori-kebersihan.store');
+            Route::put('/{checklistKamarMandi}', [KategoriKebersihanController::class, 'update'])->name('kategori-kebersihan.update');
+            Route::delete('/{checklistKamarMandi}', [KategoriKebersihanController::class, 'destroy'])->name('kategori-kebersihan.destroy');
         });
 
         //Validasi Kejadian Darurat
@@ -110,6 +122,7 @@ Route::middleware('auth')->group(function () {
         
         //Data Patroli
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');
+
 
         // Kendaraan (modul Sopir, sisi Admin Cabang)
         Route::prefix('kendaraan')->group(function () {
@@ -138,6 +151,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [RiwayatKendaraanController::class, 'index'])->name('riwayat-kendaraan.index');
             Route::get('/{riwayatKendaraan}', [RiwayatKendaraanController::class, 'show'])->name('riwayat-kendaraan.show');
         });
+
+        Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
+
     });
 
     // PETUGAS SECURITY ROUTES
@@ -173,6 +189,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-patroli/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporan'])->name('kabid-dukbis.cetak-laporan-patroli-redirect');
         // Route::get('/laporan-patroli/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-patroli');
         // Route::get('/laporan-patroli/verifikasi', [KabidDukbisController::class, 'verifikasiLaporan'])->name('kabid-dukbis.verifikasi-laporan-patroli');
+    });
+
+    Route::middleware('role:ob')->prefix('ob')->name('ob.')->group(function () {
+        Route::get('/dashboard', [ObController::class, 'dashboard'])->name('dashboard');
+        Route::get('/scan-qr', [ObController::class, 'scanQr'])->name('scan-qr');
+
+        Route::get('/kamar-mandi/{kamarMandi}/periksa', [ObController::class, 'periksa'])->name('kamar-mandi.periksa');
+        Route::post('/kamar-mandi/{kamarMandi}/simpan', [ObController::class, 'simpanPemeriksaan'])->name('kamar-mandi.simpan');
+
+         Route::get('/riwayat-cek', [ObController::class, 'riwayat'])->name('riwayat-cek');
     });
 });
 

@@ -7,20 +7,10 @@
                 {{-- Search --}}
                 <form id="search-form" action="{{ route('lokasi-kebersihan.index') }}" method="GET"
                     class="flex flex-row items-center gap-2 w-full md:w-1/2">
-
-                    <label for="search" class="sr-only">Cari Lokasi</label>
-
                     <div class="relative flex flex-grow">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
                         <input type="text" id="search" name="search" value="{{ request('search') }}"
-                            placeholder="Cari lokasi kebersihan..." autocomplete="off"
-                            class="block w-full p-2 pl-10 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500" />
+                            placeholder="Cari kode, nama, lantai..." autocomplete="off"
+                            class="block w-full p-2 pl-4 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500" />
                         <button type="submit"
                             class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-r-lg">
                             Cari
@@ -49,7 +39,9 @@
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
                     <tr class="text-center">
                         <th class="px-4 py-3">No</th>
+                        <th class="px-4 py-3">Kode</th>
                         <th class="px-4 py-3">Nama Lokasi</th>
+                        <th class="px-4 py-3">Lantai</th>
                         <th class="px-4 py-3">Deskripsi</th>
                         <th class="px-4 py-3">QR Code</th>
                         <th class="px-4 py-3">Aksi</th>
@@ -61,57 +53,37 @@
                             <td class="px-4 py-2 text-center">
                                 {{ $loop->iteration + ($lokasiKebersihan->currentPage() - 1) * $lokasiKebersihan->perPage() }}
                             </td>
-                            <td class="px-4 py-2">{{ $data->nama_lokasi }}</td>
+                            <td class="px-4 py-2 text-center font-semibold">{{ $data->kode_kamar_mandi }}</td>
+                            <td class="px-4 py-2">{{ $data->nama_kamar_mandi }}</td>
+                            <td class="px-4 py-2 text-center">{{ $data->lantai }}</td>
                             <td class="px-4 py-2">{{ $data->deskripsi ?? '-' }}</td>
                             <td class="px-4 py-2 text-center">
                                 @if ($data->qr_code)
                                     <img src="{{ asset('storage/' . $data->qr_code) }}" alt="QR Code"
-                                        class="w-20 sm:w-16 xs:w-14 max-w-full h-auto object-contain mx-auto rounded cursor-pointer"
-                                        onclick="showQrModal('{{ asset('storage/' . $data->qr_code) }}', '{{ $data->nama_lokasi }}')">
+                                        class="w-16 h-auto object-contain mx-auto rounded cursor-pointer"
+                                        onclick="showQrModal('{{ asset('storage/' . $data->qr_code) }}', '{{ $data->nama_kamar_mandi }}')">
                                 @else
                                     <span class="text-gray-400 italic">Tidak tersedia</span>
                                 @endif
                             </td>
                             <td class="px-4 py-2 text-center">
-                                <div class="flex overflow-x-auto no-scrollbar gap-1 justify-center">
-                                    {{-- Unduh QR Code --}}
+                                <div class="flex gap-1 justify-center">
                                     @if ($data->qr_code)
                                         <a href="{{ route('lokasi-kebersihan.downloadQrCode', $data->id) }}"
-                                            class="inline-flex items-center px-2 py-1 text-sm text-white bg-green-600 hover:bg-green-700 rounded whitespace-nowrap">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1"
-                                                fill="currentColor" viewBox="0 0 512 512">
-                                                <path
-                                                    d="M480 352c17.7 0 32 14.3 32 32v64c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V384c0-17.7 14.3-32 32-32s32 14.3 32 32v64H448V384c0-17.7 14.3-32 32-32zM272 32v278.1l73.6-73.6c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-128 128c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L240 310.1V32c0-17.7 14.3-32 32-32s32 14.3 32 32z" />
-                                            </svg>
+                                            class="px-2 py-1 text-sm text-white bg-green-600 hover:bg-green-700 rounded">
                                             Unduh
                                         </a>
                                     @endif
-
-                                    {{-- Edit --}}
                                     <a href="{{ route('lokasi-kebersihan.edit', $data->id) }}"
-                                        class="inline-flex items-center px-2 py-1 text-sm text-white bg-yellow-400 hover:bg-yellow-500 rounded whitespace-nowrap">
-                                        <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                            <path fill-rule="evenodd"
-                                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                clip-rule="evenodd" />
-                                        </svg>
+                                        class="px-2 py-1 text-sm text-white bg-yellow-400 hover:bg-yellow-500 rounded">
                                         Edit
                                     </a>
-
-                                    {{-- Hapus --}}
-                                    <form action="{{ route('lokasi-kebersihan.destroy', $data->id) }}" method="POST"
-                                        class="inline form-hapus">
+                                    <form action="{{ route('lokasi-kebersihan.destroy', $data->id) }}" method="POST" class="inline form-hapus">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
-                                            class="btn-hapus inline-flex items-center px-2 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded whitespace-nowrap"
-                                            data-nama="{{ $data->nama_lokasi }}">
-                                            <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
+                                            class="btn-hapus px-2 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded"
+                                            data-nama="{{ $data->nama_kamar_mandi }}">
                                             Hapus
                                         </button>
                                     </form>
@@ -120,7 +92,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-4 text-center text-gray-700">
+                            <td colspan="7" class="px-4 py-4 text-center text-gray-700">
                                 Belum ada data lokasi kebersihan.
                             </td>
                         </tr>
@@ -142,20 +114,11 @@
 
         {{-- Modal Preview QR --}}
         <div id="qrModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50">
-            <div class="flex items-center justify-center min-h-screen p-4 sm:p-6">
-                <div class="relative w-full max-w-sm bg-white rounded-lg shadow-xl z-10">
-                    <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-700 hover:text-gray-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                    <div class="p-4 sm:p-6 text-center">
-                        <h3 id="qrModalNamaLokasi" class="text-base sm:text-lg font-semibold mb-4 text-gray-800"></h3>
-                        <img id="qrModalImg" src="" alt="QR Preview"
-                            class="mx-auto w-full max-w-[180px] sm:max-w-[220px] h-auto rounded-lg shadow-md border border-gray-200">
-                    </div>
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="relative w-full max-w-sm bg-white rounded-lg shadow-xl p-6 text-center">
+                    <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-700 hover:text-gray-900 font-bold">✕</button>
+                    <h3 id="qrModalNamaLokasi" class="text-lg font-semibold mb-4 text-gray-800"></h3>
+                    <img id="qrModalImg" src="" alt="QR Preview" class="mx-auto max-w-[200px] rounded-lg shadow-md border">
                 </div>
             </div>
         </div>
@@ -163,39 +126,28 @@
 </x-app-layout>
 
 <script>
-    //Menampilkan QR Code
     function showQrModal(imageUrl, namaLokasi) {
         document.getElementById('qrModalImg').src = imageUrl;
         document.getElementById('qrModalNamaLokasi').textContent = namaLokasi;
         document.getElementById('qrModal').classList.remove('hidden');
     }
-
-    //Menutup Modal
     function closeModal() {
         document.getElementById('qrModal').classList.add('hidden');
     }
-
-    //Konfirmasi Hapus
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.btn-hapus').forEach(button => {
             button.addEventListener('click', function() {
                 const form = this.closest('form');
-                const namaLokasi = this.getAttribute('data-nama');
-
+                const nama = this.getAttribute('data-nama');
                 Swal.fire({
                     title: 'Konfirmasi Hapus',
-                    text: `Apakah Anda yakin ingin menghapus lokasi kebersihan "${namaLokasi}"?`,
+                    text: `Apakah Anda yakin ingin menghapus lokasi "${nama}"?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Hapus',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
+                    confirmButtonText: 'Hapus'
+                }).then((res) => { if (res.isConfirmed) form.submit(); });
             });
         });
     });

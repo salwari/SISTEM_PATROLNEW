@@ -69,4 +69,9 @@ class Cabang extends Model
         return $this->hasMany(Patroli::class, 'cabang_id');
     }
 
+    public function kamarMandi()
+    {
+        return $this->hasMany(KamarMandi::class, 'cabang_id');
+    }
+
 }

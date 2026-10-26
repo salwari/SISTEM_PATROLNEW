@@ -6,6 +6,8 @@ use App\Models\Cabang;
 use App\Models\User;
 use App\Models\LokasiPatroli;
 use App\Models\Patroli;
+use App\Models\KamarMandi;
+use App\Models\PemeriksaanKamarMandi;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -317,5 +319,189 @@ class KabidDukbisController extends Controller
             'preview' => true,
             'namaKepala' => $namaKepala,
         ]);
+    }
+
+    public function dataLokasiKebersihan(Request $request)
+    {
+        $search = $request->input('search');
+        $cabangId = Auth::user()->cabang_id;
+        $lokasiKebersihan = KamarMandi::where('cabang_id', $cabangId)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_kamar_mandi', 'like', "%{$search}%")
+                      ->orWhere('kode_kamar_mandi', 'like', "%{$search}%")
+                      ->orWhere('lantai', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('kode_kamar_mandi')
+            ->paginate(10)
+            ->withQueryString();
+        return view('kabid-dukbis.data-lokasi-kebersihan', compact('lokasiKebersihan', 'search'));
+    }
+    /**
+     * Menampilkan Tab Temuan Kamar Mandi (Khusus Status Perlu Tindakan)
+     */
+    public function temuanKamarMandi(Request $request)
+    {
+        $search = $request->input('search');
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSelesai = $request->input('tanggal_selesai');
+        $cabangId = Auth::user()->cabang_id;
+        $temuanList = PemeriksaanKamarMandi::with(['kamarMandi', 'user', 'detailPemeriksaan.checklist'])
+            ->where('cabang_id', $cabangId)
+            ->where('status_kondisi', 'perlu_tindakan')
+            ->when($search, function ($query, $search) {
+                $query->whereHas('kamarMandi', function ($q) use ($search) {
+                    $q->where('nama_kamar_mandi', 'like', "%{$search}%")
+                      ->orWhere('kode_kamar_mandi', 'like', "%{$search}%");
+                });
+            })
+            ->when($tanggalMulai && $tanggalSelesai, function ($query) use ($tanggalMulai, $tanggalSelesai) {
+                $query->whereBetween('tanggal', [$tanggalMulai, $tanggalSelesai]);
+            })
+            ->orderByDesc('tanggal')
+            ->orderByDesc('waktu')
+            ->paginate(10)
+            ->withQueryString();
+        return view('kabid-dukbis.temuan-kamar-mandi', compact('temuanList', 'search', 'tanggalMulai', 'tanggalSelesai'));
+    }
+
+    public function laporanKebersihan(Request $request)
+    {
+        $search = $request->input('search');
+        $status = $request->input('status');
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSelesai = $request->input('tanggal_selesai');
+        $cabangId = Auth::user()->cabang_id;
+        $laporanKebersihan = PemeriksaanKamarMandi::with(['kamarMandi', 'user', 'detailPemeriksaan.checklist'])
+            ->where('cabang_id', $cabangId)
+            ->when($status, fn($q, $s) => $q->where('status_kondisi', $s))
+            ->when($search, function ($query, $search) {
+                $query->whereHas('kamarMandi', function ($q) use ($search) {
+                    $q->where('nama_kamar_mandi', 'like', "%{$search}%")
+                      ->orWhere('kode_kamar_mandi', 'like', "%{$search}%");
+                });
+            })
+            ->when($tanggalMulai && $tanggalSelesai, function ($query) use ($tanggalMulai, $tanggalSelesai) {
+                $query->whereBetween('tanggal', [$tanggalMulai, $tanggalSelesai]);
+            })
+            ->orderByDesc('tanggal')
+            ->orderByDesc('waktu')
+            ->paginate(10)
+            ->withQueryString();
+        return view('kabid-dukbis.laporan-kebersihan', compact('laporanKebersihan', 'search', 'status', 'tanggalMulai', 'tanggalSelesai'));
+    }
+        public function redirectCetakLaporanKebersihan(Request $request)
+    {
+        // Validasi input tanggal
+        $validated = Validator::make($request->all(), [
+            'tanggal_mulai' => ['required', 'date'],
+            'tanggal_selesai' => ['required', 'date'],
+            'status' => ['nullable', 'in:baik,perlu_tindakan'],
+        ], [
+            'tanggal_mulai.required' => 'Tanggal mulai wajib diisi.',
+            'tanggal_mulai.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
+            'tanggal_selesai.required' => 'Tanggal selesai wajib diisi.',
+            'tanggal_selesai.date' => 'Tanggal selesai harus berupa tanggal yang valid.',
+            'status.in' => 'Status yang dipilih tidak valid.',
+        ]);
+
+        $validated->after(function ($validator) use ($request) {
+            if ($request->filled(['tanggal_mulai', 'tanggal_selesai'])) {
+                $start = Carbon::parse($request->tanggal_mulai);
+                $end = Carbon::parse($request->tanggal_selesai);
+
+                if ($start->greaterThan($end)) {
+                    $validator->errors()->add('tanggal_mulai', 'Tanggal mulai tidak boleh lebih besar dari tanggal selesai.');
+                }
+
+                if ($start->format('Y-m') !== $end->format('Y-m')) {
+                    $validator->errors()->add('tanggal_mulai', 'Tanggal mulai dan selesai harus dalam bulan dan tahun yang sama.');
+                }
+
+                if ($start->diffInMonths($end) > 1) {
+                    $validator->errors()->add('tanggal_mulai', 'Rentang tanggal tidak boleh lebih dari satu bulan.');
+                }
+            }
+        });
+
+        if ($validated->fails()) {
+            return back()->withInput()->with('error', $validated->errors()->first());
+        }
+
+        // Enkripsi parameter filter ke token
+        $token = Crypt::encrypt([
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('kabid-dukbis.cetak-laporan-kebersihan', ['token' => $token]);
+    }
+
+    public function cetakLaporanKebersihanTerenkripsi($token)
+    {
+        try {
+            $params = Crypt::decrypt($token);
+        } catch (\Exception $e) {
+            abort(403, 'Token tidak valid atau rusak.');
+        }
+
+        $startDate = $params['tanggal_mulai'];
+        $endDate = $params['tanggal_selesai'];
+        $status = $params['status'];
+
+        $cabangId = Auth::user()->cabang_id;
+
+        $dataKebersihan = PemeriksaanKamarMandi::with(['kamarMandi', 'user'])
+            ->where('cabang_id', $cabangId)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->when($status, fn($query) => $query->where('status_kondisi', $status))
+            ->orderBy('tanggal')
+            ->orderBy('waktu')
+            ->get();
+
+        if ($dataKebersihan->isEmpty()) {
+            return back()->with('error', 'Tidak ditemukan data pemeriksaan kebersihan pada rentang tanggal dan status yang dipilih.');
+        }
+
+        $cabang = Cabang::find($cabangId);
+
+        $kepala = User::where('role', 'kabid_dukbis')
+            ->where('cabang_id', $cabangId)
+            ->first();
+
+        $namaKepala = $kepala?->nama ?? 'Nama Kepala';
+        $nomorInduk = $kepala?->nomor_induk ?? '-';
+
+        $adminCabang = User::where('cabang_id', $cabangId)
+            ->whereIn('role', ['admin', 'kabid_dukbis'])
+            ->first();
+
+        $teleponCabang = $adminCabang?->no_telepon ?? '-';
+        $emailCabang = $adminCabang?->email ?? '-';
+
+        // QR Code pengesahan dokumen resmi
+        $linkVerifikasi = url('/kabid-dukbis/laporan-kebersihan/cetak/' . $token);
+        $qrText = "Laporan Pemeriksaan Kebersihan\nDisahkan oleh : $namaKepala" .
+            "\nNomor Induk : $nomorInduk" .
+            "\nTanggal : " . now()->translatedFormat('d F Y') .
+            "\n\nVerifikasi :\n" . $linkVerifikasi;
+
+        $qrCode = base64_encode(QrPng::make($qrText, 150, 2));
+
+        $pdf = Pdf::loadView('kabid-dukbis.cetak-laporan-kebersihan', [
+            'data' => $dataKebersihan,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'qrCode' => $qrCode,
+            'namaKepala' => $namaKepala,
+            'nomorInduk' => $nomorInduk,
+            'cabang' => $cabang,
+            'teleponCabang' => $teleponCabang,
+            'emailCabang' => $emailCabang,
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->stream('laporan_kebersihan_' . now()->format('Ymd_His') . '.pdf');
     }
 }

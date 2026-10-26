@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ? $title . ' | ' : '' }}{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ $title ?? 'SIM PATROLI' }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -42,6 +42,8 @@
                 <x-sidebar-petugas />
             @elseif(Auth::user()->role == 'kabid_dukbis')
                 <x-sidebar-dukbis />
+            @elseif(Auth::user()->role == 'ob')
+                <x-sidebar-ob />
             @endif
         @endif
 

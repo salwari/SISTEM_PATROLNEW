@@ -33,13 +33,15 @@ class PasswordController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'super_admin') {
-            return redirect()->route('super_admin.dashboard')->with('success', 'Password berhasil diubah.');
+            return redirect()->route('super-admin.dashboard')->with('success', 'Password berhasil diubah.');
         } elseif ($user->role === 'admin') {
             return redirect()->route('admin.dashboard')->with('success', 'Password berhasil diubah.');
         } elseif ($user->role === 'petugas_security') {
             return redirect()->route('petugas-security.dashboard')->with('success', 'Password berhasil diubah.');
         } elseif ($user->role === 'kabid_dukbis') {
             return redirect()->route('kabid-dukbis.dashboard')->with('success', 'Password berhasil diubah.');
+        } elseif ($user->role === 'ob') {
+            return redirect()->route('ob.dashboard')->with('success', 'Password berhasil diubah.');
         }
 
         // fallback

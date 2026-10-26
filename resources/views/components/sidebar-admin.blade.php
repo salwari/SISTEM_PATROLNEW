@@ -90,7 +90,7 @@
                 </button>
                 <ul id="dropdown-kebersihan" class="{{ $isKebersihanActive ? '' : 'hidden' }} py-2 space-y-2">
                     <li>
-                        <a href="#" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
+                        <a href="{{ route('kategori-kebersihan.index') }}" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
                             {{ request()->routeIs('kategori-kebersihan.*') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Kategori Kebersihan</a>
                     </li>
                     <li>

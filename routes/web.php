@@ -6,6 +6,7 @@ use App\Http\Controllers\JadwalPatroliController;
 use App\Http\Controllers\KabidDukbisController;
 use App\Http\Controllers\KategoriKejadianController;
 use App\Http\Controllers\LokasiPatroliController;
+use App\Http\Controllers\LokasiKebersihanController;
 use App\Http\Controllers\ObController;
 use App\Http\Controllers\PatroliController;
 use App\Http\Controllers\PetugasSecurityController;
@@ -87,6 +88,17 @@ Route::middleware('auth')->group(function () {
             Route::put('/{lokasiPatroli}', [LokasiPatroliController::class, 'update'])->name('lokasi-patroli.update');
             Route::delete('/{lokasiPatroli}', [LokasiPatroliController::class, 'destroy'])->name('lokasi-patroli.destroy');
             Route::get('/{lokasiPatroli}/download-qr', [LokasiPatroliController::class, 'downloadQrCode'])->name('lokasi-patroli.downloadQrCode');
+        });
+
+        // Lokasi Kebersihan (Untuk OB)
+        Route::prefix('lokasi-kebersihan')->group(function () {
+            Route::get('/', [LokasiKebersihanController::class, 'index'])->name('lokasi-kebersihan.index');
+            Route::get('/create', [LokasiKebersihanController::class, 'create'])->name('lokasi-kebersihan.create');
+            Route::post('/', [LokasiKebersihanController::class, 'store'])->name('lokasi-kebersihan.store');
+            Route::get('/{lokasiKebersihan}/edit', [LokasiKebersihanController::class, 'edit'])->name('lokasi-kebersihan.edit');
+            Route::put('/{lokasiKebersihan}', [LokasiKebersihanController::class, 'update'])->name('lokasi-kebersihan.update');
+            Route::delete('/{lokasiKebersihan}', [LokasiKebersihanController::class, 'destroy'])->name('lokasi-kebersihan.destroy');
+            Route::get('/{lokasiKebersihan}/download-qr', [LokasiKebersihanController::class, 'downloadQrCode'])->name('lokasi-kebersihan.downloadQrCode');
         });
 
         //Validasi Kejadian Darurat

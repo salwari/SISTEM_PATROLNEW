@@ -73,12 +73,21 @@
                                 class="bg-blue-600 hover:bg-blue-700 text-white font-normal px-5 py-2 rounded-full transition">
                                 Dashboard Kabid Dukbis
                             </a>
+
                         @elseif (auth()->user()->role === 'unit')
                             <a href="{{ route('unit.dashboard') }}"
                                 class="bg-blue-600 hover:bg-blue-700 text-white font-normal px-5 py-2 rounded-full transition">
                                 Dashboard Unit
                             </a>
-                        @endif
+                            @elseif (auth()->user()->role === 'ob')
+                            <a href="{{ route('petugas-security.dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-normal px-5 py-2 rounded-full transition">
+                                Dashboard OB
+                            </a>
+                        @elseif (auth()->user()->role === 'sopir')
+                            <a href="{{ route('petugas-security.dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-normal px-5 py-2 rounded-full transition">
+                                Dashboard Sopir
+                            </a>
+                        @endif 
                     @else
                         <a href="{{ route('login') }}"
                            class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow transition">

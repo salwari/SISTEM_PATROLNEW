@@ -6,6 +6,7 @@ use App\Http\Controllers\JadwalPatroliController;
 use App\Http\Controllers\KabidDukbisController;
 use App\Http\Controllers\KategoriKejadianController;
 use App\Http\Controllers\LokasiPatroliController;
+use App\Http\Controllers\ObController;
 use App\Http\Controllers\PatroliController;
 use App\Http\Controllers\PetugasSecurityController;
 use App\Http\Controllers\ProfileController;
@@ -115,6 +116,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-patroli/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporan'])->name('kabid-dukbis.cetak-laporan-patroli-redirect');
         // Route::get('/laporan-patroli/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-patroli');
         // Route::get('/laporan-patroli/verifikasi', [KabidDukbisController::class, 'verifikasiLaporan'])->name('kabid-dukbis.verifikasi-laporan-patroli');
+    });
+
+    Route::middleware('role:ob')->prefix('ob')->name('ob.')->group(function () {
+        Route::get('/dashboard', [ObController::class, 'dashboard'])->name('dashboard');
+        Route::get('/scan-qr', [ObController::class, 'scanQr'])->name('scan-qr');
+
+        Route::get('/kamar-mandi/{kamarMandi}/periksa', [ObController::class, 'periksa'])->name('kamar-mandi.periksa');
+        Route::post('/kamar-mandi/{kamarMandi}/simpan', [ObController::class, 'simpanPemeriksaan'])->name('kamar-mandi.simpan');
+
+         Route::get('/riwayat-cek', [ObController::class, 'riwayat'])->name('riwayat-cek');
     });
 });
 

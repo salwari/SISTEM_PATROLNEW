@@ -17,7 +17,7 @@ class AdminController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        $cabangId = $user->cabang_id; // ambil cabang admin login
+        $cabangId = $user->cabang_id; 
 
         // Hitung jumlah sesuai cabang
         $jumlahPengguna = User::where('cabang_id', $cabangId)

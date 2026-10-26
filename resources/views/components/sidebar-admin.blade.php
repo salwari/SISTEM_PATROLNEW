@@ -97,10 +97,10 @@
                         <a href="{{ route('lokasi-kebersihan.index') }}" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
                             {{ request()->routeIs('lokasi-kebersihan.*') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Lokasi Kebersihan</a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="#" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
                             {{ request()->routeIs('jadwal-kebersihan.*') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Jadwal Kebersihan</a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="{{ route('riwayat-kebersihan.index') }}" class="flex items-center w-full p-2 text-base font-medium rounded-lg pl-11 group transition duration-75 
                             {{ request()->routeIs('riwayat-kebersihan.') ? 'text-blue-600 bg-gray-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700' }}">Riwayat Kebersihan</a>

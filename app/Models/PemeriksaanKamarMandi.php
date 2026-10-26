@@ -31,14 +31,4 @@ class PemeriksaanKamarMandi extends Model
     {
         return $this->belongsTo(KamarMandi::class, 'kamar_mandi_id');
     }
-
-    public function cabang()
-    {
-        return $this->belongsTo(Cabang::class, 'cabang_id');
-    }
-
-    public function detailPemeriksaan()
-    {
-        return $this->hasMany(DetailPemeriksaanKamarMandi::class, 'pemeriksaan_id');
-    }
 }

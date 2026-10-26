@@ -8,6 +8,7 @@ use App\Http\Controllers\KategoriKebersihanController;
 use App\Http\Controllers\KategoriKejadianController;
 use App\Http\Controllers\LokasiPatroliController;
 use App\Http\Controllers\LokasiKebersihanController;
+use App\Http\Controllers\RiwayatKebersihanController;
 use App\Http\Controllers\ObController;
 use App\Http\Controllers\PatroliController;
 use App\Http\Controllers\PetugasSecurityController;
@@ -116,6 +117,8 @@ Route::middleware('auth')->group(function () {
         
         //Data Patroli
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');
+
+        Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
     });
 
     // PETUGAS SECURITY ROUTES

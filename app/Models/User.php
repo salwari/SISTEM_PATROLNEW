@@ -76,4 +76,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Cabang::class, 'cabang_id');
     }
+
+    public function pemeriksaanKamarMandi()
+    {
+        return $this->hasMany(PemeriksaanKamarMandi::class, 'user_id');
+    }
 }

@@ -7,6 +7,13 @@
                 <form id="search-form" action="{{ route('kendaraan.index') }}" method="GET"
                     class="flex flex-row items-center gap-2 w-full md:w-1/2">
 
+                    <select name="status"
+                        class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-36">
+                        <option value="">Semua status</option>
+                        <option value="aktif" @selected(request('status') === 'aktif')>Aktif</option>
+                        <option value="nonaktif" @selected(request('status') === 'nonaktif')>Nonaktif</option>
+                    </select>
+
                     <label for="search" class="sr-only">Cari Kendaraan</label>
 
                     <div class="relative flex flex-grow">
@@ -26,7 +33,7 @@
                         </button>
                     </div>
 
-                    @if (request('search'))
+                    @if (request('search') || request('status'))
                         <a href="{{ route('kendaraan.index') }}"
                             class="px-4 py-2 text-sm text-white bg-gray-400 hover:bg-gray-500 rounded-lg whitespace-nowrap">
                             Kembali
@@ -34,10 +41,16 @@
                     @endif
                 </form>
 
-                <a href="{{ route('kendaraan.create') }}"
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm text-center font-semibold whitespace-nowrap">
-                    Tambah Kendaraan
-                </a>
+                <div class="flex gap-2">
+                    <a href="{{ route('kendaraan.cetakQr') }}" target="_blank"
+                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm text-center font-semibold whitespace-nowrap">
+                        Cetak Semua QR
+                    </a>
+                    <a href="{{ route('kendaraan.create') }}"
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm text-center font-semibold whitespace-nowrap">
+                        Tambah Kendaraan
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -50,6 +63,7 @@
                         <th class="px-4 py-3">Jenis</th>
                         <th class="px-4 py-3">Kode Barcode</th>
                         <th class="px-4 py-3">QR Code</th>
+                        <th class="px-4 py-3">Cek Terakhir</th>
                         <th class="px-4 py-3">Status</th>
                         <th class="px-4 py-3">Aksi</th>
                     </tr>
@@ -70,6 +84,18 @@
                                         onclick="showQrModal('{{ asset('storage/' . $data->qr_code) }}', '{{ $data->plat_nomor }}')">
                                 @else
                                     <span class="text-gray-400 italic">Tidak tersedia</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2 text-center whitespace-nowrap">
+                                @if ($data->cekTerakhir)
+                                    <div class="text-xs text-gray-600">{{ $data->cekTerakhir->tanggal_cek->format('d-m-Y') }}</div>
+                                    @if ($data->cekTerakhir->status_kondisi === 'baik')
+                                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Baik</span>
+                                    @else
+                                        <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Perlu Tindakan</span>
+                                    @endif
+                                @else
+                                    <span class="text-gray-400 italic">Belum pernah</span>
                                 @endif
                             </td>
                             <td class="px-4 py-2 text-center">
@@ -127,7 +153,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-4 text-center text-gray-700">
+                            <td colspan="8" class="px-4 py-4 text-center text-gray-700">
                                 Belum ada data kendaraan.
                             </td>
                         </tr>

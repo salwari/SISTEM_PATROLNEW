@@ -8,6 +8,19 @@ class CekKendaraan extends Model
 {
     protected $table = 'cek_kendaraan';
 
+    public const LEVEL_BBM = [
+        'kosong' => 'Kosong',
+        'seperempat' => '1/4',
+        'setengah' => '1/2',
+        'tigaperempat' => '3/4',
+        'penuh' => 'Penuh',
+    ];
+
+    public const STATUS = [
+        'baik' => 'Baik',
+        'perlu_tindakan' => 'Perlu Tindakan',
+    ];
+
     protected $fillable = [
         'user_id',
         'kendaraan_id',
@@ -22,6 +35,14 @@ class CekKendaraan extends Model
         'latitude',
         'longitude',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'tanggal_cek' => 'date',
+            'odometer' => 'integer',
+        ];
+    }
 
     public function user()
     {
@@ -41,5 +62,15 @@ class CekKendaraan extends Model
     public function detail()
     {
         return $this->hasMany(CekKendaraanDetail::class, 'cek_kendaraan_id');
+    }
+
+    public function getLevelBbmLabelAttribute(): string
+    {
+        return self::LEVEL_BBM[$this->level_bbm] ?? '-';
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::STATUS[$this->status_kondisi] ?? '-';
     }
 }

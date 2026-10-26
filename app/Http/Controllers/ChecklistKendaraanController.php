@@ -9,12 +9,6 @@ use Illuminate\Validation\Rule;
 
 class ChecklistKendaraanController extends Controller
 {
-    private const KATEGORI = [
-        'eksterior' => 'Eksterior',
-        'mesin_keselamatan' => 'Mesin dan Keselamatan',
-        'kelengkapan' => 'Kelengkapan',
-    ];
-
     public function index()
     {
         $butir = ChecklistKendaraan::where('cabang_id', Auth::user()->cabang_id)
@@ -23,14 +17,14 @@ class ChecklistKendaraanController extends Controller
             ->get()
             ->groupBy('kategori');
 
-        $daftarKategori = self::KATEGORI;
+        $daftarKategori = ChecklistKendaraan::KATEGORI;
 
         return view('admin.checklist-kendaraan.daftar-butir', compact('butir', 'daftarKategori'));
     }
 
     public function create(Request $request)
     {
-        $daftarKategori = self::KATEGORI;
+        $daftarKategori = ChecklistKendaraan::KATEGORI;
         $kategoriDipilih = $request->query('kategori');
 
         return view('admin.checklist-kendaraan.tambah-butir', compact('daftarKategori', 'kategoriDipilih'));
@@ -41,7 +35,7 @@ class ChecklistKendaraanController extends Controller
         $cabangId = Auth::user()->cabang_id;
 
         $validated = $request->validate([
-            'kategori' => ['required', Rule::in(array_keys(self::KATEGORI))],
+            'kategori' => ['required', Rule::in(array_keys(ChecklistKendaraan::KATEGORI))],
             'nama_butir' => [
                 'required',
                 'string',
@@ -72,7 +66,7 @@ class ChecklistKendaraanController extends Controller
     {
         $this->pastikanMilikCabang($checklistKendaraan);
 
-        $daftarKategori = self::KATEGORI;
+        $daftarKategori = ChecklistKendaraan::KATEGORI;
 
         return view('admin.checklist-kendaraan.ubah-butir', compact('checklistKendaraan', 'daftarKategori'));
     }
@@ -84,7 +78,7 @@ class ChecklistKendaraanController extends Controller
         $cabangId = Auth::user()->cabang_id;
 
         $validated = $request->validate([
-            'kategori' => ['required', Rule::in(array_keys(self::KATEGORI))],
+            'kategori' => ['required', Rule::in(array_keys(ChecklistKendaraan::KATEGORI))],
             'nama_butir' => [
                 'required',
                 'string',
@@ -124,4 +118,4 @@ class ChecklistKendaraanController extends Controller
     {
         abort_if($butir->cabang_id != Auth::user()->cabang_id, 403);
     }
-}
+}

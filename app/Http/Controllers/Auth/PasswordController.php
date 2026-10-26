@@ -40,6 +40,8 @@ class PasswordController extends Controller
             return redirect()->route('petugas-security.dashboard')->with('success', 'Password berhasil diubah.');
         } elseif ($user->role === 'kabid_dukbis') {
             return redirect()->route('kabid-dukbis.dashboard')->with('success', 'Password berhasil diubah.');
+        } elseif ($user->role === 'sopir') {
+            return redirect()->route('sopir.dashboard')->with('success', 'Password berhasil diubah.');
         }
 
         // fallback

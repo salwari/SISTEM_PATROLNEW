@@ -17,6 +17,23 @@ use Illuminate\Http\Request;
 
 class KabidDukbisController extends Controller
 {
+    /** Absen kendaraan sopir di cabang Kabid, per tanggal. */
+    public function absenKendaraan(Request $request)
+    {
+        $cabangId = Auth::user()->cabang_id;
+        $tanggal = $request->input('tanggal');
+        $tanggal = $tanggal && strtotime($tanggal) ? Carbon::parse($tanggal)->toDateString() : now()->toDateString();
+
+        $kendaraan = \App\Models\Kendaraan::diCabang($cabangId)->aktif()->orderBy('plat_nomor')
+            ->with(['absenKendaraan' => fn ($q) => $q->whereDate('tanggal', $tanggal)])
+            ->get();
+
+        $total = $kendaraan->count();
+        $sudah = $kendaraan->filter(fn ($k) => $k->absenKendaraan->isNotEmpty())->count();
+
+        return view('kabid-dukbis.absen-kendaraan', compact('kendaraan', 'tanggal', 'total', 'sudah'));
+    }
+
     public function dashboard()
     {
         // Filter patroli hanya untuk cabang tertentu

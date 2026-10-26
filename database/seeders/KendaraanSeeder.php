@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Cabang;
 use App\Models\Kendaraan;
+use App\Support\QrPng;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class KendaraanSeeder extends Seeder
 {
@@ -41,7 +43,7 @@ class KendaraanSeeder extends Seeder
             }
 
             foreach ($kendaraan as [$plat, $jenis]) {
-                Kendaraan::updateOrCreate(
+                $item = Kendaraan::updateOrCreate(
                     ['plat_nomor' => $plat],
                     [
                         'cabang_id' => $cabang->id,
@@ -50,6 +52,15 @@ class KendaraanSeeder extends Seeder
                         'aktif' => true,
                     ]
                 );
+
+                // Buat file QR supaya langsung tampil di Data Kendaraan (butuh `php artisan storage:link`).
+                $path = "qr_codes/kendaraan_{$item->id}.png";
+                if (!Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->put($path, QrPng::make($item->url_scan, 300, 2));
+                }
+                if ($item->qr_code !== $path) {
+                    $item->update(['qr_code' => $path]);
+                }
             }
         }
     }

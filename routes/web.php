@@ -11,6 +11,8 @@ use App\Http\Controllers\PetugasSecurityController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\KendaraanController;
+use App\Http\Controllers\ChecklistKendaraanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -126,3 +128,24 @@ Route::get('/kabid-dukbis/laporan-patroli/cetak/{token}', [KabidDukbisController
 
 
 require __DIR__ . '/auth.php';  // Menambahkan route auth
+
+// batas nesya
+
+        Route::prefix('kendaraan')->group(function () {
+            Route::get('/', [KendaraanController::class, 'index'])->name('kendaraan.index');
+            Route::get('/create', [KendaraanController::class, 'create'])->name('kendaraan.create');
+            Route::post('/', [KendaraanController::class, 'store'])->name('kendaraan.store');
+            Route::get('/{kendaraan}/edit', [KendaraanController::class, 'edit'])->name('kendaraan.edit');
+            Route::put('/{kendaraan}', [KendaraanController::class, 'update'])->name('kendaraan.update');
+            Route::delete('/{kendaraan}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy');
+            Route::get('/{kendaraan}/download-qr', [KendaraanController::class, 'downloadQrCode'])->name('kendaraan.downloadQrCode');
+        });
+
+        Route::prefix('checklist-kendaraan')->group(function () {
+            Route::get('/', [ChecklistKendaraanController::class, 'index'])->name('checklist-kendaraan.index');
+            Route::get('/create', [ChecklistKendaraanController::class, 'create'])->name('checklist-kendaraan.create');
+            Route::post('/', [ChecklistKendaraanController::class, 'store'])->name('checklist-kendaraan.store');
+            Route::get('/{checklistKendaraan}/edit', [ChecklistKendaraanController::class, 'edit'])->name('checklist-kendaraan.edit');
+            Route::put('/{checklistKendaraan}', [ChecklistKendaraanController::class, 'update'])->name('checklist-kendaraan.update');
+            Route::delete('/{checklistKendaraan}', [ChecklistKendaraanController::class, 'destroy'])->name('checklist-kendaraan.destroy');
+        });

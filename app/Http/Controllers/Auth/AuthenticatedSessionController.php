@@ -38,10 +38,12 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('petugas-security.dashboard');
         } elseif ($user->role === 'kabid_dukbis') {
             return redirect()->route('kabid-dukbis.dashboard');
+
         } elseif ($user->role === 'ob') {
             return redirect()->route('ob.dashboard'); 
         } elseif ($user->role === 'sopir' && Route::has('sopir.dashboard')) {
             return redirect()->route('sopir.dashboard');
+
 
         }
 

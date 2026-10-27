@@ -123,7 +123,9 @@ Route::middleware('auth')->group(function () {
         //Data Patroli
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');
 
-        Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
+
+        // Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
+
 
         // Kendaraan (modul Sopir, sisi Admin Cabang)
         Route::prefix('kendaraan')->group(function () {
@@ -152,6 +154,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [RiwayatKendaraanController::class, 'index'])->name('riwayat-kendaraan.index');
             Route::get('/{riwayatKendaraan}', [RiwayatKendaraanController::class, 'show'])->name('riwayat-kendaraan.show');
         });
+
+        Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
+
+
     });
 
     // PETUGAS SECURITY ROUTES

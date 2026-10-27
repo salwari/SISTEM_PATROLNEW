@@ -43,11 +43,11 @@
             @elseif(Auth::user()->role == 'kabid_dukbis')
                 <x-sidebar-dukbis />
 
-            @elseif(Auth::user()->role == 'ob')
-                <x-sidebar-ob />
-
             @elseif(Auth::user()->role == 'sopir')
                 <x-sidebar-sopir />
+
+            @elseif(Auth::user()->role == 'ob')
+                <x-sidebar-ob />
 
             @endif
         @endif

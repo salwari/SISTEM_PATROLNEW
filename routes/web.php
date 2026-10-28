@@ -191,8 +191,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/absen-kendaraan', [KabidDukbisController::class, 'absenKendaraan'])->name('kabid-dukbis.absen-kendaraan');
         Route::get('/laporan-patroli', [KabidDukbisController::class, 'laporanPatroli'])->name('kabid-dukbis.laporan-patroli');
         Route::get('/laporan-patroli/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporan'])->name('kabid-dukbis.cetak-laporan-patroli-redirect');
-        // Route::get('/laporan-patroli/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-patroli');
-        // Route::get('/laporan-patroli/verifikasi', [KabidDukbisController::class, 'verifikasiLaporan'])->name('kabid-dukbis.verifikasi-laporan-patroli');
+        
+        Route::get('/data-lokasi-kebersihan', [KabidDukbisController::class, 'dataLokasiKebersihan'])->name('kabid-dukbis.data-lokasi-kebersihan');
+        Route::get('/temuan-kamar-mandi', [KabidDukbisController::class, 'temuanKamarMandi'])->name('kabid-dukbis.temuan-kamar-mandi');
+        Route::get('/laporan-kebersihan', [KabidDukbisController::class, 'laporanKebersihan'])->name('kabid-dukbis.laporan-kebersihan');
+        Route::get('/laporan-kebersihan/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporanKebersihan'])->name('kabid-dukbis.cetak-laporan-kebersihan-redirect');
     });
 
     Route::middleware('role:ob')->prefix('ob')->name('ob.')->group(function () {
@@ -207,6 +210,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/kabid-dukbis/laporan-patroli/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-patroli');
+Route::get('/kabid-dukbis/laporan-kebersihan/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanKebersihanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-kebersihan');
 
 //Verifikasi laporan
 // Route::get('/verifikasi-laporan/{token}', [KabidDukbisController::class, 'verifikasiLaporanToken'])

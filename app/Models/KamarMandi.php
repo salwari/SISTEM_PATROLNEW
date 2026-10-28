@@ -31,4 +31,35 @@ class KamarMandi extends Model
     {
         return $this->hasMany(PemeriksaanKamarMandi::class, 'kamar_mandi_id');
     }
+
+    // Relasi untuk mengambil pemeriksaan terakhir
+    public function cekTerakhir()
+    {
+        return $this->hasOne(PemeriksaanKamarMandi::class, 'kamar_mandi_id')->latestOfMany('id');
+    }
+
+    // --- Local Scopes ---
+    public function scopeDiCabang($query, $cabangId)
+    {
+        return $query->where('cabang_id', $cabangId);
+    }
+
+    public function scopeAktif($query)
+    {
+        return $query;
+    }
+
+    public function scopeSudahDicek($query, $tanggal)
+    {
+        return $query->whereHas('pemeriksaan', function ($q) use ($tanggal) {
+            $q->whereDate('tanggal', $tanggal);
+        });
+    }
+
+    public function scopeBelumDicek($query, $tanggal)
+    {
+        return $query->whereDoesntHave('pemeriksaan', function ($q) use ($tanggal) {
+            $q->whereDate('tanggal', $tanggal);
+        });
+    }
 }

@@ -40,7 +40,7 @@ class LokasiKebersihanController extends Controller
      */
     private function generateQrCode(KamarMandi $kamarMandi): void
     {
-        $url = route('lokasi-kebersihan.create', ['kamar_mandi' => $kamarMandi->id]);
+        $url = route('ob.kamar-mandi.periksa', ['kamarMandi' => $kamarMandi->id]);
 
         $qrCodeImage = QrPng::make($url, 300, 2);
 

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Cabang;
 use App\Models\CekKendaraan;
+use App\Models\PemeriksaanKamarMandi;
+use App\Models\ChecklistKamarMandi;
 use App\Models\Kendaraan;
+use App\Models\KamarMandi;
 use App\Models\LokasiPatroli;
 use App\Models\Patroli;
 use Carbon\Carbon;
@@ -21,15 +24,13 @@ class AdminController extends Controller
         $user = Auth::user();
         $cabangId = $user->cabang_id; 
 
-        // Hitung jumlah sesuai cabang
         $jumlahPengguna = User::where('cabang_id', $cabangId)
-            ->whereIn('role', ['petugas_security', 'kabid_dukbis', 'sopir']) // sama dengan yang ditampilkan di Data Pengguna
+            ->whereIn('role', ['petugas_security', 'kabid_dukbis', 'sopir']) 
             ->count();
 
         $jumlahLokasiPatroli = LokasiPatroli::where('cabang_id', $cabangId)->count();
         $jumlahPatroli = Patroli::where('cabang_id', $cabangId)->count();
 
-        // Aktivitas Harian
         $harianLabels = [];
         $harianData = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -40,7 +41,6 @@ class AdminController extends Controller
                 ->count();
         }
 
-        // Aktivitas Mingguan
         $mingguanLabels = [];
         $mingguanData = [];
         for ($i = 3; $i >= 0; $i--) {
@@ -52,7 +52,6 @@ class AdminController extends Controller
                 ->count();
         }
 
-        // Aktivitas Bulanan
         $bulananLabels = [];
         $bulananData = [];
         for ($i = 11; $i >= 0; $i--) {
@@ -64,14 +63,12 @@ class AdminController extends Controller
                 ->count();
         }
 
-        // Pie Chart Status
         $statusPatroli = Patroli::where('cabang_id', $cabangId)
             ->select('status', DB::raw('count(*) as total'))
             ->whereIn('status', ['aman', 'darurat'])
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        // Notifikasi Petugas Kurang Patroli
         $currentMonth = Carbon::now();
         $minimalPatroli = 8;
 
@@ -88,9 +85,11 @@ class AdminController extends Controller
             });
 
         $kendaraan = $this->dataKendaraan($cabangId);
+        $kebersihan = $this->dataKebersihan($cabangId);
 
         return view('admin.dashboard', compact(
             'kendaraan',
+            'kebersihan',
             'jumlahPengguna',
             'jumlahLokasiPatroli',
             'jumlahPatroli',
@@ -105,10 +104,6 @@ class AdminController extends Controller
         ));
     }
 
-    /**
-     * Ringkasan modul kendaraan untuk dashboard admin cabang.
-     * "Dicek hari ini" = kendaraan aktif yang punya minimal satu cek di tanggal hari ini.
-     */
     private function dataKendaraan(int $cabangId): array
     {
         $hariIni = Carbon::today();
@@ -118,7 +113,6 @@ class AdminController extends Controller
         $jumlahAktif = (clone $aktif)->count();
         $sudahDicek = (clone $aktif)->sudahDicek($hariIni)->count();
 
-        // Kondisi terkini = hasil cek paling baru tiap kendaraan aktif.
         $terkini = (clone $aktif)->with('cekTerakhir.user')->get();
 
         $perluTindakan = $terkini
@@ -133,7 +127,6 @@ class AdminController extends Controller
 
         $belumDicekHariIni = (clone $aktif)->belumDicek($hariIni)->orderBy('plat_nomor')->get(['id', 'plat_nomor', 'jenis']);
 
-        // Jumlah cek 7 hari terakhir dalam satu query.
         $mulai = Carbon::today()->subDays(6);
         $perTanggal = CekKendaraan::where('cabang_id', $cabangId)
             ->whereDate('tanggal_cek', '>=', $mulai)
@@ -151,6 +144,58 @@ class AdminController extends Controller
 
         return [
             'jumlahAktif' => $jumlahAktif,
+            'sudahDicek' => $sudahDicek,
+            'belumDicekHariIni' => $belumDicekHariIni,
+            'perluTindakan' => $perluTindakan,
+            'kondisi' => $kondisi,
+            'mingguLabels' => $labels,
+            'mingguData' => $data,
+        ];
+    }
+
+    private function dataKebersihan(int $cabangId): array
+    {
+        $hariIni = Carbon::today();
+    
+        $aktif = KamarMandi::diCabang($cabangId)->aktif();
+    
+        $jumlahKamarMandi = (clone $aktif)->count();
+        $sudahDicek = (clone $aktif)->sudahDicek($hariIni)->count();
+    
+        $terkini = (clone $aktif)->with('cekTerakhir.user')->get();
+    
+        $perluTindakan = $terkini
+            ->filter(fn ($k) => $k->cekTerakhir?->status_kondisi === 'perlu_tindakan')
+            ->values();
+    
+        $kondisi = [
+            'baik' => $terkini->filter(fn ($k) => $k->cekTerakhir?->status_kondisi === 'baik')->count(),
+            'perlu_tindakan' => $perluTindakan->count(),
+            'belum_pernah' => $terkini->filter(fn ($k) => $k->cekTerakhir === null)->count(),
+        ];
+    
+        $belumDicekHariIni = (clone $aktif)
+            ->belumDicek($hariIni)
+            ->orderBy('nama_kamar_mandi')
+            ->get(['id', 'nama_kamar_mandi', 'lantai']);
+    
+        $mulai = Carbon::today()->subDays(6);
+        $perTanggal = PemeriksaanKamarMandi::where('cabang_id', $cabangId)
+            ->whereDate('tanggal', '>=', $mulai)
+            ->selectRaw('DATE(tanggal) as tgl, COUNT(*) as total')
+            ->groupBy('tgl')
+            ->pluck('total', 'tgl');
+    
+        $labels = [];
+        $data = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $tgl = Carbon::today()->subDays($i);
+            $labels[] = Str::title($tgl->isoFormat('dddd'));
+            $data[] = (int) ($perTanggal[$tgl->toDateString()] ?? 0);
+        }
+    
+        return [
+            'jumlahKamarMandi' => $jumlahKamarMandi,
             'sudahDicek' => $sudahDicek,
             'belumDicekHariIni' => $belumDicekHariIni,
             'perluTindakan' => $perluTindakan,

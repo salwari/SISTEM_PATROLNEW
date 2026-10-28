@@ -34,18 +34,54 @@
 
             function onScanSuccess(decodedText) {
                 if (hasScanned) return;
+
+                if (decodedText.includes('/petugas-security') || decodedText.includes('/patroli/')) {
+                    resultContainer.className = "mt-4 text-sm font-semibold text-red-600 min-h-[24px]";
+                    resultContainer.innerText = "❌ Ini adalah Barcode Pos Patroli Satpam, bukan Kamar Mandi.";
+                    return;
+                }
+
                 hasScanned = true;
 
                 html5QrCode.stop().then(() => {
+                    resultContainer.className = "mt-4 text-sm font-semibold text-blue-600 min-h-[24px]";
                     resultContainer.innerText = `Barcode Terbaca: Mengalihkan...`;
 
-                    if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
-                        setTimeout(() => {
-                            window.location.href = decodedText;
-                        }, 1000);
-                    } else {
-                        window.location.href = `/ob/kamar-mandi/${decodedText}/periksa`;
+                    let targetUrl = '';
+
+                    try {
+                        if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
+                            const urlObj = new URL(decodedText);
+
+                            if (urlObj.pathname.includes('/ob/kamar-mandi/')) {
+                                targetUrl = urlObj.pathname;
+                            }
+                            
+                            else if (urlObj.searchParams.has('kamar_mandi')) {
+                                const kmId = urlObj.searchParams.get('kamar_mandi');
+                                targetUrl = `/ob/kamar-mandi/${kmId}/periksa`;
+                            } 
+                            
+                            else {
+                                const match = urlObj.pathname.match(/lokasi-kebersihan\/(\d+)/);
+                                if (match) {
+                                    targetUrl = `/ob/kamar-mandi/${match[1]}/periksa`;
+                                } else {
+                                    targetUrl = urlObj.pathname;
+                                }
+                            }
+                        } else {
+                            
+                            targetUrl = `/ob/kamar-mandi/${decodedText}/periksa`;
+                        }
+                    } catch (e) {
+                        targetUrl = `/ob/kamar-mandi/${decodedText}/periksa`;
                     }
+
+                    setTimeout(() => {
+                        window.location.href = targetUrl;
+                    }, 800);
+
                 }).catch(err => {
                     console.error("Gagal menghentikan scanner: ", err);
                 });

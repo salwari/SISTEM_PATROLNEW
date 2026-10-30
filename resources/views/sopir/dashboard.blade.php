@@ -2,13 +2,35 @@
     @php
         $jumlahBelum = $total - $sudah;
         $persentase = $total > 0 ? ($sudah / $total) * 100 : 0;
-        $sudahDiabsen = $daftarKendaraan
-            ->filter(fn($k) => $k->absenKendaraan->isNotEmpty())
-            ->sortByDesc(fn($k) => $k->absenKendaraan->first()->jam);
-        $belumDiabsen = $daftarKendaraan->filter(fn($k) => $k->absenKendaraan->isEmpty())->values();
+
+        $darurat = $daftarKendaraan->filter(fn ($k) => $k->statusHarian() === 'darurat')->values();
+        $belumDiabsen = $daftarKendaraan->filter(fn ($k) => $k->statusHarian() === 'belum')->values();
+
+        // Aktivitas hari ini: semua laporan (aman maupun darurat), terbaru di atas.
+        $aktivitas = $daftarKendaraan
+            ->flatMap(fn ($k) => $k->absenKendaraan->map(fn ($a) => ['k' => $k, 'a' => $a]))
+            ->sortByDesc(fn ($x) => $x['a']->waktu)
+            ->values();
     @endphp
 
     <div class="max-w-7xl mx-auto p-2 space-y-2">
+        @if ($darurat->isNotEmpty())
+            <div class="mt-6 mb-2 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-lg shadow-md">
+                <strong>Kendaraan darurat ({{ $darurat->count() }})</strong> — belum selesai ditangani admin:
+                <ul class="mt-2 space-y-1 text-sm">
+                    @foreach ($darurat as $k)
+                        @php $d = $k->laporanUtama(); @endphp
+                        <li>
+                            <span class="font-semibold">{{ $k->plat_nomor }}</span>
+                            · {{ $d->kategoriKejadian->nama_kategori ?? '-' }}
+                            · dilaporkan {{ $d->nama_sopir }}, {{ $d->tanggal->format('d-m-Y') }} {{ $d->jam }}
+                            <span class="px-2 py-0.5 rounded-full text-xs {{ $d->status_penanganan === 'proses' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700' }}">{{ $d->penanganan_label }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         @if ($total > 0 && $jumlahBelum > 0)
             <div class="mt-6 mb-2 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg shadow-md">
                 <strong>Perhatian!</strong> Masih ada <strong>{{ $jumlahBelum }}</strong> kendaraan yang belum dipatroli
@@ -34,19 +56,20 @@
 
                 <div class="space-y-1 text-sm text-gray-800">
                     <p class="flex space-x-1">
-                        <span class="w-44 text-left">Total kendaraan</span>
-                        <span>:</span>
+                        <span class="w-44 text-left">Total kendaraan</span><span>:</span>
                         <strong>{{ $total }}</strong>
                     </p>
                     <p class="flex space-x-1">
-                        <span class="w-44 text-left">Kendaraan sudah dipatroli</span>
-                        <span>:</span>
-                        <strong class="text-green-600">{{ $sudah }}</strong>
+                        <span class="w-44 text-left">Sudah dipatroli (aman)</span><span>:</span>
+                        <strong class="text-green-600">{{ $jumlahAman }}</strong>
                     </p>
                     <p class="flex space-x-1">
-                        <span class="w-44 text-left">Kendaraan belum dipatroli</span>
-                        <span>:</span>
-                        <strong class="text-red-700">{{ $jumlahBelum }}</strong>
+                        <span class="w-44 text-left">Darurat</span><span>:</span>
+                        <strong class="text-red-600">{{ $jumlahDarurat }}</strong>
+                    </p>
+                    <p class="flex space-x-1">
+                        <span class="w-44 text-left">Belum dipatroli</span><span>:</span>
+                        <strong class="text-yellow-700">{{ $jumlahBelum }}</strong>
                     </p>
                 </div>
 
@@ -54,30 +77,29 @@
                     <div class="relative h-4 bg-gray-200 rounded-full overflow-hidden">
                         <div class="h-full bg-blue-500 transition-all duration-300 ease-in-out"
                             style="width: {{ $persentase }}%"></div>
-                        <div
-                            class="absolute inset-0 flex items-center justify-center text-xs font-medium text-gray-800">
+                        <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-gray-800">
                             {{ number_format($persentase, 1) }}%
                         </div>
                     </div>
+                    <p class="text-xs text-gray-500 mt-1">Kendaraan darurat dihitung sudah dilaporkan.</p>
                 </div>
             </div>
 
             <div class="p-5 bg-white border border-gray-200 rounded-lg shadow-md max-h-64 overflow-y-auto">
-                <h2 class="text-lg font-semibold text-gray-800 mb-3">Aktivitas Terakhir</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">Aktivitas Hari Ini</h2>
                 <ul class="space-y-3 text-sm text-gray-700">
-                    @forelse ($sudahDiabsen as $k)
-                        @php $absen = $k->absenKendaraan->first(); @endphp
+                    @forelse ($aktivitas as $x)
+                        @php $absen = $x['a']; $k = $x['k']; $isDarurat = $absen->status === 'darurat'; @endphp
                         <li class="flex items-start space-x-2">
-                            <svg class="w-5 h-5 mr-2 text-green-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512" fill="currentColor">
-                                <path
-                                    d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" />
-                            </svg>
+                            <span class="mr-2 flex-shrink-0 font-bold {{ $isDarurat ? 'text-red-600' : 'text-green-600' }}">{{ $isDarurat ? '!' : '✓' }}</span>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm leading-tight break-words">
                                     <span class="font-medium text-gray-800">{{ str_replace(':', '.', $absen->jam) }}</span> -
                                     <span>{{ $k->plat_nomor }} · {{ $k->jenis }}</span>
                                     <span class="text-gray-500">oleh {{ $absen->nama_sopir }}</span>
+                                    @if ($isDarurat)
+                                        <span class="text-red-600 font-semibold">· Darurat: {{ $absen->kategoriKejadian->nama_kategori ?? '-' }}</span>
+                                    @endif
                                 </p>
                             </div>
                         </li>
@@ -113,8 +135,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-4 text-center text-gray-500">Semua kendaraan sudah
-                                    dipatroli.</td>
+                                <td colspan="4" class="px-4 py-4 text-center text-gray-500">
+                                    {{ $darurat->isNotEmpty() ? 'Semua kendaraan lain sudah dipatroli.' : 'Semua kendaraan sudah dipatroli.' }}
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>

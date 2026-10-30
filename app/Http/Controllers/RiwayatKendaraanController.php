@@ -56,7 +56,15 @@ class RiwayatKendaraanController extends Controller
         $daftarKendaraan = Kendaraan::diCabang($cabangId)->orderBy('plat_nomor')->get(['id', 'plat_nomor', 'jenis']);
         $daftarKondisi = KategoriKondisiKendaraan::orderBy('nama_kategori')->get(['id', 'nama_kategori']);
 
-        return view('admin.riwayat-kendaraan.index', compact('riwayat', 'daftarKendaraan', 'daftarKondisi', 'search'));
+        $dasar = AbsenKendaraan::where('cabang_id', $cabangId);
+        $hitung = [
+            'semua' => (clone $dasar)->count(),
+            'perlu' => (clone $dasar)->daruratTerbuka()->count(),
+            'selesai' => (clone $dasar)->where('status', 'darurat')->where('status_penanganan', 'selesai')->count(),
+            'aman' => (clone $dasar)->where('status', 'aman')->count(),
+        ];
+
+        return view('admin.riwayat-kendaraan.index', compact('riwayat', 'daftarKendaraan', 'daftarKondisi', 'search', 'hitung'));
     }
 
     public function show(AbsenKendaraan $riwayatKendaraan)
@@ -90,6 +98,12 @@ class RiwayatKendaraanController extends Controller
             'ditangani_oleh' => Auth::id(),
             'waktu_ditangani' => now(),
         ]);
+
+        // Sudah selesai -> kembali ke daftar riwayat; status lain tetap di halaman detail.
+        if ($validated['status_penanganan'] === 'selesai') {
+            return redirect()->route('riwayat-kendaraan.index')
+                ->with('success', 'Laporan darurat ' . ($riwayatKendaraan->kendaraan->plat_nomor ?? '') . ' ditandai selesai.');
+        }
 
         return back()->with('success', 'Status penanganan berhasil diperbarui.');
     }

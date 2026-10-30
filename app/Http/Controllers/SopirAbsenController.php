@@ -22,14 +22,13 @@ class SopirAbsenController extends Controller
                 ->with('error', 'QR tidak dikenali, kendaraan tidak aktif, atau bukan milik cabang kamu.');
         }
 
-        $sudahPatroli = AbsenKendaraan::where('kendaraan_id', $kendaraan->id)
-            ->whereDate('tanggal', now()->toDateString())
-            ->first();
-
-        if ($sudahPatroli) {
-            return redirect()->route('sopir.dashboard')
-                ->with('error', $kendaraan->plat_nomor . ' sudah dipatroli hari ini oleh ' . $sudahPatroli->nama_sopir . ' pukul ' . $sudahPatroli->jam . '.');
+        // Kendaraan yang masih darurat tidak bisa dipatroli/dilaporkan lagi sampai admin menyelesaikannya.
+        if ($terbuka = $this->laporanDaruratTerbuka($kendaraan)) {
+            return redirect()->route('sopir.dashboard')->with('error', $this->pesanDaruratTerbuka($kendaraan, $terbuka));
         }
+
+        // Patroli aman cukup sekali per hari, tapi laporan darurat boleh kapan saja.
+        $sudahPatroli = $this->patroliAmanHariIni($kendaraan);
 
         $cabang = Auth::user()->cabang;
 
@@ -42,17 +41,11 @@ class SopirAbsenController extends Controller
 
         $kategoriKejadian = KategoriKondisiKendaraan::orderBy('id')->get();
 
-        $laporanTerbuka = AbsenKendaraan::with('kategoriKejadian')
-            ->where('kendaraan_id', $kendaraan->id)
-            ->daruratTerbuka()
-            ->orderByDesc('tanggal')
-            ->get();
-
         return view('sopir.form-absen', [
             'kendaraan' => $kendaraan,
             'area' => $area,
             'kategoriKejadian' => $kategoriKejadian,
-            'laporanTerbuka' => $laporanTerbuka,
+            'sudahPatroli' => $sudahPatroli,
         ]);
     }
 
@@ -67,7 +60,7 @@ class SopirAbsenController extends Controller
             'kode' => ['required', 'string'],
             'status' => ['required', 'in:aman,darurat'],
             'kejadian_id' => [Rule::requiredIf($request->input('status') === 'darurat'), 'nullable', 'exists:kategori_kondisi_kendaraan,id'],
-            'keterangan' => ['required', 'string', 'max:1000'],
+            'keterangan' => [Rule::requiredIf($request->input('status') === 'darurat'), 'nullable', 'string', 'max:1000'],
             'foto' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
@@ -75,7 +68,7 @@ class SopirAbsenController extends Controller
         ], [
             'status.required' => 'Status patroli wajib dipilih.',
             'kejadian_id.required' => 'Kondisi kendaraan wajib dipilih untuk status darurat.',
-            'keterangan.required' => 'Keterangan wajib diisi.',
+            'keterangan.required' => 'Keterangan wajib diisi untuk laporan darurat (jelaskan masalah dan posisi kendaraan).',
             'foto.required' => 'Foto kendaraan wajib diambil.',
             'foto.image' => 'File harus berupa gambar.',
             'foto.max' => 'Ukuran foto maksimal 5 MB.',
@@ -84,8 +77,14 @@ class SopirAbsenController extends Controller
         ]);
 
         $hariIni = now()->toDateString();
+        $darurat = $validated['status'] === 'darurat';
 
-        if (AbsenKendaraan::where('kendaraan_id', $kendaraan->id)->whereDate('tanggal', $hariIni)->exists()) {
+        // Aturan dijaga di server (bukan hanya di tampilan), supaya tidak bisa ditembus lewat kiriman langsung.
+        if ($terbuka = $this->laporanDaruratTerbuka($kendaraan)) {
+            return redirect()->route('sopir.dashboard')->with('error', $this->pesanDaruratTerbuka($kendaraan, $terbuka));
+        }
+
+        if (!$darurat && $this->patroliAmanHariIni($kendaraan)) {
             return redirect()->route('sopir.dashboard')
                 ->with('error', $kendaraan->plat_nomor . ' sudah dipatroli hari ini.');
         }
@@ -98,7 +97,9 @@ class SopirAbsenController extends Controller
             $jarak = $cabang->jarakKe((float) $validated['latitude'], (float) $validated['longitude']);
             $dalamArea = $jarak <= $cabang->radius_meter;
 
-            if (!$dalamArea) {
+            // Darurat bisa terjadi di jalan, jadi tidak dibatasi area kantor:
+            // posisi tetap dicatat agar admin tahu di mana kendaraan berada.
+            if (!$dalamArea && !$darurat) {
                 throw ValidationException::withMessages([
                     'latitude' => "Kamu berada {$jarak} m dari kantor (batas {$cabang->radius_meter} m). Patroli hanya bisa dilakukan di area kantor.",
                 ]);
@@ -123,7 +124,7 @@ class SopirAbsenController extends Controller
                 'dalam_area' => $dalamArea,
                 'status' => $validated['status'],
                 'kejadian_id' => $validated['status'] === 'darurat' ? $validated['kejadian_id'] : null,
-                'keterangan' => $validated['keterangan'],
+                'keterangan' => $validated['keterangan'] ?? null,
                 'status_penanganan' => $validated['status'] === 'darurat' ? 'belum' : null,
             ]);
         } catch (\Throwable $e) {
@@ -132,7 +133,9 @@ class SopirAbsenController extends Controller
         }
 
         return redirect()->route('sopir.dashboard')
-            ->with('success', 'Patroli ' . $kendaraan->plat_nomor . ' berhasil disimpan.');
+            ->with('success', $darurat
+                ? 'Laporan darurat ' . $kendaraan->plat_nomor . ' terkirim ke admin cabang. Tetap di lokasi yang aman dan tunggu penanganan.'
+                : 'Patroli ' . $kendaraan->plat_nomor . ' berhasil disimpan.');
     }
 
     public function riwayat(Request $request)
@@ -158,6 +161,30 @@ class SopirAbsenController extends Controller
             ->withQueryString();
 
         return view('sopir.riwayat-absen', compact('riwayat'));
+    }
+
+    private function laporanDaruratTerbuka(Kendaraan $kendaraan): ?AbsenKendaraan
+    {
+        return AbsenKendaraan::with('kategoriKejadian')
+            ->where('kendaraan_id', $kendaraan->id)
+            ->daruratTerbuka()
+            ->orderByDesc('id')
+            ->first();
+    }
+
+    private function pesanDaruratTerbuka(Kendaraan $kendaraan, AbsenKendaraan $laporan): string
+    {
+        return $kendaraan->plat_nomor . ' sedang berstatus DARURAT (' . ($laporan->kategoriKejadian->nama_kategori ?? 'lainnya')
+            . ', ' . strtolower($laporan->penanganan_label) . ') dan menunggu penanganan admin. '
+            . 'Patroli atau laporan baru bisa dibuat setelah penanganannya selesai.';
+    }
+
+    private function patroliAmanHariIni(Kendaraan $kendaraan): ?AbsenKendaraan
+    {
+        return AbsenKendaraan::where('kendaraan_id', $kendaraan->id)
+            ->where('status', 'aman')
+            ->whereDate('tanggal', now()->toDateString())
+            ->first();
     }
 
     private function cariKendaraan(string $kode): ?Kendaraan

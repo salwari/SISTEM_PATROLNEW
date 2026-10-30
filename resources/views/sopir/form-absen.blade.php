@@ -10,14 +10,10 @@
             </div>
         @endif
 
-        @if ($laporanTerbuka->isNotEmpty())
-            <div class="max-w-full md:max-w-4xl mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg shadow-md text-sm">
-                <strong>Perhatian!</strong> Kendaraan ini masih punya laporan darurat yang belum selesai:
-                <ul class="list-disc ml-5 mt-1">
-                    @foreach ($laporanTerbuka as $lap)
-                        <li>{{ $lap->tanggal->format('d-m-Y') }} · {{ $lap->kategoriKejadian->nama_kategori ?? '-' }} ({{ $lap->penanganan_label }})</li>
-                    @endforeach
-                </ul>
+        @if ($sudahPatroli)
+            <div class="max-w-full md:max-w-4xl mb-4 p-4 bg-blue-100 border-l-4 border-blue-500 text-blue-800 rounded-lg shadow-md text-sm">
+                {{ $kendaraan->plat_nomor }} sudah dipatroli aman hari ini oleh {{ $sudahPatroli->nama_sopir }} pukul {{ $sudahPatroli->jam }}.
+                Form ini hanya bisa dipakai untuk melaporkan kondisi <strong>darurat</strong>.
             </div>
         @endif
 
@@ -90,9 +86,11 @@
 
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">
-                            Keterangan <span class="text-red-600">*</span>
+                            Keterangan <span id="bintang-ket" class="text-red-600 hidden">*</span>
+                            <span id="opsi-ket" class="text-gray-400 font-normal">(opsional)</span>
                         </label>
-                        <textarea name="keterangan" rows="3" required maxlength="1000"
+                        <textarea name="keterangan" id="keterangan" rows="3" maxlength="1000"
+                            placeholder="Untuk darurat: jelaskan masalah dan posisi kendaraan (mis. bensin habis di dekat SPBU X)"
                             class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm bg-white focus:ring-blue-500 focus:border-blue-500 text-sm">{{ old('keterangan') }}</textarea>
                     </div>
 
@@ -158,10 +156,12 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const AREA = @json($area);
+        const SUDAH_AMAN = @json((bool) $sudahPatroli);
 
         const $ = (id) => document.getElementById(id);
         const foto = $('foto'), btnSimpan = $('btn-simpan');
         let lokasiSiap = false;
+        let posisi = null; // {lat, lng, jarak}
 
         function perbarui() { btnSimpan.disabled = !(lokasiSiap && foto.files && foto.files.length); }
 
@@ -171,7 +171,12 @@
             const darurat = statusDarurat.checked;
             kategoriForm.classList.toggle('hidden', !darurat);
             kejadian.required = darurat;
+            $('keterangan').required = darurat;
+            $('bintang-ket').classList.toggle('hidden', !darurat);
+            $('opsi-ket').classList.toggle('hidden', darurat);
+            if (typeof evaluasiLokasi === 'function') evaluasiLokasi();
         }
+        if (SUDAH_AMAN) { statusAman.disabled = true; statusDarurat.checked = true; toggleKategori(); }
         statusAman.addEventListener('change', toggleKategori);
         statusDarurat.addEventListener('change', toggleKategori);
         toggleKategori();
@@ -282,11 +287,23 @@
             $('lok-koordinat').textContent = lat.toFixed(5) + ', ' + lng.toFixed(5) + ' · akurasi ±' + acc + ' m';
             $('lok-judul').className = 'font-semibold text-gray-700';
 
+            posisi = { lat, lng, jarak: AREA ? jarak(AREA.lat, AREA.lng, lat, lng) : null };
+            evaluasiLokasi();
+        }
+
+        // Patroli aman wajib di area kantor; laporan darurat boleh di mana saja.
+        function evaluasiLokasi() {
+            if (!posisi) return;
+            const darurat = statusDarurat.checked;
+            $('lok-judul').className = 'font-semibold text-gray-700';
             if (AREA) {
-                const j = jarak(AREA.lat, AREA.lng, lat, lng);
+                const j = posisi.jarak;
                 $('lok-judul').textContent = 'Kawasan Kantor Cabang ' + AREA.nama;
                 if (j <= AREA.radius) {
                     badge('Dalam area', true);
+                    lokasiSiap = true;
+                } else if (darurat) {
+                    badge('Di luar area (' + j + ' m dari kantor) - posisi dicatat untuk penanganan', false);
                     lokasiSiap = true;
                 } else {
                     badge('Di luar area (' + j + ' m dari kantor)', false);
@@ -307,6 +324,7 @@
             $('lok-judul').textContent = 'Mencari lokasi...';
             $('lok-judul').className = 'font-semibold text-gray-600';
             lokasiSiap = false;
+            posisi = null;
             perbarui();
 
             if (!navigator.geolocation) return gagal('Perangkat tidak mendukung lokasi.');

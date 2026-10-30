@@ -74,6 +74,9 @@
                                         <div class="text-xs text-gray-500 mt-1">{{ $item->kategoriKejadian->nama_kategori }}</div>
                                     @endif
                                     <div class="text-xs text-gray-500 mt-1">Penanganan: {{ $item->penanganan_label }}</div>
+                                    @if ($item->catatan_penanganan)
+                                        <div class="text-xs text-gray-500 mt-1">Catatan admin: {{ $item->catatan_penanganan }}</div>
+                                    @endif
                                 @else
                                     <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Aman</span>
                                 @endif

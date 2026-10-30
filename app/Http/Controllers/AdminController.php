@@ -113,18 +113,19 @@ class AdminController extends Controller
     {
         $hariIni = Carbon::today();
 
-        $aktif = Kendaraan::diCabang($cabangId)->aktif();
-
-        $jumlahAktif = (clone $aktif)->count();
-
-        $sudahDipatroli = (clone $aktif)
-            ->whereHas('absenKendaraan', fn ($q) => $q->whereDate('tanggal', $hariIni))
-            ->count();
-
-        $belumDipatroliHariIni = (clone $aktif)
-            ->whereDoesntHave('absenKendaraan', fn ($q) => $q->whereDate('tanggal', $hariIni))
+        // Status tiap kendaraan dihitung oleh Kendaraan::statusHarian() (sama dengan dashboard sopir & kabid).
+        $semua = Kendaraan::diCabang($cabangId)->aktif()
+            ->denganStatusHarian($hariIni)
+            ->with('patroliTerakhir')
             ->orderBy('plat_nomor')
-            ->get(['id', 'plat_nomor', 'jenis']);
+            ->get();
+
+        $jumlahAktif = $semua->count();
+
+        // "Sudah dipatroli" = aman hari ini + darurat (sudah dilaporkan).
+        $sudahDipatroli = $semua->filter(fn ($k) => $k->statusHarian() !== 'belum')->count();
+
+        $belumDipatroliHariIni = $semua->filter(fn ($k) => $k->statusHarian() === 'belum')->values();
 
         $laporanTerbuka = AbsenKendaraan::with(['kendaraan:id,plat_nomor,jenis', 'kategoriKejadian:id,nama_kategori'])
             ->where('cabang_id', $cabangId)
@@ -133,14 +134,11 @@ class AdminController extends Controller
             ->orderByDesc('waktu')
             ->get();
 
-        $idBermasalah = $laporanTerbuka->pluck('kendaraan_id')->unique();
-        $terkini = (clone $aktif)->with('patroliTerakhir')->get();
-
-        $darurat = $terkini->filter(fn ($k) => $idBermasalah->contains($k->id))->count();
-        $belumPernah = $terkini->filter(fn ($k) => !$idBermasalah->contains($k->id) && $k->patroliTerakhir === null)->count();
+        $darurat = $semua->filter(fn ($k) => $k->statusHarian() === 'darurat')->count();
+        $belumPernah = $semua->filter(fn ($k) => $k->statusHarian() !== 'darurat' && $k->patroliTerakhir === null)->count();
 
         $kondisi = [
-            'aman' => $terkini->count() - $darurat - $belumPernah,
+            'aman' => $jumlahAktif - $darurat - $belumPernah,
             'darurat' => $darurat,
             'belum_pernah' => $belumPernah,
         ];

@@ -4,7 +4,7 @@
 
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-md mb-4">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-4 py-3 bg-white">
-                {{-- Search --}}
+                
                 <form id="search-form" action="{{ route('lokasi-kebersihan.index') }}" method="GET"
                     class="flex flex-row items-center gap-2 w-full md:w-1/2">
                     <div class="relative flex flex-grow">
@@ -25,7 +25,7 @@
                     @endif
                 </form>
 
-                {{-- Tambah Lokasi --}}
+                
                 <a href="{{ route('lokasi-kebersihan.create') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm text-center font-semibold whitespace-nowrap">
                     Tambah Lokasi
@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        {{-- Tabel Data Lokasi Kebersihan --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg mb-4">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -101,7 +101,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex justify-between items-center bg-white">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $lokasiKebersihan->firstItem() ?? 0 }} sampai {{ $lokasiKebersihan->lastItem() ?? 0 }} dari
@@ -112,7 +112,7 @@
             </div>
         </div>
 
-        {{-- Modal Preview QR --}}
+        
         <div id="qrModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="relative w-full max-w-sm bg-white rounded-lg shadow-xl p-6 text-center">

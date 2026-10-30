@@ -1,7 +1,7 @@
 <x-app-layout :title="'Dashboard Petugas Security'">
 
     <div class="max-w-7xl mx-auto p-2 space-y-2">
-        {{-- Notifikasi jika masih ada lokasi yang belum dipatroli --}}
+        
         @if ($jumlahBelum > 0)
             <div class="mt-6 mb-2 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg shadow-md">
                 <strong>Perhatian!</strong> Masih ada <strong>{{ $jumlahBelum }}</strong> lokasi yang belum dipatroli
@@ -11,7 +11,7 @@
             </div>
         @endif
 
-        {{-- Notifikasi jika tidak ada jadwal patroli --}}
+        
         @if ($totalLokasi == 0)
             <div class="mt-6 mb-2 p-4 bg-blue-100 border-l-4 border-blue-500 text-blue-800 rounded-lg shadow-md">
                 <strong>Informasi :</strong> Hari ini kamu tidak memiliki jadwal patroli.
@@ -24,11 +24,11 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Status Patroli --}}
+            
             <div class="p-5 bg-white border border-gray-200 rounded-lg shadow-md">
                 <h2 class="text-lg font-semibold text-gray-800 mb-2">Status Patroli Hari Ini</h2>
 
-                {{-- Ringkasan jumlah lokasi --}}
+                
                 <div class="space-y-1 text-sm text-gray-800">
                     <p class="flex space-x-1">
                         <span class="w-40 text-left">Total titik lokasi</span>
@@ -47,7 +47,7 @@
                     </p>
                 </div>
 
-                {{-- Progress bar --}}
+                
                 <div class="mt-4">
                     <div class="relative h-4 bg-gray-200 rounded-full overflow-hidden">
                         <div class="h-full bg-blue-500 transition-all duration-300 ease-in-out"
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            {{-- Aktivitas Terakhir --}}
+            
             <div class="p-5 bg-white border border-gray-200 rounded-lg shadow-md max-h-64 overflow-y-auto">
                 <h2 class="text-lg font-semibold text-gray-800 mb-3">Aktivitas Terakhir</h2>
                 <ul class="space-y-3 text-sm text-gray-700">
@@ -85,7 +85,7 @@
             </div>
         </div>
 
-        {{-- Tabel Lokasi Belum Dipatroli --}}
+        
         <div class="mt-12 bg-white p-4">
             <h2 class="text-lg font-bold text-gray-800 mb-4">Daftar Lokasi Belum Dipatroli</h2>
             <div class="overflow-x-auto rounded-lg border border-gray-200">

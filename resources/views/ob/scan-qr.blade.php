@@ -15,7 +15,7 @@
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 text-center">
             <div id="reader" class="w-full rounded-lg overflow-hidden border border-gray-200 bg-black min-h-[300px]"></div>
 
-            {{-- Pesan Status Hasil Scan --}}
+            
             <div id="result" class="mt-4 text-sm font-semibold text-blue-600 min-h-[24px]"></div>
 
             <p class="text-xs text-gray-400 mt-2">

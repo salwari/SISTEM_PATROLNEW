@@ -5,7 +5,7 @@
     <div class="h-full overflow-y-auto py-5 px-3 bg-white dark:bg-gray-800">
         <ul class="space-y-2">
 
-            {{-- DASHBOARD --}}
+            
             <li class="px-3 text-sm font-semibold text-gray-500 uppercase">Dashboard</li>
             <li>
                 <a href="{{ route('super-admin.dashboard') }}"
@@ -21,7 +21,7 @@
                 </a>
             </li>
 
-            {{-- MASTER DATA --}}
+            
             <li class="px-3 text-sm font-semibold text-gray-500 uppercase">Master Data</li>
             <li>
                 <a href="{{ route('data-cabang.index') }}"
@@ -37,7 +37,7 @@
             </li>
 
             <li class="px-3 text-sm font-semibold text-gray-500 uppercase">Manajemen Patroli</li>
-            {{-- Data Petugas Security --}}
+            
             <li>
                 <a href="{{ route('super-admin.data-petugas') }}"
                     class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
@@ -51,7 +51,7 @@
                 </a>
             </li>
 
-            {{-- Data Lokasi Patroli --}}
+            
             <li>
                 <a href="{{ route('super-admin.data-lokasi') }}"
                     class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
@@ -66,7 +66,7 @@
                 </a>
             </li>
 
-            {{-- Data Patroli --}}
+            
             <li>
                 <a href="{{ route('super-admin.data-patroli-petugas') }}"
                     class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group

@@ -5,7 +5,7 @@
             <form action="{{ route('kabid-dukbis.laporan-patroli') }}" method="GET"
                 class="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
 
-                {{-- Status Filter --}}
+                
                 <select name="status"
                     class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-full md:w-40">
                     <option value="" {{ request('status') == '' ? 'selected' : '' }}>Semua status</option>
@@ -13,7 +13,7 @@
                     <option value="darurat" {{ request('status') == 'darurat' ? 'selected' : '' }}>Darurat</option>
                 </select>
 
-                {{-- Search --}}
+                
                 <div class="flex w-full md:w-96">
                     <div class="relative flex-grow">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -42,17 +42,17 @@
             </form>
         </div>
 
-        {{-- Form Cetak --}}
+        
         <div class="bg-white border border-gray-200 rounded-lg shadow-md mb-6 p-4">
             <form action="{{ route('kabid-dukbis.cetak-laporan-patroli-redirect') }}" method="GET" target="_blank"
                 class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-end">
 
-                {{-- Hidden input status dari URL jika ada --}}
+                
                 @if (request('status'))
                     <input type="hidden" name="status" value="{{ request('status') }}">
                 @endif
 
-                {{-- Tanggal Mulai --}}
+                
                 <div>
                     <label for="tanggal_mulai" class="block text-sm font-medium text-gray-700 mb-1">Tanggal
                         Mulai</label>
@@ -61,7 +61,7 @@
                         required>
                 </div>
 
-                {{-- Tanggal Selesai --}}
+                
                 <div>
                     <label for="tanggal_selesai" class="block text-sm font-medium text-gray-700 mb-1">Tanggal
                         Selesai</label>
@@ -71,7 +71,7 @@
                         required>
                 </div>
 
-                {{-- Tombol Cetak --}}
+                
                 <div class="flex justify-end">
                     <button type="submit"
                         class="inline-flex items-center justify-center w-90 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-semibold">
@@ -86,7 +86,7 @@
             </form>
         </div>
 
-        {{-- Tabel Laporan Patroli --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg mb-4">
             <table class="min-w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -144,7 +144,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex flex-col sm:flex-row justify-between items-center bg-white px-2 py-3 text-sm text-gray-600">
             <div class="mb-2 sm:mb-0">
                 Menampilkan {{ $dataPatroli->firstItem() ?? 0 }} sampai {{ $dataPatroli->lastItem() ?? 0 }} dari
@@ -155,7 +155,7 @@
             </div>
         </div>
 
-        {{-- Modal Preview Foto --}}
+        
         <div id="fotoModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50">
             <div class="flex items-center justify-center min-h-screen p-4 sm:p-6">
                 <div class="relative w-full max-w-sm bg-white rounded-lg shadow-xl z-10">
@@ -179,14 +179,12 @@
 </x-app-layout>
 
 <script>
-    //Menampilkan modal foto
     function showFotoModal(imageUrl, namaLokasi) {
         document.getElementById('fotoModalImg').src = imageUrl;
         document.getElementById('fotoModalNamaLokasi').textContent = namaLokasi;
         document.getElementById('fotoModal').classList.remove('hidden');
     }
 
-    //Menutup modal foto
     function closeModal() {
         document.getElementById('fotoModal').classList.add('hidden');
     }

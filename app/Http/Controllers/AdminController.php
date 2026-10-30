@@ -17,17 +17,14 @@ class AdminController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        $cabangId = $user->cabang_id; // ambil cabang admin login
+        $cabangId = $user->cabang_id; 
 
-        // Hitung jumlah sesuai cabang
         $jumlahPengguna = User::where('cabang_id', $cabangId)
-            ->whereIn('role', ['petugas_security', 'kabid_petugas']) // hanya petugas + kabid
-            ->count();
+            ->whereIn('role', ['petugas_security', 'kabid_petugas']) ->count();
 
         $jumlahLokasiPatroli = LokasiPatroli::where('cabang_id', $cabangId)->count();
         $jumlahPatroli = Patroli::where('cabang_id', $cabangId)->count();
 
-        // Aktivitas Harian
         $harianLabels = [];
         $harianData = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -38,7 +35,6 @@ class AdminController extends Controller
                 ->count();
         }
 
-        // Aktivitas Mingguan
         $mingguanLabels = [];
         $mingguanData = [];
         for ($i = 3; $i >= 0; $i--) {
@@ -50,7 +46,6 @@ class AdminController extends Controller
                 ->count();
         }
 
-        // Aktivitas Bulanan
         $bulananLabels = [];
         $bulananData = [];
         for ($i = 11; $i >= 0; $i--) {
@@ -62,14 +57,12 @@ class AdminController extends Controller
                 ->count();
         }
 
-        // Pie Chart Status
         $statusPatroli = Patroli::where('cabang_id', $cabangId)
             ->select('status', DB::raw('count(*) as total'))
             ->whereIn('status', ['aman', 'darurat'])
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        // Notifikasi Petugas Kurang Patroli
         $currentMonth = Carbon::now();
         $minimalPatroli = 8;
 
@@ -103,14 +96,13 @@ class AdminController extends Controller
     public function dataPatroli(Request $request)
     {
         $user = Auth::user();
-        $cabangId = $user->cabang_id; // ambil cabang admin login
+        $cabangId = $user->cabang_id; 
 
         $search = $request->input('search');
         $status = $request->input('status');
 
         $patroli = Patroli::with(['user', 'lokasiPatroli'])
-            ->where('cabang_id', $cabangId) // filter sesuai cabang
-            ->when($search, function ($query, $search) {
+            ->where('cabang_id', $cabangId) ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->whereHas('user', function ($subQuery) use ($search) {
                         $subQuery->where('nama', 'like', '%' . $search . '%');

@@ -18,7 +18,6 @@ class JadwalPatroliController extends Controller
         $currentMonth = $monthParam ? Carbon::parse($monthParam . '-01') : Carbon::now();
         $cabangId = Auth::user()->cabang_id;
 
-        // Ambil jadwal patroli bulan ini sesuai cabang admin login
         $jadwalPatroliRaw = JadwalPatroli::with('user')
             ->whereYear('tanggal', $currentMonth->year)
             ->whereMonth('tanggal', $currentMonth->month)
@@ -27,11 +26,9 @@ class JadwalPatroliController extends Controller
             })
             ->get();
 
-        // Jika belum ada jadwal sama sekali untuk cabang ini & bulan ini → auto generate otomatis
         if ($jadwalPatroliRaw->isEmpty()) {
             $this->generateJadwalOtomatis($currentMonth, false, null, $cabangId);
 
-            // Ambil ulang data setelah generate
             $jadwalPatroliRaw = JadwalPatroli::with('user')
                 ->whereYear('tanggal', $currentMonth->year)
                 ->whereMonth('tanggal', $currentMonth->month)
@@ -43,12 +40,10 @@ class JadwalPatroliController extends Controller
 
         $jadwalPatroli = $jadwalPatroliRaw->groupBy(fn($item) => Carbon::parse($item->tanggal)->format('Y-m-d'));
 
-        // Ambil semua petugas sesuai cabang
         $users = User::where('role', 'petugas_security')
             ->where('cabang_id', $cabangId)
             ->get();
 
-        // Hitung jumlah patroli per user
         $jumlahPatroliPerUser = JadwalPatroli::selectRaw('user_id, count(*) as total')
             ->whereYear('tanggal', $currentMonth->year)
             ->whereMonth('tanggal', $currentMonth->month)
@@ -59,7 +54,6 @@ class JadwalPatroliController extends Controller
             ->with('user')
             ->get();
 
-        // Histori pergantian per cabang
         $historiPergantian = PergantianPetugas::with(['jadwal', 'petugasLama', 'petugasBaru'])
             ->whereHas('jadwal.user', function ($q) use ($cabangId) {
                 $q->where('cabang_id', $cabangId);
@@ -80,7 +74,6 @@ class JadwalPatroliController extends Controller
         ));
     }
 
-    // Fungsi untuk membuat jadwal patroli otomatis selama satu bulan tertentu
     private function generateJadwalOtomatis(Carbon $bulan, bool $overwrite = false, ?Carbon $overrideStartDate = null, ?int $cabangId = null)
     {
         $cabangId = $cabangId ?? Auth::user()->cabang_id;
@@ -88,7 +81,6 @@ class JadwalPatroliController extends Controller
         $startDate = $overrideStartDate ?? $bulan->copy()->startOfMonth();
         $endDate = $bulan->copy()->endOfMonth();
 
-        // Ambil semua user petugas sesuai cabang
         $allUsers = User::where('role', 'petugas_security')
             ->where('cabang_id', $cabangId)
             ->orderBy('id')
@@ -97,7 +89,6 @@ class JadwalPatroliController extends Controller
         if ($allUsers->isEmpty())
             return;
 
-        // Hitung total shift dalam bulan ini
         $totalShiftBulan = 0;
         foreach (Carbon::parse($startDate)->daysUntil($endDate) as $tanggal) {
             $hari = $tanggal->dayOfWeek;
@@ -107,7 +98,6 @@ class JadwalPatroliController extends Controller
         $jumlahPetugas = $allUsers->count();
         $maxPatroliPerUser = ceil($totalShiftBulan / max($jumlahPetugas, 1));
 
-        // Inisialisasi counter
         $jadwalCounter = $allUsers->pluck('id')->mapWithKeys(fn($id) => [$id => 0])->toArray();
 
         foreach (Carbon::parse($startDate)->daysUntil($endDate) as $tanggal) {
@@ -146,7 +136,6 @@ class JadwalPatroliController extends Controller
         }
     }
 
-    // Fungsi untuk generate ulang jadwal patroli dari tanggal tertentu
     public function generateUlang(Request $request)
     {
         $monthParam = $request->input('month');
@@ -155,24 +144,20 @@ class JadwalPatroliController extends Controller
         $startDate = $startDateInput ? Carbon::parse($startDateInput) : $currentMonth->copy()->startOfMonth();
         $cabangId = Auth::user()->cabang_id;
 
-        // Cegah generate ulang untuk bulan yang sudah lewat
         if ($currentMonth->lt(Carbon::now()->startOfMonth())) {
             return back()->with('error', 'Tidak dapat generate ulang jadwal untuk bulan yang sudah lewat.');
         }
 
-        // Cek apakah sudah ada jadwal di bulan ini
         $jadwalAda = JadwalPatroli::whereYear('tanggal', $currentMonth->year)
             ->whereMonth('tanggal', $currentMonth->month)
             ->whereHas('user', fn($q) => $q->where('cabang_id', $cabangId))
             ->exists();
 
-        // Jika belum ada → generate pertama kali
         if (!$jadwalAda) {
             $this->generateJadwalOtomatis($currentMonth, false, $startDate, $cabangId);
             return back()->with('success', 'Jadwal patroli berhasil digenerate pertama kali untuk bulan ini.');
         }
 
-        // Cek apakah sudah digenerate hari ini
         $sudahGenerateHariIni = JadwalPatroli::whereDate('created_at', Carbon::today())
             ->whereYear('tanggal', $currentMonth->year)
             ->whereMonth('tanggal', $currentMonth->month)
@@ -183,12 +168,10 @@ class JadwalPatroliController extends Controller
             return back()->with('error', 'Jadwal bulan ini sudah digenerate ulang hari ini, tidak perlu generate lagi.');
         }
 
-        // Hapus jadwal mulai tanggal tertentu
         JadwalPatroli::whereDate('tanggal', '>=', $startDate->format('Y-m-d'))
             ->whereHas('user', fn($q) => $q->where('cabang_id', $cabangId))
             ->delete();
 
-        // Overwrite jadwal lama dengan logika baru
         $this->generateJadwalOtomatis($currentMonth, true, $startDate, $cabangId);
 
         return back()->with('success', 'Jadwal patroli berhasil digenerate ulang.');
@@ -204,7 +187,6 @@ class JadwalPatroliController extends Controller
 
         $tanggal = Carbon::parse($request->tanggal);
 
-        // Hitung berapa petugas yang sudah terisi di shift yang sama
         $jumlahPetugas = JadwalPatroli::whereDate('tanggal', $tanggal)
             ->where('shift', $request->shift)
             ->whereHas('user', function ($q) {
@@ -236,7 +218,6 @@ class JadwalPatroliController extends Controller
 
         $tanggal = $jadwalPatroli->tanggal;
 
-        // Hitung petugas yang sudah terisi di shift yang sama (kecuali dirinya)
         $jumlahPetugas = JadwalPatroli::where('tanggal', $tanggal)
             ->where('shift', $request->shift)
             ->where('id', '!=', $jadwalPatroli->id)
@@ -249,7 +230,6 @@ class JadwalPatroliController extends Controller
             return back()->withInput()->with('error', 'Shift ini sudah terisi maksimal 3 petugas.');
         }
 
-        // Catat histori pergantian jika petugasnya berbeda
         if ($jadwalPatroli->user_id != $request->user_id) {
             $bulanIni = Carbon::now();
 
@@ -282,7 +262,6 @@ class JadwalPatroliController extends Controller
 
     public function destroy(JadwalPatroli $jadwalPatroli)
     {
-        // Cek apakah jadwal ini milik cabang yang sama dengan admin login
         if ($jadwalPatroli->user->cabang_id !== Auth::user()->cabang_id) {
             abort(403, 'Tidak boleh menghapus jadwal dari cabang lain.');
         }
@@ -308,7 +287,6 @@ class JadwalPatroliController extends Controller
             ->get()
             ->groupBy('tanggal');
 
-        // Ambil nama cabang admin yang login
         $cabang = Auth::user()->cabang->nama_cabang ?? '-';
 
         return Pdf::loadView('admin.jadwal-patroli.cetak-jadwal', [

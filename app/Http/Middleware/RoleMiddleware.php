@@ -9,19 +9,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        // Cek apakah user sudah login dan memiliki role yang sesuai
         if (Auth::check() && Auth::user()->role === $role) {
             return $next($request);
         }
 
-        // Jika tidak sesuai role, tampilkan error 403
         abort(403, 'Access denied. You do not have the required role.');
     }
 }

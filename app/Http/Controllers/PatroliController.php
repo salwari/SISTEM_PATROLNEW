@@ -15,20 +15,16 @@ class PatroliController extends Controller
 {
     public function create(Request $request)
     {
-        // Mengecek apakah user sudah login
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu.');
         }
 
-        // Ambil lokasi berdasarkan query string ?lokasi=id
         $lokasiId = $request->query('lokasi');
         $lokasiPatroli = LokasiPatroli::findOrFail($lokasiId);
 
-        // Mengambil ID user yang sedang login dan tanggal hari ini
         $userId = Auth::id();
         $today = now()->toDateString();
 
-        // Mengecek apakah petugas dijadwalkan patroli hari ini
         $jadwal = JadwalPatroli::where('user_id', $userId)
             ->where('tanggal', $today)
             ->exists();
@@ -38,10 +34,8 @@ class PatroliController extends Controller
                 ->with('error', 'Anda tidak dijadwalkan patroli di lokasi ini hari ini.');
         }
 
-        // Ambil semua kategori kejadian untuk ditampilkan di form
         $kategoriKejadian = KategoriKejadian::all();
 
-        // Kirim ke view
         return view('petugas-security.form-patroli', compact('lokasiPatroli', 'kategoriKejadian'));
     }
 
@@ -76,7 +70,6 @@ class PatroliController extends Controller
                 ->with('error', 'Patroli di lokasi ini sudah dilakukan hari ini.');
         }
 
-        // Simpan foto
         $fotoPath = null;
         if ($request->filled('foto')) {
             $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $request->foto);

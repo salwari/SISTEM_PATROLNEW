@@ -2,7 +2,7 @@
     <div class="container mx-auto p-4">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Daftar Lokasi Patroli</h2>
 
-        {{-- Search --}}
+        
         <div class="bg-white border border-gray-200 rounded-lg shadow-md p-4 mb-4">
             <form action="{{ route('kabid-dukbis.data-lokasi-patroli') }}" method="GET"
                 class="flex flex-col md:flex-row md:items-center gap-3">
@@ -32,7 +32,7 @@
             </form>
         </div>
 
-        {{-- Table --}}
+        
         <div class="bg-white border border-gray-200 rounded-lg shadow-md overflow-x-auto mb-4">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-100 text-gray-800 uppercase text-xs font-semibold">
@@ -74,7 +74,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex flex-col md:flex-row justify-between items-center gap-2 bg-white p-3 rounded-lg shadow">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $lokasiPatroli->firstItem() ?? 0 }} sampai {{ $lokasiPatroli->lastItem() ?? 0 }} dari
@@ -85,7 +85,7 @@
             </div>
         </div>
 
-        {{-- Modal Preview QR --}}
+        
         <div id="qrModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="relative w-full max-w-sm bg-white rounded-lg shadow-xl">

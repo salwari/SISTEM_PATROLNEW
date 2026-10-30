@@ -18,13 +18,11 @@ class LokasiPatroli extends Model
         'qr_code',
     ];
 
-    // Relasi dengan tabel patroli
     public function patroli()
     {
         return $this->hasMany(Patroli::class, 'lokasi_id');
     }
 
-    // Relasi dengan tabel cabang
     public function cabang()
     {
         return $this->belongsTo(Cabang::class, 'cabang_id');

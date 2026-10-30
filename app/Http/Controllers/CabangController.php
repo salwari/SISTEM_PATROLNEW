@@ -47,20 +47,17 @@ class CabangController extends Controller
             'no_telepon.unique' => 'Nomor telepon sudah digunakan.',
         ]);
 
-        // Simpan cabang
         $cabang = Cabang::create([
             'nama_cabang' => $validated['nama_cabang'],
             'alamat_cabang' => $validated['alamat'],
         ]);
 
-        // Pastikan tidak ada admin ganda di cabang ini
         if (User::where('cabang_id', $cabang->id)->where('role', 'admin')->exists()) {
             return back()->withErrors([
                 'email' => 'Cabang ini sudah memiliki admin.'
             ])->withInput();
         }
 
-        // Buat admin cabang otomatis
         User::create([
             'nama' => "Admin " . $validated['nama_cabang'],
             'email' => $validated['email'],
@@ -101,13 +98,11 @@ class CabangController extends Controller
             'no_telepon.unique' => 'Nomor telepon sudah digunakan.',
         ]);
 
-        // Update data cabang
         $cabang->update([
             'nama_cabang' => $validated['nama_cabang'],
             'alamat_cabang' => $validated['alamat_cabang'],
         ]);
 
-        // Update data admin cabang (relasi 1 cabang punya 1 admin)
         if ($cabang->admin) {
             $cabang->admin->update([
                 'nama' => "Admin " . $validated['nama_cabang'],

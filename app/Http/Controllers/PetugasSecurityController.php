@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Patroli;
 use App\Models\LokasiPatroli;
 use App\Models\JadwalPatroli;
@@ -16,10 +15,8 @@ class PetugasSecurityController extends Controller
     {
         $user = Auth::user();
         $userId = $user->id;
-        $cabangId = $user->cabang_id; // ambil cabang user login
-        $today = Carbon::today()->toDateString();
+        $cabangId = $user->cabang_id; $today = Carbon::today()->toDateString();
 
-        // Mengecek apakah petugas dijadwalkan hari ini (via relasi user -> cabang)
         $dijadwalkan = JadwalPatroli::where('user_id', $userId)
             ->whereDate('tanggal', $today)
             ->whereHas('user', function ($query) use ($cabangId) {
@@ -38,10 +35,8 @@ class PetugasSecurityController extends Controller
             ]);
         }
 
-        // Lokasi patroli hanya dari cabang user
         $totalLokasi = LokasiPatroli::where('cabang_id', $cabangId)->count();
 
-        // Ambil data patroli hari ini untuk user login (via relasi user -> cabang)
         $patroliHariIni = Patroli::with('lokasiPatroli')
             ->where('user_id', $userId)
             ->whereDate('tanggal_patroli', $today)
@@ -55,12 +50,10 @@ class PetugasSecurityController extends Controller
         $jumlahBelum = $totalLokasi - $jumlahSelesai;
         $persentase = $totalLokasi > 0 ? ($jumlahSelesai / $totalLokasi) * 100 : 0;
 
-        // Lokasi yang belum dipatroli (hanya di cabang user login)
         $belumDipatroli = LokasiPatroli::where('cabang_id', $cabangId)
             ->whereNotIn('id', $lokasiDipatroliIds)
             ->get();
 
-        // 5 aktivitas patroli terakhir
         $aktivitasTerakhir = $patroliHariIni->sortByDesc('waktu_patroli')->take(5);
 
         return view('petugas-security.dashboard', compact(
@@ -80,7 +73,6 @@ class PetugasSecurityController extends Controller
         $cabangId = $user->cabang_id;
         $today = now()->toDateString();
 
-        // cek jadwal dengan join ke users, karena cabang_id ada di tabel users
         $jadwalHariIni = JadwalPatroli::where('user_id', $userId)
             ->whereDate('tanggal', $today)
             ->whereHas('user', function ($query) use ($cabangId) {
@@ -100,13 +92,12 @@ class PetugasSecurityController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status');
-        $cabangId = Auth::user()->cabang_id; // ambil cabang user yang login
+        $cabangId = Auth::user()->cabang_id; 
 
         $riwayatPatroli = Patroli::with(['lokasiPatroli'])
             ->where('user_id', Auth::id())
             ->whereHas('lokasiPatroli', function ($query) use ($cabangId) {
-                $query->where('cabang_id', $cabangId); // filter cabang
-            })
+                $query->where('cabang_id', $cabangId); })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->whereHas('lokasiPatroli', function ($subQuery) use ($search) {

@@ -57,7 +57,7 @@ class UserController extends Controller
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
-        $validated['cabang_id'] = Auth::user()->cabang_id; // otomatis isi cabang sesuai admin login
+        $validated['cabang_id'] = Auth::user()->cabang_id; 
 
         User::create($validated);
 

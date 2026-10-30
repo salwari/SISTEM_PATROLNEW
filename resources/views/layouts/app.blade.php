@@ -1,4 +1,4 @@
-{{-- resources/views/components/app-layout.blade.php --}}
+
 @props(['title' => ''])
 
 <!DOCTYPE html>
@@ -11,17 +11,17 @@
 
     <title>{{ $title ?? 'SIM PATROLI' }}</title>
 
-    <!-- Fonts -->
+    
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Flowbite CSS -->
+    
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 
-    <!-- Calender -->
+    
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 
     
@@ -29,10 +29,10 @@
 
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-white">
-        <!-- Navbar -->
+        
         @include('layouts.navigation')
 
-        <!-- Sidebar Dinamis Berdasarkan Role -->
+        
         @if (Auth::check())
             @if(Auth::user()->role == 'super_admin')
                 <x-sidebar-super-admin />
@@ -47,7 +47,7 @@
             @endif
         @endif
 
-        <!-- Page Content -->
+        
        <main class="relative pt-16 md:ml-64 p-4 bg-white min-h-screen">
             {{ $slot }}
             
@@ -55,16 +55,16 @@
         </main>
     </div>
 
-    <!-- FLOWBITE JS -->
+    
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
-    <!-- CHART -->
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- SWEET ALERT -->
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Calender -->
+    
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 </body>
 

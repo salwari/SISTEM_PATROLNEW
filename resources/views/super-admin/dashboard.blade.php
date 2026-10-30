@@ -1,7 +1,7 @@
 <x-app-layout :title="'Dashboard Super Admin'">
 
     <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2 lg:grid-cols-4">
-        {{-- Card Jumlah Cabang --}}
+        
         <a href="{{ route('data-cabang.index') }}">
             <div
                 class="flex items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
@@ -18,7 +18,7 @@
                 </div>
             </div>
         </a>
-        {{-- Card Jumlah Petugas Security --}}
+        
         <a href="{{ route('super-admin.data-petugas') }}">
             <div
                 class="flex items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
@@ -35,7 +35,7 @@
                 </div>
             </div>
         </a>
-        {{-- Card Jumlah Lokasi Patroli --}}
+        
         <a href="{{ route('super-admin.data-lokasi') }}">
             <div
                 class="flex items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
@@ -52,7 +52,7 @@
                 </div>
             </div>
         </a>
-        {{-- Card Jumlah Patroli --}}
+        
         <a href="{{ route('super-admin.data-patroli-petugas') }}">
             <div
                 class="flex items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700 cursor-pointer">

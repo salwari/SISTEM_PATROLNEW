@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Patroli extends Model
 {
-    /** @use HasFactory<\Database\Factories\PatroliFactory> */
     use HasFactory;
     
     protected $table = 'patroli';
@@ -25,25 +24,21 @@ class Patroli extends Model
         'foto',
     ];
 
-    // Relasi ke user (petugas)
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relasi ke lokasi patroli
     public function lokasiPatroli()
     {
         return $this->belongsTo(LokasiPatroli::class, 'lokasi_id');
     }
 
-    // Relasi ke cabang (bukan unit lagi)
     public function cabang()
     {
         return $this->belongsTo(Cabang::class, 'cabang_id');
     }
     
-    // Relasi ke kategori kejadian
     public function kategoriKejadian()
     {
         return $this->belongsTo(KategoriKejadian::class, 'kejadian_id');

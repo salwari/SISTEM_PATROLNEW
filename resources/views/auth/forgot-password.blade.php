@@ -3,7 +3,7 @@
         class="w-full max-w-sm mx-auto bg-gray-50 rounded-xl shadow-lg dark:bg-gray-800 dark:border dark:border-gray-700 mt-10">
         <div class="p-6 sm:p-8 space-y-6">
 
-            <!-- Logo dan Judul -->
+            
             <div class="flex justify-center">
                 <a href="#" class="flex flex-col items-center text-xl font-semibold text-gray-900 dark:text-white">
                     <img class="w-24 h-auto mb-2" src="{{ asset('assets/sucofindo.png') }}" alt="logo">
@@ -18,14 +18,14 @@
                 Masukkan email Anda dan kami akan mengirimkan link untuk mengatur ulang password Anda.
             </p>
 
-            <!-- Session Status -->
+            
             <x-auth-session-status class="mb-4" :status="session('status')" />
 
-            <!-- Form -->
+            
             <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
                 @csrf
 
-                <!-- Email -->
+                
                 <div>
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Email

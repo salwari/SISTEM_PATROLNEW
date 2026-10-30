@@ -21,11 +21,9 @@ class KabidDukbisController extends Controller
 {
     public function dashboard()
     {
-        // Filter patroli hanya untuk cabang tertentu
         $user = Auth::user();
-        $cabangId = $user->cabang_id; // ambil cabang admin login
+        $cabangId = $user->cabang_id;
 
-        // Jumlah sesuai cabang login
         $jumlahPetugas = User::where('role', 'petugas_security')
             ->where('cabang_id', $cabangId)
             ->count();
@@ -35,10 +33,8 @@ class KabidDukbisController extends Controller
 
         $jumlahLaporanPatroli = Patroli::whereHas('user', function ($q) use ($cabangId) {
             $q->where('cabang_id', $cabangId);
-        })
-            ->count();
+        })->count();
 
-        // Data harian 7 hari terakhir
         $harianLabels = [];
         $harianData = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -49,7 +45,6 @@ class KabidDukbisController extends Controller
                 ->count();
         }
 
-        // Data mingguan
         $mingguanLabels = [];
         $mingguanData = [];
         for ($i = 3; $i >= 0; $i--) {
@@ -61,7 +56,6 @@ class KabidDukbisController extends Controller
                 ->count();
         }
 
-        // Data bulanan
         $bulananLabels = [];
         $bulananData = [];
         for ($i = 11; $i >= 0; $i--) {
@@ -73,6 +67,25 @@ class KabidDukbisController extends Controller
                 ->count();
         }
 
+        $jumlahKamarMandi = KamarMandi::where('cabang_id', $cabangId)->count();
+
+        $toiletSelesaiHariIni = PemeriksaanKamarMandi::where('cabang_id', $cabangId)
+            ->whereDate('tanggal', Carbon::today())
+            ->distinct('kamar_mandi_id')
+            ->count('kamar_mandi_id');
+
+        $jumlahTemuanAktif = PemeriksaanKamarMandi::where('cabang_id', $cabangId)
+            ->where('status_kondisi', 'perlu_tindakan')
+            ->count();
+
+        $temuanTerbaru = PemeriksaanKamarMandi::with(['kamarMandi', 'user'])
+            ->where('cabang_id', $cabangId)
+            ->where('status_kondisi', 'perlu_tindakan')
+            ->orderByDesc('tanggal')
+            ->orderByDesc('waktu')
+            ->take(3)
+            ->get();
+
         return view('kabid-dukbis.dashboard', compact(
             'jumlahPetugas',
             'jumlahLokasiPatroli',
@@ -82,20 +95,22 @@ class KabidDukbisController extends Controller
             'mingguanLabels',
             'mingguanData',
             'bulananLabels',
-            'bulananData'
+            'bulananData',
+            'jumlahKamarMandi',
+            'toiletSelesaiHariIni',
+            'jumlahTemuanAktif',
+            'temuanTerbaru'
         ));
     }
 
-    //Menampilkan data petugas security
     public function dataPetugasSecurity(Request $request)
     {
         $search = $request->input('search');
-        $cabangId = Auth::user()->cabang_id; // ambil cabang user login
+        $cabangId = Auth::user()->cabang_id; 
 
         $users = User::query()
             ->where('role', 'petugas_security')
-            ->where('cabang_id', $cabangId) // filter berdasarkan cabang
-            ->when($search, function ($query, $search) {
+            ->where('cabang_id', $cabangId) ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama', 'like', '%' . $search . '%')
                         ->orWhere('email', 'like', '%' . $search . '%')
@@ -110,15 +125,13 @@ class KabidDukbisController extends Controller
         return view('kabid-dukbis.data-petugas-security', compact('users', 'search'));
     }
 
-    //Menampilkan data lokasi patroli
     public function dataLokasiPatroli(Request $request)
     {
         $search = $request->input('search');
-        $cabangId = Auth::user()->cabang_id; // ambil cabang user login
+        $cabangId = Auth::user()->cabang_id; 
 
         $lokasiPatroli = LokasiPatroli::with('cabang')
-            ->where('cabang_id', $cabangId) // filter cabang
-            ->when($search, function ($query, $search) {
+            ->where('cabang_id', $cabangId) ->when($search, function ($query, $search) {
                 $query->where('nama_lokasi', 'like', '%' . $search . '%');
             })
             ->orderBy('nama_lokasi')
@@ -128,16 +141,14 @@ class KabidDukbisController extends Controller
         return view('kabid-dukbis.data-lokasi-patroli', compact('lokasiPatroli', 'search'));
     }
 
-    //Menampilkan laporan patroli
     public function laporanPatroli(Request $request)
     {
         $search = $request->input('search');
         $status = $request->input('status');
-        $cabangId = Auth::user()->cabang_id; // cabang login
+        $cabangId = Auth::user()->cabang_id; 
 
         $dataPatroli = Patroli::with(['user', 'lokasiPatroli'])
-            ->where('cabang_id', $cabangId) // filter cabang
-            ->when($search, function ($query, $search) {
+            ->where('cabang_id', $cabangId) ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->whereHas('user', function ($qUser) use ($search) {
                         $qUser->where('nama', 'like', '%' . $search . '%');
@@ -160,7 +171,6 @@ class KabidDukbisController extends Controller
 
     public function redirectCetakLaporan(Request $request)
     {
-        // Validasi input awal
         $validated = Validator::make($request->all(), [
             'tanggal_mulai' => ['required', 'date'],
             'tanggal_selesai' => ['required', 'date'],
@@ -173,7 +183,6 @@ class KabidDukbisController extends Controller
             'status.in' => 'Status yang dipilih tidak valid.',
         ]);
 
-        // Validasi lanjutan: tanggal
         $validated->after(function ($validator) use ($request) {
             if ($request->filled(['tanggal_mulai', 'tanggal_selesai'])) {
                 $start = Carbon::parse($request->tanggal_mulai);
@@ -197,7 +206,6 @@ class KabidDukbisController extends Controller
             return back()->withInput()->with('error', $validated->errors()->first());
         }
 
-        // Enkripsi parameter menjadi token
         $token = Crypt::encrypt([
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
@@ -231,10 +239,8 @@ class KabidDukbisController extends Controller
             return back()->with('error', 'Tidak ditemukan data patroli pada rentang tanggal dan status yang dipilih.');
         }
 
-        // Ambil data cabang
         $cabang = Cabang::find($cabangId);
 
-        // Ambil kepala bidang dukbis cabang ini
         $kepala = User::where('role', 'kabid_dukbis')
             ->where('cabang_id', $cabangId)
             ->first();
@@ -242,7 +248,6 @@ class KabidDukbisController extends Controller
         $namaKepala = $kepala?->nama ?? 'Nama Kepala';
         $nomorInduk = $kepala?->nomor_induk ?? '-';
 
-        // Ambil kontak resmi cabang dari user role admin/kabid
         $adminCabang = User::where('cabang_id', $cabangId)
             ->whereIn('role', ['admin', 'kabid_dukbis'])
             ->first();
@@ -250,7 +255,6 @@ class KabidDukbisController extends Controller
         $teleponCabang = $adminCabang?->no_telepon ?? '-';
         $emailCabang = $adminCabang?->email ?? '-';
 
-        // Buat QR code untuk verifikasi
         $linkVerifikasi = url('/kabid-dukbis/laporan-patroli/cetak/' . $token);
 
         $qrText = "Laporan Patroli\nDisahkan oleh : $namaKepala" .
@@ -260,7 +264,6 @@ class KabidDukbisController extends Controller
 
         $qrCode = base64_encode(QrPng::make($qrText, 150, 2));
 
-        // Kirim semua data ke view
         $pdf = Pdf::loadView('kabid-dukbis.cetak-laporan-patroli', [
             'data' => $dataPatroli,
             'startDate' => $startDate,
@@ -302,8 +305,6 @@ class KabidDukbisController extends Controller
         $namaKepala = $kepala?->nama ?? 'Nama Kepala';
         $nomorInduk = $kepala?->nomor_induk ?? '-';
 
-
-        // Buat ulang QR Code seperti di cetak
         $qrText = "Laporan Patroli\nDisahkan oleh : $namaKepala" .
             "\nNomor Induk : $nomorInduk" .
             "\nTanggal : " . now()->translatedFormat('d F Y') .
@@ -338,9 +339,6 @@ class KabidDukbisController extends Controller
             ->withQueryString();
         return view('kabid-dukbis.data-lokasi-kebersihan', compact('lokasiKebersihan', 'search'));
     }
-    /**
-     * Menampilkan Tab Temuan Kamar Mandi (Khusus Status Perlu Tindakan)
-     */
     public function temuanKamarMandi(Request $request)
     {
         $search = $request->input('search');
@@ -393,7 +391,6 @@ class KabidDukbisController extends Controller
     }
         public function redirectCetakLaporanKebersihan(Request $request)
     {
-        // Validasi input tanggal
         $validated = Validator::make($request->all(), [
             'tanggal_mulai' => ['required', 'date'],
             'tanggal_selesai' => ['required', 'date'],
@@ -429,7 +426,16 @@ class KabidDukbisController extends Controller
             return back()->withInput()->with('error', $validated->errors()->first());
         }
 
-        // Enkripsi parameter filter ke token
+        $cabangId = Auth::user()->cabang_id;
+        $adaData = PemeriksaanKamarMandi::where('cabang_id', $cabangId)
+            ->whereBetween('tanggal', [$request->tanggal_mulai, $request->tanggal_selesai])
+            ->when($request->status, fn($q) => $q->where('status_kondisi', $request->status))
+            ->exists();
+
+        if (!$adaData) {
+            return back()->withInput()->with('error', 'Tidak ditemukan data pemeriksaan kebersihan pada rentang tanggal dan status yang dipilih.');
+        }
+
         $token = Crypt::encrypt([
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
@@ -437,10 +443,15 @@ class KabidDukbisController extends Controller
         ]);
 
         return redirect()->route('kabid-dukbis.cetak-laporan-kebersihan', ['token' => $token]);
+
+        return redirect()->route('kabid-dukbis.cetak-laporan-kebersihan', ['token' => $token]);
     }
 
     public function cetakLaporanKebersihanTerenkripsi($token)
     {
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', 120);
+
         try {
             $params = Crypt::decrypt($token);
         } catch (\Exception $e) {
@@ -462,7 +473,8 @@ class KabidDukbisController extends Controller
             ->get();
 
         if ($dataKebersihan->isEmpty()) {
-            return back()->with('error', 'Tidak ditemukan data pemeriksaan kebersihan pada rentang tanggal dan status yang dipilih.');
+            return redirect()->route('kabid-dukbis.laporan-kebersihan')
+                ->with('error', 'Tidak ditemukan data pemeriksaan kebersihan pada rentang tanggal dan status yang dipilih.');
         }
 
         $cabang = Cabang::find($cabangId);
@@ -481,7 +493,6 @@ class KabidDukbisController extends Controller
         $teleponCabang = $adminCabang?->no_telepon ?? '-';
         $emailCabang = $adminCabang?->email ?? '-';
 
-        // QR Code pengesahan dokumen resmi
         $linkVerifikasi = url('/kabid-dukbis/laporan-kebersihan/cetak/' . $token);
         $qrText = "Laporan Pemeriksaan Kebersihan\nDisahkan oleh : $namaKepala" .
             "\nNomor Induk : $nomorInduk" .

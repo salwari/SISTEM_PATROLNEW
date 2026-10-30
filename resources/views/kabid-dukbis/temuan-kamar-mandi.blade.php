@@ -1,7 +1,7 @@
 <x-app-layout :title="'Temuan Kamar Mandi'">
     <div class="max-w-7xl mx-auto p-4 space-y-6">
 
-        {{-- Header Halaman --}}
+        
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Temuan Fasilitas Kamar Mandi</h1>
             <p class="text-sm text-gray-500">
@@ -9,7 +9,7 @@
             </p>
         </div>
 
-        {{-- Banner Info Kabid --}}
+        
         <div class="p-4 bg-red-50 border-l-4 border-red-500 text-red-900 rounded-lg shadow-sm flex items-center justify-between">
             <div class="flex items-center">
                 <svg class="w-5 h-5 mr-3 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -24,51 +24,48 @@
             </span>
         </div>
 
-        {{-- Bar Filter & Pencarian --}}
+        
         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <form action="{{ route('kabid-dukbis.temuan-kamar-mandi') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                
-                {{-- Filter Tanggal Mulai --}}
-                <div class="md:col-span-3">
-                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">DARI TANGGAL</label>
-                    <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}"
-                        class="w-full border border-gray-300 rounded-lg p-2 text-xs text-gray-700 focus:ring-red-500 focus:border-red-500">
-                </div>
+            <form action="{{ route('kabid-dukbis.temuan-kamar-mandi') }}" method="GET" class="space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">DARI TANGGAL</label>
+                        <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}"
+                            class="w-full border border-gray-300 rounded-lg p-2 text-xs text-gray-700 focus:ring-red-500 focus:border-red-500">
+                    </div>
 
-                {{-- Filter Tanggal Selesai --}}
-                <div class="md:col-span-3">
-                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">SAMPAI TANGGAL</label>
-                    <input type="date" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}"
-                        class="w-full border border-gray-300 rounded-lg p-2 text-xs text-gray-700 focus:ring-red-500 focus:border-red-500">
-                </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">SAMPAI TANGGAL</label>
+                        <input type="date" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}"
+                            class="w-full border border-gray-300 rounded-lg p-2 text-xs text-gray-700 focus:ring-red-500 focus:border-red-500">
+                    </div>
 
-                {{-- Search Box & Tombol --}}
-                <div class="md:col-span-5">
-                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">CARI LOKASI TOILET</label>
-                    <div class="flex">
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Cari kode atau nama toilet..." autocomplete="off"
-                            class="block w-full p-2 text-xs text-gray-900 bg-white border border-gray-300 rounded-l-lg focus:ring-red-500 focus:border-red-500" />
-                        <button type="submit"
-                            class="px-5 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-r-lg border border-red-600 transition">
-                            Cari
-                        </button>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">CARI LOKASI TOILET</label>
+                        <div class="flex">
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Cari kode atau nama toilet..." autocomplete="off"
+                                class="block w-full p-2 text-xs text-gray-900 bg-white border border-gray-300 rounded-l-lg focus:ring-red-500 focus:border-red-500" />
+                            <button type="submit"
+                                class="px-5 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-r-lg border border-red-600 transition">
+                                Cari
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Tombol Reset --}}
                 @if (request('search') || request('tanggal_mulai') || request('tanggal_selesai'))
-                    <div class="md:col-span-1 text-center pt-4">
+                    <div class="flex justify-end">
                         <a href="{{ route('kabid-dukbis.temuan-kamar-mandi') }}"
-                            class="inline-block px-3 py-2 text-xs text-gray-600 hover:text-gray-900 hover:underline">
-                            Reset
+                            class="text-xs text-gray-500 hover:text-gray-800 hover:underline">
+                            Reset Filter
                         </a>
                     </div>
                 @endif
             </form>
         </div>
 
-        {{-- Tabel Temuan Kerusakan --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-xl shadow-sm bg-white">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-red-50 text-red-900 uppercase text-xs font-semibold">
@@ -140,7 +137,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex flex-col md:flex-row justify-between items-center gap-3 bg-white p-3 rounded-xl border border-gray-200">
             <div class="text-xs text-gray-600">
                 Menampilkan {{ $temuanList->firstItem() ?? 0 }} sampai {{ $temuanList->lastItem() ?? 0 }} dari {{ $temuanList->total() }} data temuan
@@ -152,7 +149,7 @@
 
     </div>
 
-    {{-- MODAL PREVIEW FOTO --}}
+    
     <div id="fotoModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-60 flex items-center justify-center p-4">
         <div class="relative bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden">
             <div class="flex justify-between items-center p-3 border-b border-gray-200 bg-gray-50">
@@ -169,7 +166,7 @@
         </div>
     </div>
 
-    {{-- MODAL RINCIAN BUTIR CHECKLIST --}}
+    
     <div id="detailChecklistModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-60 flex items-center justify-center p-4">
         <div class="relative bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center p-4 border-b border-gray-200">
@@ -199,7 +196,7 @@
         </div>
     </div>
 
-    {{-- Script Modal --}}
+    
     <script>
         function showFotoModal(url, title) {
             document.getElementById('fotoModalImg').src = url;

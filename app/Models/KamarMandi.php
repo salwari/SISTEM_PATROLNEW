@@ -20,13 +20,11 @@ class KamarMandi extends Model
         'deskripsi',
     ];
 
-    // Relasi ke Cabang
     public function cabang()
     {
         return $this->belongsTo(Cabang::class, 'cabang_id');
     }
 
-    // Relasi ke histori pemeriksaan
     public function pemeriksaan()
     {
         return $this->hasMany(PemeriksaanKamarMandi::class, 'kamar_mandi_id');

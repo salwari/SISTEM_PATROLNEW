@@ -1,5 +1,5 @@
 <div>
-    <!-- Nothing in life is to be feared, it is only to be understood. Now is the time to understand more, so that we may fear less. - Marie Curie -->
+    
 </div><aside id="drawer-navigation"
     class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform bg-white border-r border-gray-200 
            -translate-x-full md:translate-x-0 dark:bg-gray-800 dark:border-gray-700">
@@ -7,7 +7,7 @@
     <div class="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800">
         <ul class="space-y-3">
 
-            {{-- Dashboard --}}
+            
             <li>
                 <a href="{{ route('petugas-security.dashboard') }}"
                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
@@ -22,7 +22,7 @@
                 </a>
             </li>
 
-            {{-- Scan QR --}}
+            
             <li>
                 <a href="{{ route('petugas-security.scan-qr') }}"
                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
@@ -35,7 +35,7 @@
                 </a>
             </li>
 
-            {{-- Riwayat Patroli --}}
+            
             <li>
                 <a href="{{ route('petugas-security.riwayat-patroli') }}"
                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group

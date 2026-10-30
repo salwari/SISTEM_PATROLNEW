@@ -149,11 +149,10 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{kategoriKondisiKendaraan}', [KategoriKondisiKendaraanController::class, 'destroy'])->name('kategori-kondisi-kendaraan.destroy');
         });
 
-        // Riwayat patroli kendaraan
+        // Riwayat cek kendaraan
         Route::prefix('riwayat-kendaraan')->group(function () {
             Route::get('/', [RiwayatKendaraanController::class, 'index'])->name('riwayat-kendaraan.index');
             Route::get('/{riwayatKendaraan}', [RiwayatKendaraanController::class, 'show'])->name('riwayat-kendaraan.show');
-            Route::put('/{riwayatKendaraan}/penanganan', [RiwayatKendaraanController::class, 'updatePenanganan'])->name('riwayat-kendaraan.penanganan');
         });
 
         Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');

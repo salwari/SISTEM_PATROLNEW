@@ -9,7 +9,6 @@ class Kendaraan extends Model
 {
     protected $table = 'kendaraan';
 
-    /** Diisi manual oleh SopirController (cek terbaru hari ini), bukan kolom database. */
     public $cekHariIni = null;
 
     protected $fillable = [
@@ -43,7 +42,6 @@ class Kendaraan extends Model
         return $this->hasMany(AbsenKendaraan::class, 'kendaraan_id');
     }
 
-    /** Cek paling baru, untuk menampilkan kondisi terkini kendaraan. */
     public function cekTerakhir()
     {
         return $this->hasOne(CekKendaraan::class, 'kendaraan_id')->latestOfMany();
@@ -59,18 +57,16 @@ class Kendaraan extends Model
         return $query->where('cabang_id', $cabangId);
     }
 
-    /** Kendaraan yang sudah punya minimal satu cek pada tanggal tertentu. */
-    public function scopeSudahDicek($query, $tanggal)
+    public function scopeSudahAbsen($query, $tanggal)
     {
-        return $query->whereHas('cekKendaraan', fn ($q) => $q->whereDate('tanggal_cek', $tanggal));
+        return $query->whereHas('absenKendaraan', fn ($q) => $q->whereDate('tanggal', $tanggal));
     }
 
-    public function scopeBelumDicek($query, $tanggal)
+    public function scopeBelumAbsen($query, $tanggal)
     {
-        return $query->whereDoesntHave('cekKendaraan', fn ($q) => $q->whereDate('tanggal_cek', $tanggal));
+        return $query->whereDoesntHave('absenKendaraan', fn ($q) => $q->whereDate('tanggal', $tanggal));
     }
 
-    /** URL yang disimpan di dalam QR: form absen sopir (?kode=...). */
     public function getUrlScanAttribute(): string
     {
         $query = ['kode' => $this->kode_barcode];

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CekKendaraan;
+use App\Models\AbsenKendaraan;
 use App\Models\Kendaraan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,47 +16,37 @@ class RiwayatKendaraanController extends Controller
         $request->validate([
             'tanggal_dari' => ['nullable', 'date'],
             'tanggal_sampai' => ['nullable', 'date', 'after_or_equal:tanggal_dari'],
-            'status' => ['nullable', 'in:baik,perlu_tindakan'],
+            'lokasi' => ['nullable', 'in:dalam_area,tanpa_area'],
             'kendaraan_id' => ['nullable', 'integer'],
         ]);
 
         $search = $request->input('search');
 
-        $riwayat = CekKendaraan::with(['kendaraan', 'user'])
+        $riwayat = AbsenKendaraan::with(['kendaraan', 'user'])
             ->where('cabang_id', $cabangId)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->whereHas('kendaraan', fn ($k) => $k->where('plat_nomor', 'like', "%{$search}%")
-                            ->orWhere('jenis', 'like', "%{$search}%"))
-                        ->orWhereHas('user', fn ($u) => $u->where('nama', 'like', "%{$search}%"));
+                    $q->where('nama_sopir', 'like', "%{$search}%")
+                        ->orWhereHas('kendaraan', function ($k) use ($search) {
+                            $k->where('plat_nomor', 'like', "%{$search}%")
+                                ->orWhere('jenis', 'like', "%{$search}%");
+                        });
                 });
             })
-            ->when($request->filled('status'), fn ($q) => $q->where('status_kondisi', $request->status))
+            ->when($request->lokasi === 'dalam_area', fn ($q) => $q->where('dalam_area', true))
+            ->when($request->lokasi === 'tanpa_area', fn ($q) => $q->whereNull('dalam_area'))
             ->when($request->filled('kendaraan_id'), fn ($q) => $q->where('kendaraan_id', $request->kendaraan_id))
-            ->when($request->filled('tanggal_dari'), fn ($q) => $q->whereDate('tanggal_cek', '>=', $request->tanggal_dari))
-            ->when($request->filled('tanggal_sampai'), fn ($q) => $q->whereDate('tanggal_cek', '<=', $request->tanggal_sampai))
-            ->orderByDesc('tanggal_cek')
-            ->orderByDesc('waktu_cek')
+            ->when($request->filled('tanggal_dari'), fn ($q) => $q->whereDate('tanggal', '>=', $request->tanggal_dari))
+            ->when($request->filled('tanggal_sampai'), fn ($q) => $q->whereDate('tanggal', '<=', $request->tanggal_sampai))
+            ->orderByDesc('tanggal')
+            ->orderByDesc('waktu')
             ->paginate(10)
             ->withQueryString();
 
-        $daftarKendaraan = Kendaraan::diCabang($cabangId)->orderBy('plat_nomor')->get(['id', 'plat_nomor', 'jenis']);
+        $daftarKendaraan = Kendaraan::diCabang($cabangId)
+            ->orderBy('plat_nomor')
+            ->get(['id', 'plat_nomor', 'jenis']);
 
         return view('admin.riwayat-kendaraan.index', compact('riwayat', 'daftarKendaraan', 'search'));
-    }
-
-    public function show(CekKendaraan $riwayatKendaraan)
-    {
-        abort_if((int) $riwayatKendaraan->cabang_id !== (int) Auth::user()->cabang_id, 403);
-
-        $riwayatKendaraan->load(['kendaraan', 'user', 'detail']);
-
-        // Detail dikelompokkan per kategori sesuai urutan di ChecklistKendaraan::KATEGORI.
-        $detailPerKategori = $riwayatKendaraan->detail->groupBy('kategori');
-
-        return view('admin.riwayat-kendaraan.show', [
-            'cek' => $riwayatKendaraan,
-            'detailPerKategori' => $detailPerKategori,
-        ]);
     }
 }

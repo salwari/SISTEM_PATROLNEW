@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Cabang;
-use App\Models\CekKendaraan;
+use App\Models\AbsenKendaraan;
 use App\Models\PemeriksaanKamarMandi;
 use App\Models\ChecklistKamarMandi;
 use App\Models\Kendaraan;
@@ -111,26 +111,23 @@ class AdminController extends Controller
         $aktif = Kendaraan::diCabang($cabangId)->aktif();
 
         $jumlahAktif = (clone $aktif)->count();
-        $sudahDicek = (clone $aktif)->sudahDicek($hariIni)->count();
+        $sudahAbsen = (clone $aktif)->sudahAbsen($hariIni)->count();
 
-        $terkini = (clone $aktif)->with('cekTerakhir.user')->get();
+        $belumAbsen = (clone $aktif)
+            ->belumAbsen($hariIni)
+            ->orderBy('plat_nomor')
+            ->get(['id', 'plat_nomor', 'jenis']);
 
-        $perluTindakan = $terkini
-            ->filter(fn ($k) => $k->cekTerakhir?->status_kondisi === 'perlu_tindakan')
-            ->values();
-
-        $kondisi = [
-            'baik' => $terkini->filter(fn ($k) => $k->cekTerakhir?->status_kondisi === 'baik')->count(),
-            'perlu_tindakan' => $perluTindakan->count(),
-            'belum_pernah' => $terkini->filter(fn ($k) => $k->cekTerakhir === null)->count(),
-        ];
-
-        $belumDicekHariIni = (clone $aktif)->belumDicek($hariIni)->orderBy('plat_nomor')->get(['id', 'plat_nomor', 'jenis']);
+        $absenHariIni = AbsenKendaraan::with('kendaraan:id,plat_nomor,jenis')
+            ->where('cabang_id', $cabangId)
+            ->whereDate('tanggal', $hariIni)
+            ->orderByDesc('waktu')
+            ->get();
 
         $mulai = Carbon::today()->subDays(6);
-        $perTanggal = CekKendaraan::where('cabang_id', $cabangId)
-            ->whereDate('tanggal_cek', '>=', $mulai)
-            ->selectRaw('DATE(tanggal_cek) as tgl, COUNT(*) as total')
+        $perTanggal = AbsenKendaraan::where('cabang_id', $cabangId)
+            ->whereDate('tanggal', '>=', $mulai)
+            ->selectRaw('DATE(tanggal) as tgl, COUNT(*) as total')
             ->groupBy('tgl')
             ->pluck('total', 'tgl');
 
@@ -144,10 +141,9 @@ class AdminController extends Controller
 
         return [
             'jumlahAktif' => $jumlahAktif,
-            'sudahDicek' => $sudahDicek,
-            'belumDicekHariIni' => $belumDicekHariIni,
-            'perluTindakan' => $perluTindakan,
-            'kondisi' => $kondisi,
+            'sudahAbsen' => $sudahAbsen,
+            'belumAbsen' => $belumAbsen,
+            'absenHariIni' => $absenHariIni,
             'mingguLabels' => $labels,
             'mingguData' => $data,
         ];
@@ -208,13 +204,13 @@ class AdminController extends Controller
     public function dataPatroli(Request $request)
     {
         $user = Auth::user();
-        $cabangId = $user->cabang_id; // ambil cabang admin login
+        $cabangId = $user->cabang_id;
 
         $search = $request->input('search');
         $status = $request->input('status');
 
         $patroli = Patroli::with(['user', 'lokasiPatroli'])
-            ->where('cabang_id', $cabangId) // filter sesuai cabang
+            ->where('cabang_id', $cabangId)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->whereHas('user', function ($subQuery) use ($search) {

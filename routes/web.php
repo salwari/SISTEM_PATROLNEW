@@ -149,10 +149,9 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{checklistKendaraan}', [ChecklistKendaraanController::class, 'destroy'])->name('checklist-kendaraan.destroy');
         });
 
-        // Riwayat cek kendaraan
+        // Riwayat absen kendaraan
         Route::prefix('riwayat-kendaraan')->group(function () {
             Route::get('/', [RiwayatKendaraanController::class, 'index'])->name('riwayat-kendaraan.index');
-            Route::get('/{riwayatKendaraan}', [RiwayatKendaraanController::class, 'show'])->name('riwayat-kendaraan.show');
         });
 
         Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
@@ -217,4 +216,4 @@ Route::get('/kabid-dukbis/laporan-kebersihan/cetak/{token}', [KabidDukbisControl
 //     ->name('verifikasi-laporan-patroli-token');
 
 
-require __DIR__ . '/auth.php';  
+require __DIR__ . '/auth.php';

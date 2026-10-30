@@ -26,14 +26,17 @@ class KabidDukbisController extends Controller
         $tanggal = $request->input('tanggal');
         $tanggal = $tanggal && strtotime($tanggal) ? Carbon::parse($tanggal)->toDateString() : now()->toDateString();
 
+        $hariIni = $tanggal === now()->toDateString();
+
         $kendaraan = \App\Models\Kendaraan::diCabang($cabangId)->aktif()->orderBy('plat_nomor')
-            ->with(['absenKendaraan' => fn ($q) => $q->whereDate('tanggal', $tanggal)])
+            ->denganStatusHarian($tanggal, $hariIni)
             ->get();
 
+        $historis = !$hariIni; // tanggal lampau: tampilkan apa yang terjadi pada tanggal itu
         $total = $kendaraan->count();
-        $sudah = $kendaraan->filter(fn ($k) => $k->absenKendaraan->isNotEmpty())->count();
+        $sudah = $kendaraan->filter(fn ($k) => $k->statusHarian($historis) !== 'belum')->count();
 
-        return view('kabid-dukbis.absen-kendaraan', compact('kendaraan', 'tanggal', 'total', 'sudah'));
+        return view('kabid-dukbis.absen-kendaraan', compact('kendaraan', 'tanggal', 'total', 'sudah', 'historis'));
     }
 
     public function dashboard()

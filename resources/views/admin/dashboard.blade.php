@@ -16,6 +16,7 @@
         </nav>
     </div>
 
+    {{-- TAB PATROLI --}}
     <div id="tab-patroli" class="dashboard-tab-panel">
         @if (count($petugasKurangPatroli) > 0)
             <div class="mt-4 px-3 py-2 text-sm bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-sm">
@@ -88,11 +89,17 @@
         </div>
     </div>
 
+    {{-- TAB KENDARAAN --}}
     <div id="tab-kendaraan" class="dashboard-tab-panel hidden">
-        @if ($kendaraan['belumAbsen']->count() > 0)
+        @if ($kendaraan['belumDipatroliHariIni']->count() > 0)
             <div class="mt-4 px-3 py-2 text-sm bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-sm">
-                Terdapat {{ $kendaraan['belumAbsen']->count() }} kendaraan aktif yang belum diabsen hari ini:
-                <span class="font-semibold">{{ $kendaraan['belumAbsen']->pluck('plat_nomor')->join(', ') }}</span>.
+                Terdapat {{ $kendaraan['belumDipatroliHariIni']->count() }} kendaraan aktif yang belum dipatroli hari ini:
+                <span class="font-semibold">{{ $kendaraan['belumDipatroliHariIni']->pluck('plat_nomor')->join(', ') }}</span>.
+            </div>
+        @endif
+        @if ($kendaraan['laporanTerbuka']->count() > 0)
+            <div class="mt-2 px-3 py-2 text-sm bg-red-100 border-l-4 border-red-500 text-red-800 rounded-md shadow-sm">
+                Terdapat {{ $kendaraan['laporanTerbuka']->count() }} laporan darurat kendaraan yang <span class="font-semibold">belum selesai ditangani</span>.
             </div>
         @endif
 
@@ -119,21 +126,21 @@
                         </svg>
                     </div>
                     <div class="ml-3 w-full">
-                        <h3 class="text-xs font-medium text-gray-500">Sudah Diabsen Hari Ini</h3>
+                        <h3 class="text-xs font-medium text-gray-500">Sudah Dipatroli Hari Ini</h3>
                         <p class="text-xl font-bold text-green-600 dark:text-white">
-                            {{ $kendaraan['sudahAbsen'] }} / {{ $kendaraan['jumlahAktif'] }}
+                            {{ $kendaraan['sudahDipatroli'] }} / {{ $kendaraan['jumlahAktif'] }}
                         </p>
                         @php
-                            $persen = $kendaraan['jumlahAktif'] > 0 ? round($kendaraan['sudahAbsen'] / $kendaraan['jumlahAktif'] * 100) : 0;
+                            $persenKendaraan = $kendaraan['jumlahAktif'] > 0 ? round($kendaraan['sudahDipatroli'] / $kendaraan['jumlahAktif'] * 100) : 0;
                         @endphp
                         <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
-                            <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ $persen }}%"></div>
+                            <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ $persenKendaraan }}%"></div>
                         </div>
                     </div>
                 </div>
             </a>
 
-            <a href="{{ route('kendaraan.index', ['status' => 'aktif']) }}">
+            <a href="{{ route('riwayat-kendaraan.index', ['penanganan' => 'terbuka']) }}">
                 <div class="flex items-center p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700">
                     <div class="flex items-center justify-center w-9 h-9 rounded-full bg-red-100 shrink-0">
                         <svg class="w-4 h-4 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -141,8 +148,8 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-xs font-medium text-gray-500">Belum Diabsen</h3>
-                        <p class="text-xl font-bold text-red-600 dark:text-white">{{ $kendaraan['belumAbsen']->count() }}</p>
+                        <h3 class="text-xs font-medium text-gray-500">Laporan Darurat Belum Selesai</h3>
+                        <p class="text-xl font-bold text-red-600 dark:text-white">{{ $kendaraan['laporanTerbuka']->count() }}</p>
                     </div>
                 </div>
             </a>
@@ -150,64 +157,66 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                <h3 class="text-sm font-semibold text-gray-700 dark:text-white mb-3">Absen Kendaraan 7 Hari Terakhir</h3>
+                <h3 class="text-sm font-semibold text-gray-700 dark:text-white mb-3">Patroli Kendaraan 7 Hari Terakhir</h3>
                 <div class="relative h-56">
                     <canvas id="cekKendaraanChart" class="w-full h-full"></canvas>
                 </div>
             </div>
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                <h3 class="text-sm font-semibold text-gray-700 dark:text-white mb-3">Status Absen Hari Ini</h3>
+                <h3 class="text-sm font-semibold text-gray-700 dark:text-white mb-3">Kondisi Kendaraan Terkini</h3>
                 <div class="relative w-full max-w-[16rem] mx-auto h-56">
                     <canvas id="kondisiKendaraanChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 mt-4 mb-4">
-            <h3 class="text-sm font-semibold text-gray-700 dark:text-white mb-3">Absen Kendaraan Hari Ini</h3>
-            <div class="overflow-x-auto">
-                <table class="table-auto w-full text-xs text-gray-700">
-                    <thead class="bg-blue-100 text-gray-800 uppercase">
-                        <tr>
-                            <th class="px-3 py-2 text-left">Kendaraan</th>
-                            <th class="px-3 py-2 text-left">Sopir</th>
-                            <th class="px-3 py-2 text-center">Jam</th>
-                            <th class="px-3 py-2 text-center">Lokasi</th>
-                            <th class="px-3 py-2 text-center">Foto</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        @forelse ($kendaraan['absenHariIni'] as $a)
+        @if ($kendaraan['laporanTerbuka']->count() > 0)
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 mt-4 mb-4">
+                <h3 class="text-sm font-semibold text-gray-700 dark:text-white mb-3">Laporan Darurat Kendaraan Belum Selesai</h3>
+                <div class="overflow-x-auto">
+                    <table class="table-auto w-full text-xs text-gray-700">
+                        <thead class="bg-blue-100 text-gray-800 uppercase">
                             <tr>
-                                <td class="px-3 py-2 whitespace-nowrap">
-                                    <span class="font-semibold">{{ $a->kendaraan->plat_nomor ?? '-' }}</span>
-                                    <div class="text-xs text-gray-500">{{ $a->kendaraan->jenis ?? '' }}</div>
-                                </td>
-                                <td class="px-3 py-2">{{ $a->nama_sopir }}</td>
-                                <td class="px-3 py-2 text-center whitespace-nowrap">{{ str_replace(':', '.', $a->jam) }}</td>
-                                <td class="px-3 py-2 text-center">
-                                    @if ($a->dalam_area === true)
-                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Dalam area</span>
-                                    @else
-                                        <span class="text-gray-400">-</span>
-                                    @endif
-                                </td>
-                                <td class="px-3 py-2 text-center">
-                                    <a href="{{ asset('storage/' . $a->foto) }}" target="_blank"
-                                        class="px-2 py-1 text-xs text-white bg-blue-600 hover:bg-blue-700 rounded">Lihat</a>
-                                </td>
+                                <th class="px-3 py-2 text-left">Kendaraan</th>
+                                <th class="px-3 py-2 text-left">Dilaporkan oleh</th>
+                                <th class="px-3 py-2 text-center">Tanggal</th>
+                                <th class="px-3 py-2 text-left">Kondisi</th>
+                                <th class="px-3 py-2 text-center">Penanganan</th>
+                                <th class="px-3 py-2 text-center">Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-3 py-4 text-center text-gray-500">Belum ada kendaraan yang diabsen hari ini.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @foreach ($kendaraan['laporanTerbuka'] as $l)
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap">
+                                        <span class="font-semibold">{{ $l->kendaraan->plat_nomor ?? '-' }}</span>
+                                        <div class="text-xs text-gray-500">{{ $l->kendaraan->jenis ?? '' }}</div>
+                                    </td>
+                                    <td class="px-3 py-2">{{ $l->nama_sopir }}</td>
+                                    <td class="px-3 py-2 text-center whitespace-nowrap">{{ $l->tanggal->format('d-m-Y') }}</td>
+                                    <td class="px-3 py-2">
+                                        <div class="font-semibold">{{ $l->kategoriKejadian->nama_kategori ?? '-' }}</div>
+                                        <div class="text-xs text-gray-500">{{ \Illuminate\Support\Str::limit($l->keterangan ?: '-', 60) }}</div>
+                                    </td>
+                                    <td class="px-3 py-2 text-center">
+                                        <span class="px-2 py-1 text-xs rounded-full {{ $l->status_penanganan === 'proses' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700' }}">
+                                            {{ $l->penanganan_label }}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-2 text-center">
+                                        <a href="{{ route('riwayat-kendaraan.show', $l->id) }}"
+                                            class="px-2 py-1 text-xs text-white bg-blue-600 hover:bg-blue-700 rounded">Detail</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 
+    {{-- TAB KEBERSIHAN --}}
     <div id="tab-kebersihan" class="dashboard-tab-panel hidden">
         @if ($kebersihan['belumDicekHariIni']->count() > 0)
             <div class="mt-4 px-3 py-2 text-sm bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-sm">
@@ -455,7 +464,7 @@
                     formatter: (value, context) => {
                         const dataArr = context.chart.data.datasets[0].data;
                         const total = dataArr.reduce((a, b) => a + b, 0);
-                        const percentage = ((value / total) * 100).toFixed(1);
+                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
                         return percentage + '%';
                     },
                     font: {
@@ -473,7 +482,7 @@
         data: {
             labels: @json($kendaraan['mingguLabels']),
             datasets: [{
-                label: 'Jumlah Absen Kendaraan',
+                label: 'Jumlah Patroli Kendaraan',
                 data: @json($kendaraan['mingguData']),
                 backgroundColor: 'rgba(16, 185, 129, 0.5)',
                 borderColor: 'rgba(16, 185, 129, 1)',
@@ -493,13 +502,14 @@
     new Chart(document.getElementById('kondisiKendaraanChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Sudah Diabsen', 'Belum Diabsen'],
+            labels: ['Aman', 'Ada Laporan Darurat', 'Belum Pernah Dipatroli'],
             datasets: [{
                 data: [
-                    {{ $kendaraan['sudahAbsen'] }},
-                    {{ $kendaraan['belumAbsen']->count() }}
+                    {{ $kendaraan['kondisi']['aman'] }},
+                    {{ $kendaraan['kondisi']['darurat'] }},
+                    {{ $kendaraan['kondisi']['belum_pernah'] }}
                 ],
-                backgroundColor: ['rgba(34,197,94,0.8)', 'rgba(239,68,68,0.8)'],
+                backgroundColor: ['rgba(34,197,94,0.8)', 'rgba(239,68,68,0.8)', 'rgba(156,163,175,0.8)'],
                 borderWidth: 1
             }]
         },

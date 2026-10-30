@@ -8,24 +8,25 @@ use Illuminate\Support\Facades\Auth;
 class SopirController extends Controller
 {
     /**
-     * Dashboard sopir = absen harian. Sebuah kendaraan dianggap "sudah diabsen" bila ada absen
-     * hari ini, siapa pun sopirnya. Hanya kendaraan aktif di cabang sopir yang tampil.
+     * Dashboard sopir. Status tiap kendaraan memakai Kendaraan::statusHarian():
+     * aman (sudah dipatroli aman hari ini), darurat (laporan darurat belum selesai), atau belum.
      */
     public function dashboard()
     {
         $user = Auth::user();
-        $hariIni = now()->toDateString();
 
         $daftarKendaraan = Kendaraan::diCabang($user->cabang_id)
             ->aktif()
-            ->with(['absenKendaraan' => fn ($q) => $q->whereDate('tanggal', $hariIni)])
+            ->denganStatusHarian(now()->toDateString())
             ->orderBy('plat_nomor')
             ->get();
 
         $total = $daftarKendaraan->count();
-        $sudah = $daftarKendaraan->filter(fn ($k) => $k->absenKendaraan->isNotEmpty())->count();
+        $jumlahAman = $daftarKendaraan->filter(fn ($k) => $k->statusHarian() === 'aman')->count();
+        $jumlahDarurat = $daftarKendaraan->filter(fn ($k) => $k->statusHarian() === 'darurat')->count();
+        $sudah = $jumlahAman + $jumlahDarurat; // sudah dilaporkan (aman atau darurat)
 
-        return view('sopir.dashboard', compact('daftarKendaraan', 'total', 'sudah'));
+        return view('sopir.dashboard', compact('daftarKendaraan', 'total', 'sudah', 'jumlahAman', 'jumlahDarurat'));
     }
 
     public function scanQr()

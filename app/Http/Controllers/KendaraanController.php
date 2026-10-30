@@ -19,7 +19,8 @@ class KendaraanController extends Controller
         $status = $request->input('status');
 
         $kendaraan = Kendaraan::query()
-            ->with('cekTerakhir')
+            ->with('patroliTerakhir')
+            ->withCount('laporanDaruratTerbuka')
             ->diCabang(Auth::user()->cabang_id)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {

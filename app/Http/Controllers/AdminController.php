@@ -108,21 +108,34 @@ class AdminController extends Controller
     {
         $hariIni = Carbon::today();
 
-        $aktif = Kendaraan::diCabang($cabangId)->aktif();
-
-        $jumlahAktif = (clone $aktif)->count();
-        $sudahAbsen = (clone $aktif)->sudahAbsen($hariIni)->count();
-
-        $belumAbsen = (clone $aktif)
-            ->belumAbsen($hariIni)
+        $semua = Kendaraan::diCabang($cabangId)->aktif()
+            ->denganStatusHarian($hariIni)
+            ->with('patroliTerakhir')
             ->orderBy('plat_nomor')
-            ->get(['id', 'plat_nomor', 'jenis']);
+            ->get();
 
-        $absenHariIni = AbsenKendaraan::with('kendaraan:id,plat_nomor,jenis')
+        $jumlahAktif = $semua->count();
+
+        // "Sudah dipatroli" = aman hari ini + darurat (sudah dilaporkan).
+        $sudahDipatroli = $semua->filter(fn ($k) => $k->statusHarian() !== 'belum')->count();
+
+        $belumDipatroliHariIni = $semua->filter(fn ($k) => $k->statusHarian() === 'belum')->values();
+
+        $laporanTerbuka = AbsenKendaraan::with(['kendaraan:id,plat_nomor,jenis', 'kategoriKejadian:id,nama_kategori'])
             ->where('cabang_id', $cabangId)
-            ->whereDate('tanggal', $hariIni)
+            ->daruratTerbuka()
+            ->orderByDesc('tanggal')
             ->orderByDesc('waktu')
             ->get();
+
+        $darurat = $semua->filter(fn ($k) => $k->statusHarian() === 'darurat')->count();
+        $belumPernah = $semua->filter(fn ($k) => $k->statusHarian() !== 'darurat' && $k->patroliTerakhir === null)->count();
+
+        $kondisi = [
+            'aman' => $jumlahAktif - $darurat - $belumPernah,
+            'darurat' => $darurat,
+            'belum_pernah' => $belumPernah,
+        ];
 
         $mulai = Carbon::today()->subDays(6);
         $perTanggal = AbsenKendaraan::where('cabang_id', $cabangId)
@@ -141,9 +154,10 @@ class AdminController extends Controller
 
         return [
             'jumlahAktif' => $jumlahAktif,
-            'sudahAbsen' => $sudahAbsen,
-            'belumAbsen' => $belumAbsen,
-            'absenHariIni' => $absenHariIni,
+            'sudahDipatroli' => $sudahDipatroli,
+            'belumDipatroliHariIni' => $belumDipatroliHariIni,
+            'laporanTerbuka' => $laporanTerbuka,
+            'kondisi' => $kondisi,
             'mingguLabels' => $labels,
             'mingguData' => $data,
         ];

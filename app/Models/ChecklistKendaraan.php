@@ -8,14 +8,12 @@ class ChecklistKendaraan extends Model
 {
     protected $table = 'checklist_kendaraan';
 
-    /** Kategori butir checklist, dipakai admin (kelola butir) dan sopir (form cek). */
     public const KATEGORI = [
         'eksterior' => 'Eksterior',
         'mesin_keselamatan' => 'Mesin dan Keselamatan',
         'kelengkapan' => 'Kelengkapan',
     ];
 
-    /** Butir bawaan untuk cabang baru. Dipakai seeder dan CabangController. */
     public const BUTIR_DEFAULT = [
         'eksterior' => [
             'Bodi tidak penyok atau lecet baru',

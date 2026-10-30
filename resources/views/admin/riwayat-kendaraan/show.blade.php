@@ -1,115 +1,118 @@
-<x-app-layout :title="'Detail Cek Kendaraan'">
+<x-app-layout :title="'Detail Patroli Kendaraan'">
     <div class="container mx-auto p-4">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">Detail Cek Kendaraan</h2>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Detail Patroli Kendaraan</h2>
             <a href="{{ route('riwayat-kendaraan.index') }}"
                 class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg font-semibold">Kembali</a>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {{-- Ringkasan --}}
-            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                    <div>
-                        <dt class="text-gray-500">Kendaraan</dt>
-                        <dd class="font-semibold text-gray-900">{{ $cek->kendaraan->plat_nomor ?? '-' }} &middot; {{ $cek->kendaraan->jenis ?? '' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-gray-500">Sopir</dt>
-                        <dd class="font-semibold text-gray-900">{{ $cek->user->nama ?? '-' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-gray-500">Waktu cek</dt>
-                        <dd class="font-semibold text-gray-900">{{ $cek->tanggal_cek->format('d-m-Y') }}, {{ \Illuminate\Support\Str::substr($cek->waktu_cek, 0, 5) }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-gray-500">Kondisi keseluruhan</dt>
-                        <dd>
-                            @if ($cek->status_kondisi === 'baik')
-                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Baik</span>
-                            @else
-                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Perlu Tindakan</span>
-                            @endif
-                        </dd>
-                    </div>
-                    <div>
-                        <dt class="text-gray-500">Odometer</dt>
-                        <dd class="font-semibold text-gray-900">{{ number_format($cek->odometer, 0, ',', '.') }} km</dd>
-                    </div>
-                    <div>
-                        <dt class="text-gray-500">Level BBM</dt>
-                        <dd class="font-semibold text-gray-900">{{ $cek->level_bbm_label }}</dd>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <dt class="text-gray-500">Catatan sopir</dt>
-                        <dd class="text-gray-900">{{ $cek->catatan ?: '-' }}</dd>
-                    </div>
-                    @if ($cek->latitude && $cek->longitude)
-                        <div class="sm:col-span-2">
-                            <dt class="text-gray-500">Lokasi saat cek</dt>
-                            <dd>
-                                <a class="text-blue-600 hover:underline" target="_blank" rel="noopener"
-                                    href="https://www.google.com/maps?q={{ $cek->latitude }},{{ $cek->longitude }}">
-                                    Lihat di peta ({{ $cek->latitude }}, {{ $cek->longitude }})
-                                </a>
-                            </dd>
-                        </div>
-                    @endif
-                </dl>
+        @if ($errors->any())
+            <div class="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-800 rounded-lg text-sm">
+                @foreach ($errors->all() as $e)
+                    <p>{{ $e }}</p>
+                @endforeach
             </div>
+        @endif
 
-            {{-- Foto --}}
-            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 text-center">
-                <p class="text-sm text-gray-500 mb-2 text-left">Foto kendaraan</p>
-                @if ($cek->foto && file_exists(public_path('storage/' . $cek->foto)))
-                    <a href="{{ asset('storage/' . $cek->foto) }}" target="_blank">
-                        <img src="{{ asset('storage/' . $cek->foto) }}" alt="Foto kendaraan"
-                            class="w-full h-auto rounded-lg shadow">
-                    </a>
-                @else
-                    <span class="text-gray-400 italic">Tidak ada foto</span>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Informasi Patroli</h3>
+                <dl class="space-y-2 text-sm text-gray-700">
+                    <div class="flex"><dt class="w-40 text-gray-500">Kendaraan</dt>
+                        <dd class="font-semibold">{{ $laporan->kendaraan->plat_nomor ?? '-' }} · {{ $laporan->kendaraan->jenis ?? '' }}</dd></div>
+                    <div class="flex"><dt class="w-40 text-gray-500">Sopir</dt><dd>{{ $laporan->nama_sopir }}</dd></div>
+                    <div class="flex"><dt class="w-40 text-gray-500">Tanggal</dt>
+                        <dd>{{ $laporan->tanggal->format('d-m-Y') }} pukul {{ $laporan->jam }}</dd></div>
+                    <div class="flex"><dt class="w-40 text-gray-500">Status</dt>
+                        <dd>
+                            @if ($laporan->status === 'darurat')
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs">Darurat</span>
+                            @else
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Aman</span>
+                            @endif
+                        </dd></div>
+                    @if ($laporan->status === 'darurat')
+                        <div class="flex"><dt class="w-40 text-gray-500">Kondisi</dt>
+                            <dd class="font-semibold">{{ $laporan->kategoriKejadian->nama_kategori ?? '-' }}</dd></div>
+                    @endif
+                    <div class="flex"><dt class="w-40 text-gray-500">Keterangan</dt><dd>{{ $laporan->keterangan ?: '-' }}</dd></div>
+                    <div class="flex"><dt class="w-40 text-gray-500">Lokasi</dt>
+                        <dd>
+                            <a href="https://www.google.com/maps?q={{ $laporan->latitude }},{{ $laporan->longitude }}" target="_blank"
+                                class="text-blue-600 hover:underline">Lihat di peta</a>
+                            @if ($laporan->dalam_area === true)
+                                <span class="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Dalam area</span>
+                            @endif
+                        </dd></div>
+                </dl>
+
+                @if ($laporan->foto)
+                    <img src="{{ asset('storage/' . $laporan->foto) }}" alt="Foto kendaraan"
+                        class="mt-4 w-full max-w-md rounded-lg border border-gray-200">
                 @endif
             </div>
-        </div>
 
-        {{-- Hasil checklist per kategori --}}
-        <h3 class="text-lg font-semibold text-gray-800 mt-8 mb-3">Hasil Checklist</h3>
-        @foreach (\App\Models\ChecklistKendaraan::KATEGORI as $kode => $namaKategori)
-            @php $butir = $detailPerKategori->get($kode, collect()); @endphp
-            @continue($butir->isEmpty())
-            <div class="mb-5">
-                <h4 class="font-semibold text-gray-700 mb-2">{{ $namaKategori }}</h4>
-                <div class="overflow-x-auto border border-gray-200 rounded-lg shadow">
-                    <table class="table-auto w-full text-sm text-gray-700">
-                        <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
-                            <tr>
-                                <th class="px-4 py-2 text-left">Butir</th>
-                                <th class="px-4 py-2 text-center">Hasil</th>
-                                <th class="px-4 py-2 text-left">Catatan</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($butir as $d)
-                                <tr class="{{ $d->hasil === 'perlu_tindakan' ? 'bg-red-50' : '' }}">
-                                    <td class="px-4 py-2">{{ $d->nama_butir }}</td>
-                                    <td class="px-4 py-2 text-center">
-                                        @if ($d->hasil === 'baik')
-                                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Baik</span>
-                                        @else
-                                            <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs">Perlu Tindakan</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-2">{{ $d->catatan ?: '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            @if ($laporan->status === 'darurat')
+                @php
+                    $warna = ['belum' => 'bg-red-100 text-red-700', 'proses' => 'bg-yellow-100 text-yellow-700', 'selesai' => 'bg-green-100 text-green-700'];
+                @endphp
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 self-start">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Penanganan</h3>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Status saat ini:
+                        <span class="px-2 py-1 rounded-full text-xs {{ $warna[$laporan->status_penanganan] ?? 'bg-gray-100 text-gray-600' }}">
+                            {{ $laporan->penanganan_label }}</span>
+                    </p>
+
+                    @if ($laporan->waktu_ditangani)
+                        <p class="text-xs text-gray-500 mb-4">
+                            Terakhir diperbarui oleh {{ $laporan->penangan->nama ?? '-' }}
+                            pada {{ $laporan->waktu_ditangani->format('d-m-Y H:i') }}.
+                        </p>
+                    @endif
+
+                    <form action="{{ route('riwayat-kendaraan.penanganan', $laporan->id) }}" method="POST" class="space-y-4">
+                        @csrf
+                        @method('PUT')
+
+                        <div>
+                            <label for="status_penanganan" class="block text-sm font-medium text-gray-700">Ubah status</label>
+                            <select name="status_penanganan" id="status_penanganan"
+                                class="mt-1 block w-full rounded-lg border border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500">
+                                @foreach (\App\Models\AbsenKendaraan::PENANGANAN as $nilai => $label)
+                                    <option value="{{ $nilai }}"
+                                        {{ old('status_penanganan', $laporan->status_penanganan) === $nilai ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="catatan_penanganan" class="block text-sm font-medium text-gray-700">
+                                Catatan penanganan <span id="wajib-catatan" class="text-red-600 hidden">*</span>
+                            </label>
+                            <textarea name="catatan_penanganan" id="catatan_penanganan" rows="4" maxlength="1000"
+                                placeholder="Contoh: ban sudah ditambal di bengkel, kendaraan siap dipakai."
+                                class="mt-1 block w-full rounded-lg border border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500">{{ old('catatan_penanganan', $laporan->catatan_penanganan) }}</textarea>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit"
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-semibold">Simpan</button>
+                        </div>
+                    </form>
                 </div>
-            </div>
-        @endforeach
-
-        @if ($cek->detail->isEmpty())
-            <p class="text-gray-500 italic">Tidak ada detail checklist pada cek ini.</p>
-        @endif
+            @endif
+        </div>
     </div>
+
+    <script>
+        (function () {
+            const status = document.getElementById('status_penanganan');
+            const bintang = document.getElementById('wajib-catatan');
+            if (!status || !bintang) return;
+            function sinkron() { bintang.classList.toggle('hidden', status.value !== 'selesai'); }
+            status.addEventListener('change', sinkron);
+            sinkron();
+        })();
+    </script>
 </x-app-layout>

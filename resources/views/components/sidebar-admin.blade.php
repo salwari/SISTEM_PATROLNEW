@@ -114,10 +114,10 @@
 
 
             @php
-                $isKendaraanActive = request()->routeIs('kendaraan.*', 'checklist-kendaraan.*', 'riwayat-kendaraan.*');
+                $isKendaraanActive = request()->routeIs('kendaraan.*', 'kategori-kondisi-kendaraan.*', 'riwayat-kendaraan.*');
                 $menuKendaraan = [
                     ['label' => 'Data Kendaraan', 'route' => 'kendaraan.index', 'active' => request()->routeIs('kendaraan.*')],
-                    ['label' => 'Butir Checklist Kendaraan', 'route' => 'checklist-kendaraan.index', 'active' => request()->routeIs('checklist-kendaraan.*')],
+                    ['label' => 'Kategori Kondisi', 'route' => 'kategori-kondisi-kendaraan.index', 'active' => request()->routeIs('kategori-kondisi-kendaraan.*')],
                     ['label' => 'Riwayat Kendaraan', 'route' => 'riwayat-kendaraan.index', 'active' => request()->routeIs('riwayat-kendaraan.*')],
                 ];
             @endphp

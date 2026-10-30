@@ -42,6 +42,55 @@ class Kendaraan extends Model
         return $this->hasMany(AbsenKendaraan::class, 'kendaraan_id');
     }
 
+    public function patroliTerakhir()
+    {
+        return $this->hasOne(AbsenKendaraan::class, 'kendaraan_id')->latestOfMany('id');
+    }
+
+    public function laporanDaruratTerbuka()
+    {
+        return $this->hasMany(AbsenKendaraan::class, 'kendaraan_id')->daruratTerbuka();
+    }
+
+    public function scopeDenganStatusHarian($query, $tanggal, bool $hariIni = true)
+    {
+        $query->with(['absenKendaraan' => fn ($q) => $q->with('kategoriKejadian:id,nama_kategori')
+            ->whereDate('tanggal', $tanggal)->orderByDesc('id')]);
+
+        if ($hariIni) {
+            $query->with(['laporanDaruratTerbuka' => fn ($q) => $q->with('kategoriKejadian:id,nama_kategori')->orderByDesc('id')]);
+        }
+
+        return $query;
+    }
+
+    public function statusHarian(bool $historis = false): string
+    {
+        $hari = $this->relationLoaded('absenKendaraan') ? $this->absenKendaraan : collect();
+        $terbuka = (!$historis && $this->relationLoaded('laporanDaruratTerbuka')) ? $this->laporanDaruratTerbuka : collect();
+
+        if ($terbuka->isNotEmpty() || ($historis && $hari->contains('status', 'darurat'))) {
+            return 'darurat';
+        }
+
+        return $hari->contains('status', 'aman') ? 'aman' : 'belum';
+    }
+
+    public function laporanUtama(bool $historis = false): ?AbsenKendaraan
+    {
+        $hari = $this->relationLoaded('absenKendaraan') ? $this->absenKendaraan : collect();
+        $terbuka = (!$historis && $this->relationLoaded('laporanDaruratTerbuka')) ? $this->laporanDaruratTerbuka : collect();
+
+        if ($terbuka->isNotEmpty()) {
+            return $terbuka->sortByDesc('id')->first();
+        }
+        if ($historis && ($d = $hari->firstWhere('status', 'darurat'))) {
+            return $d;
+        }
+
+        return $hari->sortByDesc('id')->first();
+    }
+
     public function cekTerakhir()
     {
         return $this->hasOne(CekKendaraan::class, 'kendaraan_id')->latestOfMany();

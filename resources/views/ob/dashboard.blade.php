@@ -164,14 +164,14 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     @if ($cek)
-                                        {{-- Tombol Lihat Detail Modal --}}
+                                        
                                         <button type="button"
                                             onclick="openDetailModal({{ json_encode($km) }}, {{ json_encode($cek) }})"
                                             class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 transition shadow-sm">
                                             Lihat Detail
                                         </button>
                                     @else
-                                        {{-- Tombol Periksa Sekarang --}}
+                                        
                                         <a href="{{ route('ob.kamar-mandi.periksa', $km->id) }}"
                                             class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition shadow-sm">
                                             Periksa
@@ -195,7 +195,7 @@
 
     <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4">
         <div class="relative bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            {{-- Modal Header --}}
+            
             <div class="flex items-center justify-between p-4 border-b border-gray-200">
                 <div>
                     <h3 id="modalTitle" class="text-lg font-bold text-gray-900">Detail Pemeriksaan</h3>

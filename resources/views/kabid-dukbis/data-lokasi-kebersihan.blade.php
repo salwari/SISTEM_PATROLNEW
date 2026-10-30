@@ -1,7 +1,7 @@
 <x-app-layout :title="'Data Lokasi Kebersihan'">
     <div class="max-w-7xl mx-auto p-4 space-y-6">
 
-        {{-- Header Halaman --}}
+        
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Daftar Lokasi Kebersihan</h1>
             <p class="text-sm text-gray-500">
@@ -9,7 +9,7 @@
             </p>
         </div>
 
-        {{-- Search Box --}}
+        
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
             <form action="{{ route('kabid-dukbis.data-lokasi-kebersihan') }}" method="GET"
                 class="flex flex-col md:flex-row md:items-center gap-3">
@@ -39,7 +39,7 @@
             </form>
         </div>
 
-        {{-- Tabel Lokasi Kamar Mandi --}}
+        
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-100 text-gray-800 uppercase text-xs font-semibold">
@@ -93,7 +93,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex flex-col md:flex-row justify-between items-center gap-3 bg-white p-3 rounded-xl border border-gray-200">
             <div class="text-xs text-gray-600">
                 Menampilkan {{ $lokasiKebersihan->firstItem() ?? 0 }} sampai {{ $lokasiKebersihan->lastItem() ?? 0 }} dari {{ $lokasiKebersihan->total() }} lokasi
@@ -105,7 +105,7 @@
 
     </div>
 
-    {{-- MODAL PREVIEW QR CODE --}}
+    
     <div id="qrModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-60 flex items-center justify-center p-4">
         <div class="relative bg-white rounded-xl shadow-xl max-w-sm w-full overflow-hidden p-5 text-center">
             <button onclick="closeQrModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-900 p-1">

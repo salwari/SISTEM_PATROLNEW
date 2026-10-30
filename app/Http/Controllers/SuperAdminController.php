@@ -19,7 +19,6 @@ class SuperAdminController extends Controller
         $jumlahLokasiPatroli = LokasiPatroli::count();
         $jumlahPatroli = Patroli::count();
 
-        // Aktivitas Harian
         $harianLabels = [];
         $harianData = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -28,7 +27,6 @@ class SuperAdminController extends Controller
             $harianData[] = Patroli::whereDate('tanggal_patroli', $date)->count();
         }
 
-        // Aktivitas Mingguan
         $mingguanLabels = [];
         $mingguanData = [];
         for ($i = 3; $i >= 0; $i--) {
@@ -38,7 +36,6 @@ class SuperAdminController extends Controller
             $mingguanData[] = Patroli::whereBetween('tanggal_patroli', [$startOfWeek, $endOfWeek])->count();
         }
 
-        // Aktivitas Bulanan
         $bulananLabels = [];
         $bulananData = [];
         for ($i = 11; $i >= 0; $i--) {
@@ -63,7 +60,6 @@ class SuperAdminController extends Controller
         ));
     }
 
-    // Menampilkan data petugas security
     public function dataPetugas(Request $request)
     {
         $search = $request->input('search');
@@ -90,7 +86,6 @@ class SuperAdminController extends Controller
         return view('super-admin.data-petugas', compact('users', 'search', 'cabangId', 'cabangs'));
     }
 
-    // Menampilkan data lokasi patroli
     public function dataLokasi(Request $request)
     {
         $search = $request->input('search');
@@ -112,7 +107,6 @@ class SuperAdminController extends Controller
         return view('super-admin.data-lokasi', compact('lokasiPatroli', 'search', 'cabangId', 'cabangs'));
     }
 
-    // Menampilkan data patroli
     public function dataPatroliPetugas(Request $request)
     {
         $search = $request->input('search');

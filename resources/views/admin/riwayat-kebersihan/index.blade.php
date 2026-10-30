@@ -5,18 +5,16 @@
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-md mb-4">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-4 py-3 bg-white">
                 <form action="{{ route('riwayat-kebersihan.index') }}" method="GET"
-                    class="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
+                    class="flex flex-col md:flex-row items-start md:items-center gap-2 w-full">
 
-                    {{-- Dropdown filter status kondisi --}}
                     <select name="status_kondisi"
-                        class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-full md:w-40">
+                        class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-full md:w-44">
                         <option value="" {{ request('status_kondisi') == '' ? 'selected' : '' }}>Semua status</option>
-                        <option value="bersih" {{ request('status_kondisi') == 'bersih' ? 'selected' : '' }}>Bersih</option>
-                        <option value="kotor" {{ request('status_kondisi') == 'kotor' ? 'selected' : '' }}>Kotor</option>
+                        <option value="baik" {{ request('status_kondisi') == 'baik' ? 'selected' : '' }}>Baik</option>
+                        <option value="perlu_tindakan" {{ request('status_kondisi') == 'perlu_tindakan' ? 'selected' : '' }}>Perlu Tindakan</option>
                     </select>
-                    
-                    {{-- Search --}}
-                    <div class="flex w-full md:w-96">
+
+                    <div class="flex w-full md:flex-1">
                         <div class="relative flex-grow">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
@@ -45,7 +43,6 @@
             </div>
         </div>
 
-        {{-- Tabel Data --}}
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg mb-4">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -73,10 +70,12 @@
                             </td>
                             <td class="px-4 py-2">{{ $data->waktu }}</td>
                             <td class="px-4 py-2">
-                                @if (strtolower($data->status_kondisi) == 'bersih')
-                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Bersih</span>
+                                @if ($data->status_kondisi === 'baik')
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Baik</span>
+                                @elseif ($data->status_kondisi === 'perlu_tindakan')
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Perlu Tindakan</span>
                                 @else
-                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">{{ ucfirst($data->status_kondisi) }}</span>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold">{{ $data->status_kondisi ?: '-' }}</span>
                                 @endif
                             </td>
                             <td class="px-4 py-2 text-left">{{ $data->catatan ?? '-' }}</td>
@@ -101,7 +100,6 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
         <div class="flex justify-between items-center bg-white px-2 py-3">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $riwayat->firstItem() ?? 0 }} sampai {{ $riwayat->lastItem() ?? 0 }} dari
@@ -112,7 +110,6 @@
             </div>
         </div>
 
-        {{-- Modal Preview Foto --}}
         <div id="fotoModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50">
             <div class="flex items-center justify-center min-h-screen p-4 sm:p-6">
                 <div class="relative w-full max-w-sm bg-white rounded-lg shadow-xl z-10">

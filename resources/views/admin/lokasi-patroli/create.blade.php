@@ -6,7 +6,7 @@
             <form action="{{ route('lokasi-patroli.store') }}" method="POST" class="space-y-6">
                 @csrf
 
-                {{-- Nama Lokasi --}}
+                
                 <div>
                     <label for="nama_lokasi" class="block text-sm font-medium text-gray-700">
                         Nama Lokasi <span class="text-red-600">*</span>
@@ -19,7 +19,7 @@
                     @enderror
                 </div>
 
-                {{-- Deskripsi Lokasi --}}
+                
                 <div>
                     <label for="deskripsi" class="block text-sm font-medium text-gray-700">
                         Deskripsi (Opsional)
@@ -31,7 +31,7 @@
                     @enderror
                 </div>
 
-                {{-- Tombol Aksi --}}
+                
                 <div class="flex justify-end gap-4 pt-2">
                     <a href="{{ route('lokasi-patroli.index') }}"
                         class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg font-semibold">

@@ -126,7 +126,7 @@
 </head>
 
 <body>
-    <!-- KOP SURAT -->
+    
     <div class="kop-surat">
         <div class="kop-logo">
             <img src="{{ isset($preview) && $preview ? asset('assets/sucofindo.png') : public_path('assets/sucofindo.png') }}"
@@ -141,14 +141,14 @@
     </div>
     <hr>
 
-    <!-- JUDUL DAN PERIODE -->
+    
     <h2>Laporan Patroli</h2>
     <p class="text-center">
         Periode : {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} s/d
         {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
     </p>
 
-    <!-- TABEL DATA -->
+    
     <table>
         <thead>
             <tr>
@@ -180,7 +180,7 @@
         </tbody>
     </table>
 
-    <!-- TANDA TANGAN DAN QR CODE -->
+    
     <div class="ttd-section">
         <div class="ttd-kepala">
             <p>Cilacap, {{ now()->translatedFormat('d F Y') }}</p>

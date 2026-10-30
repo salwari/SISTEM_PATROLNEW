@@ -6,7 +6,7 @@
             <form action="{{ route('lokasi-kebersihan.store') }}" method="POST" class="space-y-6">
                 @csrf
 
-                {{-- Kode Kamar Mandi / Lokasi --}}
+                
                 <div>
                     <label for="kode_kamar_mandi" class="block text-sm font-medium text-gray-700">
                         Kode Lokasi <span class="text-red-600">*</span>
@@ -19,7 +19,7 @@
                     @enderror
                 </div>
 
-                {{-- Nama Kamar Mandi / Lokasi --}}
+                
                 <div>
                     <label for="nama_kamar_mandi" class="block text-sm font-medium text-gray-700">
                         Nama Lokasi Kebersihan <span class="text-red-600">*</span>
@@ -32,7 +32,7 @@
                     @enderror
                 </div>
 
-                {{-- Lantai --}}
+                
                 <div>
                     <label for="lantai" class="block text-sm font-medium text-gray-700">
                         Lantai <span class="text-red-600">*</span>
@@ -45,7 +45,7 @@
                     @enderror
                 </div>
 
-                {{-- Deskripsi Lokasi --}}
+                
                 <div>
                     <label for="deskripsi" class="block text-sm font-medium text-gray-700">
                         Deskripsi (Opsional)
@@ -57,7 +57,7 @@
                     @enderror
                 </div>
 
-                {{-- Tombol Aksi --}}
+                
                 <div class="flex justify-end gap-4 pt-2">
                     <a href="{{ route('lokasi-kebersihan.index') }}"
                         class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg font-semibold">

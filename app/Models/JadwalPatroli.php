@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class JadwalPatroli extends Model
 {
-    /** @use HasFactory<\Database\Factories\JadwalPatroliFactory> */
     use HasFactory;
 
     protected $table = 'jadwal_patroli';
@@ -18,7 +17,6 @@ class JadwalPatroli extends Model
         'shift',
     ];
 
-    //Relasi ke tabel user (petugas)
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

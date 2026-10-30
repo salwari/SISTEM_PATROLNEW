@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ObController extends Controller
 {
-    /**
-     * Menampilkan Dashboard OB dengan Progres Pemeriksaan Harian
-     */
     public function dashboard()
     {
         $user = Auth::user();

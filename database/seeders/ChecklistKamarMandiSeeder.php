@@ -10,7 +10,6 @@ class ChecklistKamarMandiSeeder extends Seeder
     public function run(): void
     {
         $butirChecklist = [
-            // Kategori Kebersihan
             [
                 'kategori'   => 'kebersihan',
                 'nama_butir' => 'Lantai bersih, kering, dan bebas genangan air',
@@ -37,7 +36,6 @@ class ChecklistKamarMandiSeeder extends Seeder
                 'is_active'  => true,
             ],
 
-            // Kategori Kelengkapan & Fasilitas
             [
                 'kategori'   => 'kelengkapan',
                 'nama_butir' => 'Sabun cuci tangan cair terisi dan siap digunakan',

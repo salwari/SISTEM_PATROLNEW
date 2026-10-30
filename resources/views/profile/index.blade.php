@@ -4,7 +4,7 @@
 
         <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6 md:p-10 max-w-4xl mx-auto">
             <div class="flex justify-center mb-6">
-                {{-- Foto Profil --}}
+                
                 <div class="w-40 h-40 rounded-full overflow-hidden shadow-md">
                     @if (auth()->user()->foto && file_exists(public_path('storage/' . auth()->user()->foto)))
                         <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="Foto Profil"
@@ -21,19 +21,19 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Nama --}}
+                
                 <div>
                     <label class="block text-sm font-semibold text-gray-700">Nama</label>
                     <input type="text" value="{{ auth()->user()->nama }}"
                         class="w-full mt-1 p-3 bg-gray-100 border border-gray-200 rounded-lg" disabled>
                 </div>
-                {{-- Email --}}
+                
                 <div>
                     <label class="block text-sm font-semibold text-gray-700">Email</label>
                     <input type="text" value="{{ auth()->user()->email }}"
                         class="w-full mt-1 p-3 bg-gray-100 border border-gray-200 rounded-lg" disabled>
                 </div>
-                {{-- Nomor Induk --}}
+                
                 <div>
                     <label class="block text-sm font-semibold text-gray-700">Nomor Induk</label>
                     <input type="text" value="{{ auth()->user()->nomor_induk }}"
@@ -41,19 +41,20 @@
                 </div>
                 {{-- Cabang (hanya tampil untuk role selain super_admin) --}}
                 @if (in_array(auth()->user()->role, ['admin', 'petugas_security', 'kabid_dukbis', 'sopir', 'ob']))
+
                     <div>
                         <label class="block text-sm font-semibold text-gray-700">Cabang</label>
                         <input type="text" value="{{ auth()->user()->cabang->nama_cabang ?? '-' }}"
                             class="w-full mt-1 p-3 bg-gray-100 border border-gray-200 rounded-lg" disabled>
                     </div>
                 @endif
-                {{-- No Telepon --}}
+                
                 <div>
                     <label class="block text-sm font-semibold text-gray-700">No Telepon</label>
                     <input type="text" value="{{ auth()->user()->no_telepon }}"
                         class="w-full mt-1 p-3 bg-gray-100 border border-gray-200 rounded-lg" disabled>
                 </div>
-                {{-- Alamat --}}
+                
                 <div>
                     <label class="block text-sm font-semibold text-gray-700">Alamat</label>
                     <textarea class="w-full mt-1 p-3 bg-gray-100 border border-gray-200 rounded-lg" rows="3" disabled>{{ auth()->user()->alamat }}</textarea>
@@ -61,7 +62,7 @@
             </div>
 
             <div class="flex justify-end mt-8">
-                {{-- Edit Profile Button --}}
+                
                 <a href="{{ route('profile.edit') }}"
                     class="inline-block px-5 py-2 bg-yellow-500 text-white font-semibold text-sm rounded-lg hover:bg-yellow-600 transition duration-200">
                     Edit Profil

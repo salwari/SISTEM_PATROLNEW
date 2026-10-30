@@ -2,12 +2,12 @@
     <div class="container mx-auto px-4 py-6">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Laporan Kebersihan</h2>
 
-        {{-- 1. KOTAK FILTER & PENCARIAN CEPAT --}}
+        
         <div class="bg-white border border-gray-200 rounded-lg shadow-md mb-6 p-4">
             <form action="{{ route('kabid-dukbis.laporan-kebersihan') }}" method="GET"
                 class="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
 
-                {{-- Status Filter --}}
+                
                 <select name="status"
                     class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-full md:w-44">
                     <option value="" {{ request('status') == '' ? 'selected' : '' }}>Semua status</option>
@@ -15,7 +15,7 @@
                     <option value="perlu_tindakan" {{ request('status') == 'perlu_tindakan' ? 'selected' : '' }}>Perlu Tindakan</option>
                 </select>
 
-                {{-- Search Box --}}
+                
                 <div class="flex w-full md:w-96">
                     <div class="relative flex-grow">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -240,7 +240,6 @@
             document.getElementById('detailChecklistModal').classList.add('hidden');
         }
 
-        // Auto-submit saat filter dropdown status dipilih (sama seperti di laporan patroli)
         document.querySelector('select[name="status"]').addEventListener('change', function() {
             this.form.submit();
         });

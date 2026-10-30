@@ -17,7 +17,6 @@ class LokasiKebersihanController extends Controller
 
         $lokasiKebersihan = KamarMandi::query()
             ->when(Auth::user()->role === 'admin', function ($query) {
-                // Filter sesuai cabang admin yang login
                 $query->where('cabang_id', Auth::user()->cabang_id);
             })
             ->when($search, function ($query, $search) {
@@ -35,9 +34,6 @@ class LokasiKebersihanController extends Controller
         return view('admin.lokasi-kebersihan.index', compact('lokasiKebersihan', 'search'));
     }
 
-    /**
-     * Generate QR Code untuk lokasi kebersihan (Kamar Mandi)
-     */
     private function generateQrCode(KamarMandi $kamarMandi): void
     {
         $url = route('ob.kamar-mandi.periksa', ['kamarMandi' => $kamarMandi->id]);
@@ -96,7 +92,6 @@ class LokasiKebersihanController extends Controller
 
         $lokasiKebersihan->update($validated);
 
-        // Regenerate QR jika ada perubahan data
         if ($dataLama != $validated) {
             if ($lokasiKebersihan->qr_code && Storage::disk('public')->exists($lokasiKebersihan->qr_code)) {
                 Storage::disk('public')->delete($lokasiKebersihan->qr_code);

@@ -27,7 +27,6 @@ class KategoriKejadianController extends Controller
             'kirim_notifikasi' => 'nullable|boolean',
         ]);
 
-        // Isi default false kalau tidak dikirim dari form
         $validated['kirim_notifikasi'] = $request->has('kirim_notifikasi') ? $request->boolean('kirim_notifikasi') : false;
 
         KategoriKejadian::create($validated);

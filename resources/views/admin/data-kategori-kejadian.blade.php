@@ -2,7 +2,7 @@
     <div class="container mx-auto p-4">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Data Kategori Kejadian</h2>
 
-        {{-- Search + Tambah --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-md mb-4">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-4 py-3 bg-white">
                 <form action="{{ route('kategori-kejadian.index') }}" method="GET"
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        {{-- Modal Tambah Kategori Kejadian --}}
+        
         <div id="tambahModal" tabindex="-1" aria-hidden="true"
             class="hidden fixed top-0 left-0 right-0 z-50 items-center justify-center w-full h-full bg-black bg-opacity-50">
             <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        {{-- Tabel --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg mb-4">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -105,7 +105,7 @@
                             </td> --}}
                             <td class="px-4 py-2">
                                 <div class="flex justify-center gap-2">
-                                    {{-- Edit --}}
+                                    
                                     <button type="button" data-modal-target="editModal{{ $data->id }}"
                                         class="inline-flex items-center px-2 py-1 text-sm text-white bg-yellow-400 hover:bg-yellow-500 rounded">
                                         <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -117,7 +117,7 @@
                                         Edit
                                     </button>
 
-                                    {{-- Modal Edit Kategori Kejadian --}}
+                                    
                                     <div id="editModal{{ $data->id }}" tabindex="-1" aria-hidden="true"
                                         class="hidden fixed top-0 left-0 right-0 z-50 items-center justify-center w-full h-full bg-black bg-opacity-50 overflow-y-auto">
                                         <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto mt-10 mb-10">
@@ -170,7 +170,7 @@
                                         </div>
                                     </div>
 
-                                    {{-- Hapus --}}
+                                    
                                     <form
                                         action="{{ route('kategori-kejadian.destroy', ['kategoriKejadian' => $data->id]) }}"
                                         method="POST">
@@ -199,7 +199,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex justify-between items-center bg-white px-2 py-3">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $kategori->firstItem() ?? 0 }} sampai {{ $kategori->lastItem() ?? 0 }} dari
@@ -212,7 +212,6 @@
     </div>
 </x-app-layout>
 
-{{-- Script --}}
 <script>
     document.querySelectorAll("[data-modal-target]").forEach(btn => {
         btn.addEventListener("click", () => {

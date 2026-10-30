@@ -19,19 +19,16 @@ class PergantianPetugas extends Model
         'alasan',
     ];
 
-    // Relasi ke tabel jadwal patroli
     public function jadwal()
     {
         return $this->belongsTo(JadwalPatroli::class, 'jadwal_id');
     }
 
-    // Relasi ke tabel user untuk petugas lama
     public function petugasLama()
     {
         return $this->belongsTo(User::class, 'petugas_lama_id');
     }
 
-    // Relasi ke tabel user untuk petugas baru
     public function petugasBaru()
     {
         return $this->belongsTo(User::class, 'petugas_baru_id');

@@ -29,12 +29,12 @@
                 class="flex mx-2 text-sm bg-white rounded-full md:mr-0 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-200"
                 id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
                 <span class="sr-only">Open user menu</span>
-                <!-- Menggunakan foto pengguna yang disimpan, jika tidak ada, tampilkan gambar default -->
+                
                 <img class="w-8 h-8 rounded-full"
                     src="{{ Auth::user()->foto ? asset('storage/' . Auth::user()->foto) : 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png' }}"
                     alt="user photo" />
             </button>
-            <!-- Dropdown menu -->
+            
             <div class="hidden z-50 my-4 w-56 text-base list-none bg-white divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
                 id="dropdown">
                 <div class="py-3 px-4">

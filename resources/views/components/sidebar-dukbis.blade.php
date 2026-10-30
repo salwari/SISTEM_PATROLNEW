@@ -5,7 +5,6 @@
     <div class="h-full overflow-y-auto py-5 px-3 bg-white dark:bg-gray-800">
         <ul class="space-y-2">
 
-            {{-- Dashboard --}}
             <li class="px-3 text-sm font-semibold text-gray-500 uppercase mb-2">Dashboard</li>
             <li>
                 <a href="{{ route('kabid-dukbis.dashboard') }}"
@@ -31,6 +30,11 @@
                     ['label' => 'Data Lokasi Patroli', 'route' => 'kabid-dukbis.data-lokasi-patroli', 'active' => request()->routeIs('kabid-dukbis.data-lokasi-patroli')],
                     ['label' => 'Laporan Patroli', 'route' => 'kabid-dukbis.laporan-patroli', 'active' => request()->routeIs('kabid-dukbis.laporan-patroli*')],
                 ];
+// =======
+//             <li class="px-3 text-sm font-semibold text-gray-500 uppercase mt-6 mb-2">Master Data</li>
+//             @php 
+//                 $isKeamananActive = request()->routeIs('kabid-dukbis.data-petugas-security', 'kabid-dukbis.data-lokasi-patroli', 'kabid-dukbis.laporan-patroli*'); 
+// >>>>>>> 2cb7a2493b31c5b93e35c74c4b46ecbc1832c561
             @endphp
             <li>
                 <button type="button" onclick="toggleSidebarDropdown('keamanan')"
@@ -75,6 +79,7 @@
             </li>
 
             {{-- Kebersihan Dropdown --}}
+
             @php 
                 $isKebersihanActive = request()->routeIs('kabid-dukbis.data-lokasi-kebersihan', 'kabid-dukbis.temuan-kamar-mandi', 'kabid-dukbis.laporan-kebersihan');
                 $menuKebersihan = [

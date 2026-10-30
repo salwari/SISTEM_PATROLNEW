@@ -26,18 +26,14 @@ Route::get('/', function () {
     return view('landing-page');
 });
 
-// Authenticated Routes (Sudah Login)
 Route::middleware('auth')->group(function () {
-    // PROFILE ROUTES
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile.index');
     Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
 
-    //SUPER ADMIN ROUTES
     Route::middleware('role:super_admin')->prefix('super-admin')->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('super-admin.dashboard');
 
-        // Data Cabang
         Route::prefix('data-cabang')->group(function () {
             Route::get('/', [CabangController::class, 'index'])->name('data-cabang.index');
             Route::get('/create', [CabangController::class, 'create'])->name('data-cabang.create');
@@ -52,11 +48,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/data-patroli-petugas', [SuperAdminController::class, 'dataPatroliPetugas'])->name('super-admin.data-patroli-petugas');
     });
 
-    // ADMIN ROUTES
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-        // Data Pengguna
         Route::prefix('data-pengguna')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('data-pengguna.index');
             Route::get('/create', [UserController::class, 'create'])->name('data-pengguna.create');
@@ -66,7 +60,6 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{user}', [UserController::class, 'destroy'])->name('data-pengguna.destroy');
         });
 
-        //Data Kategori Kejadian
         Route::prefix('kategori-kejadian')->group(function () {
             Route::get('/', [KategoriKejadianController::class, 'index'])->name('kategori-kejadian.index');
             Route::post('/', [KategoriKejadianController::class, 'store'])->name('kategori-kejadian.store');
@@ -75,7 +68,6 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{kategoriKejadian}', [KategoriKejadianController::class, 'destroy'])->name('kategori-kejadian.destroy');
         });
 
-        // Jadwal Patroli
         Route::prefix('jadwal-patroli')->group(function () {
             Route::get('/', [JadwalPatroliController::class, 'index'])->name('jadwal-patroli.index');
             Route::post('/generate-ulang', [JadwalPatroliController::class, 'generateUlang'])->name('jadwal-patroli.generate-ulang');
@@ -86,7 +78,6 @@ Route::middleware('auth')->group(function () {
 
         });
 
-        // Lokasi Patroli 
         Route::prefix('lokasi-patroli')->group(function () {
             Route::get('/', [LokasiPatroliController::class, 'index'])->name('lokasi-patroli.index');
             Route::get('/create', [LokasiPatroliController::class, 'create'])->name('lokasi-patroli.create');
@@ -97,7 +88,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/{lokasiPatroli}/download-qr', [LokasiPatroliController::class, 'downloadQrCode'])->name('lokasi-patroli.downloadQrCode');
         });
 
-        // Lokasi Kebersihan (Untuk OB)
         Route::prefix('lokasi-kebersihan')->group(function () {
             Route::get('/', [LokasiKebersihanController::class, 'index'])->name('lokasi-kebersihan.index');
             Route::get('/create', [LokasiKebersihanController::class, 'create'])->name('lokasi-kebersihan.create');
@@ -108,7 +98,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/{lokasiKebersihan}/download-qr', [LokasiKebersihanController::class, 'downloadQrCode'])->name('lokasi-kebersihan.downloadQrCode');
         });
 
-        // Kategori Kebersihan
         Route::prefix('kategori-kebersihan')->group(function () {
             Route::get('/', [KategoriKebersihanController::class, 'index'])->name('kategori-kebersihan.index');
             Route::post('/', [KategoriKebersihanController::class, 'store'])->name('kategori-kebersihan.store');
@@ -120,7 +109,6 @@ Route::middleware('auth')->group(function () {
         // Route::get('/validasi-kejadian-darurat', [PatroliController::class, 'validasiKejadianDarurat'])->name('admin.validasi-kejadian-darurat');
         // Route::put('/validasi-kejadian-darurat/{id}', [PatroliController::class, 'updateValidasiDarurat'])->name('admin.update-validasi-darurat');
         
-        //Data Patroli
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');
 
 
@@ -159,7 +147,6 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    // PETUGAS SECURITY ROUTES
     Route::middleware('role:petugas_security')->prefix('petugas-security')->group(function () {
         Route::get('/dashboard', [PetugasSecurityController::class, 'dashboard'])->name('petugas-security.dashboard');
         Route::get('/scan-qr', [PetugasSecurityController::class, 'scanQR'])->name('petugas-security.scan-qr');
@@ -168,6 +155,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/patroli/create', [PatroliController::class, 'create'])->name('patroli.create');
         Route::post('/patroli/store', [PatroliController::class, 'store'])->name('patroli.store');
     });
+
 
     // SOPIR ROUTES
     Route::middleware('role:sopir')->prefix('sopir')->group(function () {
@@ -183,6 +171,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // KABID DUKBIS ROUTES
+
     Route::middleware('role:kabid_dukbis')->prefix('kabid-dukbis')->group(function () {
         Route::get('/dashboard', [KabidDukbisController::class, 'dashboard'])->name('kabid-dukbis.dashboard');
         Route::get('/data-petugas-security', [KabidDukbisController::class, 'dataPetugasSecurity'])->name('kabid-dukbis.data-petugas-security');
@@ -217,3 +206,4 @@ Route::get('/kabid-dukbis/laporan-kebersihan/cetak/{token}', [KabidDukbisControl
 
 
 require __DIR__ . '/auth.php';
+

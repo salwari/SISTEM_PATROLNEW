@@ -17,7 +17,6 @@ class LokasiPatroliController extends Controller
 
         $lokasiPatroli = LokasiPatroli::query()
             ->when(Auth::user()->role === 'admin', function ($query) {
-                // filter sesuai cabang admin
                 $query->where('cabang_id', Auth::user()->cabang_id);
             })
             ->when($search, function ($query, $search) {
@@ -33,9 +32,6 @@ class LokasiPatroliController extends Controller
         return view('admin.lokasi-patroli.index', compact('lokasiPatroli', 'search'));
     }
 
-    /**
-     * Generate QR Code untuk lokasi patroli
-     */
     private function generateQrCode(LokasiPatroli $lokasi): void
     {
         $url = route('patroli.create', ['lokasi' => $lokasi->id]);
@@ -62,7 +58,6 @@ class LokasiPatroliController extends Controller
             'deskripsi'   => 'nullable|string|max:255',
         ]);
 
-        // Tambahkan cabang_id otomatis dari admin yang login
         $validated['cabang_id'] = Auth::user()->cabang_id;
 
         $lokasi = LokasiPatroli::create($validated);
@@ -85,14 +80,12 @@ class LokasiPatroliController extends Controller
             'deskripsi'   => 'nullable|string|max:255',
         ]);
 
-        // Pastikan cabang_id tetap sesuai admin cabang yang login
         $validated['cabang_id'] = Auth::user()->cabang_id;
 
         $dataLama = $lokasiPatroli->only(['nama_lokasi', 'deskripsi']);
 
         $lokasiPatroli->update($validated);
 
-        // Regenerate QR jika ada perubahan data
         if ($dataLama != $validated) {
             if ($lokasiPatroli->qr_code && Storage::disk('public')->exists($lokasiPatroli->qr_code)) {
                 Storage::disk('public')->delete($lokasiPatroli->qr_code);
@@ -118,34 +111,25 @@ class LokasiPatroliController extends Controller
 
      public function downloadQrCode(LokasiPatroli $lokasiPatroli)
     {
-        // Cek apakah file QR ada
         if (!$lokasiPatroli->qr_code || !Storage::disk('public')->exists($lokasiPatroli->qr_code)) {
             return redirect()->back()->with('error', 'QR Code tidak ditemukan.');
         }
 
-        // Ambil path QR code
         $qrPath = storage_path('app/public/' . $lokasiPatroli->qr_code);
 
-        // Baca gambar QR
         $manager = new ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
         $qrImage = $manager->read($qrPath);
 
-        // Resize ke ukuran yang sama dengan generateQrCode (500x500)
         $qrImage->resize(500, 500);
 
-        // Ukuran QR
         $width = $qrImage->width();
         $height = $qrImage->height();
-        $extraHeight = 80; // lebih tinggi agar teks tidak mepet
-        $canvasHeight = $height + $extraHeight;
+        $extraHeight = 80; $canvasHeight = $height + $extraHeight;
 
-        // Buat canvas putih
         $canvas = $manager->create($width, $canvasHeight)->fill('#ffffff');
 
-        // Path font
         $fontPath = public_path('fonts/OpenSans.ttf');
 
-        // Tambahkan teks nama lokasi di atas QR
         if (file_exists($fontPath)) {
             $canvas->text($lokasiPatroli->nama_lokasi, $width / 2, 30, function ($font) use ($fontPath) {
                 $font->filename($fontPath);
@@ -156,10 +140,8 @@ class LokasiPatroliController extends Controller
             });
         }
 
-        // Tempel QR di bawah teks
         $canvas->place($qrImage, 'top-left', 0, $extraHeight);
 
-        // Return sebagai file download PNG
         return response($canvas->toPng()->toString())
             ->header('Content-Type', 'image/png')
             ->header('Content-Disposition', 'attachment; filename="qr_lokasi_' . $lokasiPatroli->id . '.png"');

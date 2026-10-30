@@ -7,9 +7,6 @@ use App\Models\Cabang;
 
 class CabangSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         Cabang::insert([

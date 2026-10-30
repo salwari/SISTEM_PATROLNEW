@@ -16,7 +16,6 @@ class KategoriKejadian extends Model
         'kirim_notifikasi',
     ];
 
-    // Relasi ke tabel patroli 
     public function patroli()
     {
         return $this->hasMany(Patroli::class, 'kejadian_id');

@@ -2,13 +2,13 @@
     <div class="container mx-auto p-4">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Daftar Lokasi Patroli</h2>
 
-        {{-- Filter & Search --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-md mb-4">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-4 py-3 bg-white">
                 <form action="{{ route('super-admin.data-lokasi') }}" method="GET"
                     class="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
 
-                    {{-- Filter Cabang --}}
+                    
                     <select name="cabang_id"
                         class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-full md:w-48">
                         <option value="" {{ request('cabang_id') == '' ? 'selected' : '' }}>Semua Cabang</option>
@@ -20,7 +20,7 @@
                         @endforeach
                     </select>
 
-                    {{-- Search --}}
+                    
                     <div class="flex w-full md:w-96">
                         <div class="relative flex-grow">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -40,7 +40,7 @@
                         </button>
                     </div>
 
-                    {{-- Tombol Reset --}}
+                    
                     @if (request('search') || request('cabang_id'))
                         <a href="{{ route('super-admin.data-lokasi') }}"
                             class="px-4 py-2 text-sm text-white bg-gray-400 hover:bg-gray-500 rounded-lg">
@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        {{-- Tabel Data Lokasi Patroli --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg mb-4">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -93,7 +93,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex justify-between items-center bg-white">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $lokasiPatroli->firstItem() ?? 0 }} sampai {{ $lokasiPatroli->lastItem() ?? 0 }} dari
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    {{-- Modal Preview QR --}}
+    
     <div id="qrModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="relative w-full max-w-sm bg-white rounded-lg shadow-xl">

@@ -10,7 +10,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {{-- Lokasi Patroli --}}
+                    
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">Lokasi Patroli</label>
                         <input type="text" value="{{ $lokasiPatroli->nama_lokasi ?? 'Lokasi tidak ditemukan' }}"
@@ -18,7 +18,7 @@
                             class="mt-1 block w-full rounded-lg border border-blue-300 shadow-sm bg-blue-100 text-gray-700 focus:ring-blue-500 focus:border-blue-500 text-sm">
                     </div>
 
-                    {{-- Tanggal dan Waktu Patroli --}}
+                    
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Tanggal Patroli</label>
                         <input type="text" value="{{ now()->toDateString() }}" readonly
@@ -31,7 +31,7 @@
                             class="mt-1 block w-full rounded-lg border border-blue-300 shadow-sm bg-blue-100 text-gray-700 focus:ring-blue-500 focus:border-blue-500 text-sm">
                     </div>
 
-                    {{-- Status Patroli --}}
+                    
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Status <span class="text-red-600">*</span>
@@ -48,7 +48,7 @@
                         </div>
                     </div>
 
-                    {{-- Kategori Kejadian - hanya muncul jika status darurat --}}
+                    
                     <div id="kategoriDaruratForm" class="md:col-span-2 hidden">
                         <label for="kejadian_id" class="block text-sm font-medium text-gray-700">
                             Kategori Kejadian <span class="text-red-600">*</span>
@@ -62,7 +62,7 @@
                         </select>
                     </div>
 
-                    {{-- Keterangan --}}
+                    
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">
                             Keterangan <span class="text-red-600">*</span>
@@ -71,7 +71,7 @@
                             class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm bg-white focus:ring-blue-500 focus:border-blue-500 text-sm"></textarea>
                     </div>
 
-                    {{-- Ambil Foto --}}
+                    
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Ambil Foto <span class="text-red-600">*</span>
@@ -104,7 +104,7 @@
                     </div>
                 </div>
 
-                {{-- Tombol Aksi --}}
+                
                 <div class="flex justify-end gap-4 pt-4">
                     <a href="{{ route('petugas-security.dashboard') }}"
                         class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg font-semibold">
@@ -128,12 +128,10 @@
     const takePhotoBtn = document.getElementById('takePhotoBtn');
     const retakePhotoBtn = document.getElementById('retakePhotoBtn');
 
-    //Fungsi untuk memulai kamera
     function startCamera() {
         navigator.mediaDevices.enumerateDevices().then(devices => {
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-            // Mencari kamera belakang atau environment
             const backCamera = videoDevices.find(device =>
                 device.label.toLowerCase().includes('back') ||
                 device.label.toLowerCase().includes('environment')
@@ -170,7 +168,6 @@
 
     startCamera();
 
-    //Mengambil foto dan menampilkan preview
     takePhotoBtn.addEventListener('click', () => {
         const canvas = document.getElementById('canvas');
         const context = canvas.getContext('2d');
@@ -182,7 +179,6 @@
         const dataURL = canvas.toDataURL('image/jpeg');
         document.getElementById('fotoInput').value = dataURL;
 
-        //Menampilkan preview dan info, sembunyikan video dan tombol ambil foto
         video.classList.add('hidden');
         preview.src = dataURL;
         preview.classList.remove('hidden');
@@ -191,12 +187,10 @@
         retakePhotoBtn.classList.remove('hidden');
     });
 
-    //Event listener untuk tombol ambil ulang foto
     retakePhotoBtn.addEventListener('click', () => {
         startCamera();
     });
 
-    //Toggle Kategori Kejadian
     const statusAman = document.getElementById('status-aman');
     const statusDarurat = document.getElementById('status-darurat');
     const kategoriForm = document.getElementById('kategoriDaruratForm');

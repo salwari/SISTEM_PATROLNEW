@@ -8,7 +8,7 @@
                 @method('PUT')
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Nama --}}
+                    
                     <div>
                         <label for="nama" class="block text-sm font-medium text-gray-700">
                             Nama <span class="text-red-600">*</span>
@@ -20,7 +20,7 @@
                         @enderror
                     </div>
 
-                    {{-- Email --}}
+                    
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">
                             Email <span class="text-red-600">*</span>
@@ -32,7 +32,7 @@
                         @enderror
                     </div>
 
-                    {{-- Nomor Induk --}}
+                    
                     <div>
                         <label for="nomor_induk" class="block text-sm font-medium text-gray-700">
                             Nomor Induk <span class="text-red-600">*</span>
@@ -44,7 +44,7 @@
                         @enderror
                     </div>
 
-                    {{-- Role --}}
+                    
                     <div>
                         <label for="role" class="block text-sm font-medium text-gray-700">
                             Hak Akses <span class="text-red-600">*</span>
@@ -61,7 +61,7 @@
                         @enderror
                     </div>
 
-                    {{-- No Telepon --}}
+                    
                     <div>
                         <label for="no_telepon" class="block text-sm font-medium text-gray-700">
                             No Telepon <span class="text-red-600">*</span>
@@ -73,7 +73,7 @@
                         @enderror
                     </div>
 
-                    {{-- Alamat --}}
+                    
                     <div>
                         <label for="alamat" class="block text-sm font-medium text-gray-700">
                             Alamat <span class="text-red-600">*</span>

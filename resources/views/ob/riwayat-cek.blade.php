@@ -7,51 +7,55 @@
         </div>
 
         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <form action="{{ route('ob.riwayat-cek') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                
-                <div class="md:col-span-3">
-                    <select name="status" onchange="this.form.submit()"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 text-xs text-gray-700 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="" {{ request('status') == '' ? 'selected' : '' }}>Semua Status</option>
-                        <option value="baik" {{ request('status') == 'baik' ? 'selected' : '' }}>Kondisi Baik</option>
-                        <option value="perlu_tindakan" {{ request('status') == 'perlu_tindakan' ? 'selected' : '' }}>Perlu Tindakan (Temuan)</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-2">
-                    <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}"
-                        class="w-full border border-gray-300 rounded-lg p-2 text-xs text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                        title="Tanggal Mulai">
-                </div>
-
-                <div class="md:col-span-2">
-                    <input type="date" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}"
-                        class="w-full border border-gray-300 rounded-lg p-2 text-xs text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                        title="Tanggal Selesai">
-                </div>
-
-                <div class="md:col-span-4 flex">
-                    <div class="relative flex-grow">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Cari kamar mandi..." autocomplete="off"
-                            class="block w-full p-2 pl-9 text-xs text-gray-900 bg-white border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500" />
+            <form action="{{ route('ob.riwayat-cek') }}" method="GET" class="space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    
+                    <div>
+                        <select name="status" onchange="this.form.submit()"
+                            class="block w-full border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="" {{ request('status') == '' ? 'selected' : '' }}>Semua status</option>
+                            <option value="baik" {{ request('status') == 'baik' ? 'selected' : '' }}>Kondisi Baik</option>
+                            <option value="perlu_tindakan" {{ request('status') == 'perlu_tindakan' ? 'selected' : '' }}>Perlu Tindakan</option>
+                        </select>
                     </div>
-                    <button type="submit"
-                        class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-r-lg border border-blue-600 transition">
-                        Filter
-                    </button>
+
+                    <div>
+                        <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}"
+                            class="block w-full border border-gray-300 rounded-lg p-2 text-sm text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+                            title="Tanggal Mulai">
+                    </div>
+
+                    <div>
+                        <input type="date" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}"
+                            class="block w-full border border-gray-300 rounded-lg p-2 text-sm text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+                            title="Tanggal Selesai">
+                    </div>
+
+                    <div class="flex">
+                        <div class="relative flex-grow">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Cari kamar mandi..." autocomplete="off"
+                                class="block w-full p-2 pl-10 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500" />
+                        </div>
+                        <button type="submit"
+                            class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-r-lg border-l-0 border border-blue-600 transition">
+                            Filter
+                        </button>
+                    </div>
                 </div>
 
                 @if (request('search') || request('status') || request('tanggal_mulai') || request('tanggal_selesai'))
-                    <div class="md:col-span-1 text-center">
+                    <div class="flex justify-end">
                         <a href="{{ route('ob.riwayat-cek') }}"
-                            class="inline-block px-3 py-2 text-xs text-gray-600 hover:text-gray-900 hover:underline">
-                            Reset
+                            class="text-xs text-gray-500 hover:text-gray-800 hover:underline">
+                            Reset Filter
                         </a>
                     </div>
                 @endif
@@ -173,7 +177,7 @@
             </div>
 
             <div class="p-5 space-y-4 text-xs">
-                {{-- Status & Catatan --}}
+                
                 <div class="p-3 rounded-lg bg-gray-50 border border-gray-200 flex justify-between items-center">
                     <span class="font-medium text-gray-600">Status Evaluasi:</span>
                     <span id="modalStatusBadge"></span>

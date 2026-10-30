@@ -21,7 +21,6 @@ class ChecklistKamarMandi extends Model
         'is_active' => 'boolean',
     ];
 
-    // Relasi ke detail pemeriksaan
     public function detailPemeriksaan()
     {
         return $this->hasMany(DetailPemeriksaanKamarMandi::class, 'checklist_id');

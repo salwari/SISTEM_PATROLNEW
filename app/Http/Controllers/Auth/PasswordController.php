@@ -11,9 +11,6 @@ use Illuminate\Validation\Rules\Password;
 
 class PasswordController extends Controller
 {
-    /**
-     * Update the user's password.
-     */
     public function editPassword()
     {
         return view('auth.ubah-password');
@@ -49,7 +46,6 @@ class PasswordController extends Controller
 
         }
 
-        // fallback
         return redirect()->route('login')->with('error', 'Role tidak dikenali.');
     }
 }

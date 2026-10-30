@@ -4,7 +4,7 @@
 
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-md mb-4">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-4 py-3 bg-white">
-                {{-- Search --}}
+                
                 <form action="{{ route('data-pengguna.index') }}" method="GET"
                     class="flex flex-row items-center gap-2 w-full md:w-1/2">
                     <div class="relative flex flex-grow">
@@ -30,7 +30,7 @@
                         </a>
                     @endif
                 </form>
-                 {{-- Tambah Pengguna --}}
+                 
                 <a href="{{ route('data-pengguna.create') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold whitespace-nowrap text-center">
                     Tambah Pengguna
@@ -38,7 +38,7 @@
             </div>
         </div>
         
-        {{-- Tabel Data Pengguna --}}
+        
         <div class="overflow-x-auto rounded-lg shadow-lg border border-gray-200 mb-4">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -65,7 +65,7 @@
                             <td class="px-4 py-2">{{ $user->alamat }}</td>
                             <td class="px-4 py-2 space-x-1 text-center">
                                 <div class="flex overflow-x-auto no-scrollbar gap-1">
-                                    {{-- Edit --}}
+                                    
                                     <a href="{{ route('data-pengguna.edit', $user->id) }}"
                                         class="inline-flex items-center px-2 py-1 text-sm text-white bg-yellow-400 hover:bg-yellow-500 rounded">
                                         <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -76,7 +76,7 @@
                                         </svg>
                                         Edit
                                     </a>
-                                    {{-- Hapus --}}
+                                    
                                     <form action="{{ route('data-pengguna.destroy', $user->id) }}" method="POST"
                                         class="inline form-hapus">
                                         @csrf
@@ -106,7 +106,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex justify-between items-center bg-white">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $users->firstItem() ?? 0 }} sampai {{ $users->lastItem() ?? 0 }} dari
@@ -120,7 +120,6 @@
 </x-app-layout>
 
 <script>
-    //Konfirmasi Hapus
     document.addEventListener('DOMContentLoaded', function() {
         const hapusButtons = document.querySelectorAll('.btn-hapus');
 

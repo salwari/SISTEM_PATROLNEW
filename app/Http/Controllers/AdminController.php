@@ -212,6 +212,7 @@ class AdminController extends Controller
         $patroli = Patroli::with(['user', 'lokasiPatroli'])
             ->where('cabang_id', $cabangId)
             ->when($search, function ($query, $search) {
+
                 $query->where(function ($q) use ($search) {
                     $q->whereHas('user', function ($subQuery) use ($search) {
                         $subQuery->where('nama', 'like', '%' . $search . '%');

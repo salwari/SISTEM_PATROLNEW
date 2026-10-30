@@ -19,20 +19,20 @@
     <header class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-            <!-- Logo -->
+            
             <div class="flex items-center space-x-3">
                 <img class="h-auto w-20" src="{{ asset('assets/sucofindo.png') }}" alt="Logo SUCOFINDO" />
             </div>
 
-            <!-- Tombol login + hamburger di mobile -->
+            
             <div class="flex items-center space-x-4 md:hidden">
-                <!-- Tombol Login (mobile only) -->
+                
                 <a href="{{ route('login') }}"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-full transition text-sm">
                     Login
                 </a>
 
-                <!-- Hamburger button -->
+                
                 <button id="menu-toggle" class="text-gray-800 focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
@@ -41,7 +41,7 @@
                 </button>
             </div>
 
-            <!-- Nav Menu (desktop only) -->
+            
             <nav class="hidden md:flex space-x-8 text-base font-medium text-gray-800">
                 <a href="#tentang" class="hover:text-blue-600 transition">Tentang</a>
                 <a href="#visi-misi" class="hover:text-blue-600 transition">Visi & Misi</a>
@@ -49,7 +49,7 @@
                 <a href="#kontak" class="hover:text-blue-600 transition">Kontak</a>
             </nav>
 
-            <!-- Tombol login (desktop only) -->
+            
             @if (Route::has('login'))
                 <nav class="hidden md:inline-block">
                     @auth
@@ -98,7 +98,7 @@
             @endif
         </div>
 
-        <!-- Mobile Menu (toggle content) -->
+        
         <div id="mobile-menu" class="md:hidden hidden px-6 pb-4 space-y-2">
             <a href="#tentang" class="block text-gray-800 hover:text-blue-600">Tentang</a>
             <a href="#visi-misi" class="block text-gray-800 hover:text-blue-600">Visi & Misi</a>
@@ -107,10 +107,10 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
+    
      <section class="bg-gray-50 flex items-center justify-center px-12 py-[72px] md:py-24 lg:py-32">
         <div class="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-10">
-            <!-- Text Content -->
+            
             <div class="md:w-1/2 text-center md:text-left">
                 <h1 class="text-3xl md:text-4xl font-extrabold text-blue-600 leading-tight mb-6">
                     Selamat Datang di SIM PATROLI</span>
@@ -125,24 +125,23 @@
                     Masuk Sekarang
                 </a>
             </div>
-            <!-- Logo Image -->
+            
             <div class="md:w-1/2 flex justify-center">
                 <img class="w-64 h-auto" src="{{ asset('assets/logo-shield.png') }}" alt="Logo SIM PATROLI" />
             </div>
         </div>
     </section>
 
-    <!-- Tentang SUCOFINDO -->
+    
     <section id="tentang" class="py-10 px-10 bg-gray-50">
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <!-- Gambar -->
+            
             <div class="flex justify-center">
                 <img src="{{ asset('assets/gedung-sucofindo.jpg') }}" alt="Gedung SUCOFINDO"
                     class="rounded-xl shadow-lg w-full max-w-2xl h-[360px] object-cover">
             </div>
 
-
-            <!-- Teks Tentang -->
+            
             <div>
                 <h2 class="text-2xl font-bold text-blue-700 mb-6 text-center md:text-left">Sejarah Singkat PT SUCOFINDO
                 </h2>
@@ -163,7 +162,7 @@
         </div>
     </section>
 
-    <!-- Visi dan Misi -->
+    
     <section id="visi-misi" class="py-10 px-4 bg-blue-50">
         <div class="max-w-5xl mx-auto">
             <h2 class="text-2xl font-bold text-blue-700 mb-10 text-center">Visi & Misi PT SUCOFINDO</h2>
@@ -188,7 +187,7 @@
         </div>
     </section>
 
-    <!-- Fitur Unggulan -->
+    
     <section id="fitur" class="py-10 px-4 bg-blue-50">
         <div class="max-w-6xl mx-auto text-center">
             <h2 class="text-2xl font-bold text-blue-700 mb-10">Fitur Unggulan SIM PATROLI</h2>
@@ -239,7 +238,7 @@
         </div>
     </section>
 
-    <!-- Kontak -->
+    
     <section id="kontak" class="py-10 px-4 bg-white">
         <div class="max-w-7xl mx-auto text-center">
             <h2 class="text-2xl font-bold text-blue-700 mb-2">Kontak</h2>
@@ -266,7 +265,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    
     <x-footer />
 
     <script>

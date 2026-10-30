@@ -24,37 +24,38 @@
         .kop-surat {
             display: table;
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+        }
+
+        .kop-title {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        .kop-title h1 {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 0.5px;
         }
 
         .kop-logo {
             display: table-cell;
-            width: 100px;
+            width: 130px;
             vertical-align: middle;
+            text-align: right;
         }
 
         .kop-logo img {
-            width: 100%;
+            width: 110px;
             height: auto;
         }
 
-        .kop-info {
-            display: table-cell;
-            vertical-align: middle;
-            padding-left: 6px;
-            text-align: center;
-        }
-
-        .kop-info h1 {
-            font-size: 16px;
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        .kop-info p {
-            font-size: 14px;
-            margin: 0;
-            line-height: 1.4;
+        .periode-info {
+            text-align: left;
+            margin: 12px 0 16px 0;
+            font-size: 12px;
         }
 
         table {
@@ -116,27 +117,20 @@
 </head>
 
 <body>
-    <!-- KOP SURAT -->
-    <div class="kop-surat">
-        <div class="kop-logo">
-            <img src="{{ public_path('assets/sucofindo.png') }}" alt="Logo">
+        <div class="kop-surat">
+            <div class="kop-title">
+                <h1>LAPORAN PEMERIKSAAN KEBERSIHAN</h1>
+            </div>
+            <div class="kop-logo">
+                <img src="{{ public_path('assets/sucofindo.png') }}" alt="Logo">
+            </div>
         </div>
-        <div class="kop-info">
-            <h1>PT SUCOFINDO CABANG {{ strtoupper($cabang->nama_cabang ?? '-') }}</h1>
-            <p>{{ $cabang->alamat_cabang ?? '-' }}</p>
-            <p>Telp : {{ $teleponCabang }} | Email : {{ $emailCabang }}</p>
-        </div>
-    </div>
-    <hr>
+        <hr>
 
-    <!-- JUDUL DAN PERIODE -->
-    <h2>Laporan Pemeriksaan Kebersihan</h2>
-    <p class="text-center">
-        Periode : {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} s/d
-        {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
-    </p>
+        <p class="periode-info">
+            <strong>Periode :</strong> {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
+        </p>
 
-    <!-- TABEL DATA -->
     <table>
         <thead>
             <tr>
@@ -168,7 +162,7 @@
         </tbody>
     </table>
 
-    <!-- TANDA TANGAN KEPALA DUKBIS -->
+    
     <div class="ttd-section">
         <div class="ttd-kepala">
             <p>{{ $cabang->nama_cabang ?? '-' }}, {{ now()->translatedFormat('d F Y') }}</p>

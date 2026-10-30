@@ -26,7 +26,7 @@
                         </button>
                     </div>
                 </div>
-                {{-- Error dari error bag updatePassword --}}
+                
                 @if ($errors->updatePassword->has('current_password'))
                     <p class="text-red-600 text-sm mt-2">{{ $errors->updatePassword->first('current_password') }}</p>
                 @endif

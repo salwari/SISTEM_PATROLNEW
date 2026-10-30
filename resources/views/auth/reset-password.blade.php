@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="w-full max-w-sm mx-auto bg-gray-50 rounded-xl shadow-lg dark:bg-gray-800 dark:border dark:border-gray-700 mt-10">
         <div class="p-6 sm:p-8 space-y-6">
-            <!-- Logo dan Judul -->
+            
             <div class="flex justify-center">
                 <a href="#" class="flex flex-col items-center text-xl font-semibold text-gray-900 dark:text-white">
                     <img class="w-24 h-auto mb-2" src="{{ asset('assets/sucofindo.png') }}" alt="logo">
@@ -17,7 +17,7 @@
                 @csrf
                 <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-                <!-- Email -->
+                
                 <div>
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Email
@@ -28,7 +28,7 @@
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
-                <!-- Password Baru -->
+                
                 <div>
                     <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Password Baru
@@ -52,7 +52,7 @@
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
-                <!-- Konfirmasi Password -->
+                
                 <div>
                     <label for="password_confirmation" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Konfirmasi Password
@@ -76,7 +76,7 @@
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                 </div>
 
-                <!-- Tombol Reset -->
+                
                 <button type="submit"
                     class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-semibold rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     Reset Password
@@ -85,7 +85,7 @@
         </div>
     </div>
 
-    <!-- Script Toggle -->
+    
     <script>
         function togglePasswordVisibility(fieldId, eyeId) {
             const input = document.getElementById(fieldId);

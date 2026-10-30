@@ -6,7 +6,7 @@
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-4 py-3 bg-white">
                 <form action="{{ route('super-admin.data-petugas') }}" method="GET"
                     class="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
-                    {{-- Filter Cabang --}}
+                    
                     <select name="cabang_id"
                         class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-full md:w-48">
                         <option value="" {{ request('cabang_id') == '' ? 'selected' : '' }}>Semua Cabang</option>
@@ -18,7 +18,7 @@
                         @endforeach
                     </select>
 
-                   {{-- Search --}}
+                   
                     <div class="flex w-full md:w-96">
                         <div class="relative flex-grow">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -38,7 +38,7 @@
                         </button>
                     </div>
 
-                    {{-- Tombol Reset --}}
+                    
                     @if (request('search') || request('cabang_id'))
                         <a href="{{ route('super-admin.data-petugas') }}"
                             class="px-4 py-2 text-sm text-white bg-gray-400 hover:bg-gray-500 rounded-lg">
@@ -49,7 +49,7 @@
             </div>
         </div>
 
-        {{-- Tabel Data Petugas Security --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg mb-4">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -102,7 +102,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex justify-between items-center bg-white">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $users->firstItem() ?? 0 }} sampai {{ $users->lastItem() ?? 0 }} dari

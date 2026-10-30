@@ -4,7 +4,7 @@
 
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-md mb-4">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-4 py-3 bg-white">
-                {{-- Search --}}
+                
                 <form id="search-form" action="{{ route('lokasi-patroli.index') }}" method="GET"
                     class="flex flex-row items-center gap-2 w-full md:w-1/2">
 
@@ -35,7 +35,7 @@
                     @endif
                 </form>
 
-                {{-- Tambah Lokasi --}}
+                
                 <a href="{{ route('lokasi-patroli.create') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm text-center font-semibold whitespace-nowrap">
                     Tambah Lokasi
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        {{-- Tabel Data Lokasi Patroli --}}
+        
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg mb-4">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -74,7 +74,7 @@
                             </td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex overflow-x-auto no-scrollbar gap-1">
-                                    {{-- Unduh QR Code --}}
+                                    
                                     @if ($data->qr_code)
                                         <a href="{{ route('lokasi-patroli.downloadQrCode', $data->id) }}"
                                             class="inline-flex items-center px-2 py-1 text-sm text-white bg-green-600 hover:bg-green-700 rounded whitespace-nowrap">
@@ -90,7 +90,7 @@
                                         </a>
                                     @endif
 
-                                    {{-- Edit --}}
+                                    
                                     <a href="{{ route('lokasi-patroli.edit', $data->id) }}"
                                         class="inline-flex items-center px-2 py-1 text-sm text-white bg-yellow-400 hover:bg-yellow-500 rounded whitespace-nowrap">
                                         <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -103,7 +103,7 @@
                                         Edit
                                     </a>
 
-                                    {{-- Hapus --}}
+                                    
                                     <form action="{{ route('lokasi-patroli.destroy', $data->id) }}" method="POST"
                                         class="inline form-hapus">
                                         @csrf
@@ -134,7 +134,7 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
+        
         <div class="flex justify-between items-center bg-white">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $lokasiPatroli->firstItem() ?? 0 }} sampai {{ $lokasiPatroli->lastItem() ?? 0 }} dari
@@ -145,7 +145,7 @@
             </div>
         </div>
 
-        {{-- Modal Preview QR --}}
+        
         <div id="qrModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50">
             <div class="flex items-center justify-center min-h-screen p-4 sm:p-6">
                 <div class="relative w-full max-w-sm bg-white rounded-lg shadow-xl z-10">
@@ -168,19 +168,16 @@
 </x-app-layout>
 
 <script>
-    //Menampilkan QR Code
     function showQrModal(imageUrl, namaLokasi) {
         document.getElementById('qrModalImg').src = imageUrl;
         document.getElementById('qrModalNamaLokasi').textContent = namaLokasi;
         document.getElementById('qrModal').classList.remove('hidden');
     }
 
-    //Menutup Modal
     function closeModal() {
         document.getElementById('qrModal').classList.add('hidden');
     }
 
-    //Konfirmasi Hapus
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.btn-hapus').forEach(button => {
             button.addEventListener('click', function() {

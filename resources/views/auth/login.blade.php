@@ -1,8 +1,8 @@
- <x-guest-layout>
+<x-guest-layout :title="'Login'">
     <div
         class="w-full max-w-sm mx-auto bg-gray-50 rounded-xl shadow-lg dark:bg-gray-800 dark:border dark:border-gray-700 mt-10">
         <div class="p-6 sm:p-8 space-y-6">
-            <!-- Logo dan Judul -->
+            
             <div class="flex justify-center">
                 <a href="#" class="flex flex-col items-center text-xl font-semibold text-gray-900 dark:text-white">
                    <img class="w-24 h-auto mb-2" src="{{ asset('assets/sucofindo.png') }}" alt="logo">
@@ -19,7 +19,7 @@
             <form method="POST" action="{{ route('login') }}" class="space-y-4">
                 @csrf
 
-                <!-- Email -->
+                
                 <div>
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Email
@@ -30,7 +30,7 @@
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
-                <!-- Password -->
+                
                 <div>
                     <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Password
@@ -54,7 +54,7 @@
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
-                <!-- Ingat saya dan Lupa password -->
+                
                 <div class="flex items-center justify-between">
                     <label class="flex items-center text-sm text-gray-600 dark:text-gray-300">
                         <input id="remember" type="checkbox" name="remember"
@@ -70,7 +70,7 @@
                     @endif
                 </div>
 
-                <!-- Tombol Masuk -->
+                
                 <button type="submit"
                     class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-semibold rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     Masuk

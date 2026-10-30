@@ -83,7 +83,7 @@
 </head>
 <body>
 
-    <!-- KOP SURAT -->
+    
     <div class="kop-surat">
         <div class="kop-logo">
             <img src="{{ asset('assets/sucofindo.png') }}" alt="Logo">
@@ -96,14 +96,14 @@
     </div>
     <hr>
 
-    <!-- JUDUL DAN PERIODE -->
+    
     <h2>Laporan Patroli</h2>
     <p class="text-center">
         Periode: {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }}
         s/d {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
     </p>
 
-    <!-- TABEL DATA -->
+    
     <table>
         <thead>
             <tr>

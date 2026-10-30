@@ -7,7 +7,7 @@
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Nama Cabang --}}
+                    
                     <div>
                         <label for="nama_cabang" class="block text-sm font-medium text-gray-700">
                             Nama Cabang <span class="text-red-600">*</span>
@@ -20,7 +20,7 @@
                         @enderror
                     </div>
 
-                    {{-- Alamat Cabang --}}
+                    
                     <div>
                         <label for="alamat" class="block text-sm font-medium text-gray-700">
                             Alamat Cabang <span class="text-red-600">*</span>
@@ -32,7 +32,7 @@
                         @enderror
                     </div>
 
-                    {{-- Email --}}
+                    
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">
                             Email <span class="text-red-600">*</span>
@@ -44,7 +44,7 @@
                         @enderror
                     </div>
 
-                    {{-- Nomor Induk Admin --}}
+                    
                     <div>
                         <label for="nomor_induk" class="block text-sm font-medium text-gray-700">
                             Nomor Induk Admin <span class="text-red-600">*</span>
@@ -57,7 +57,7 @@
                         @enderror
                     </div>
 
-                    {{-- No Telepon Admin --}}
+                    
                     <div>
                         <label for="no_telepon" class="block text-sm font-medium text-gray-700">
                             No Telepon Admin <span class="text-red-600">*</span>
@@ -69,7 +69,7 @@
                         @enderror
                     </div>
 
-                    {{-- Password Admin --}}
+                    
                     <div class="relative">
                         <label for="password" class="block text-sm font-medium text-gray-700">
                             Password Admin <span class="text-red-600">*</span>
@@ -120,7 +120,6 @@
         }
     }
 
-    // Tampilkan/hidden nama unit saat role berubah
     document.addEventListener('DOMContentLoaded', function() {
         const roleSelect = document.getElementById('role');
         const unitField = document.getElementById('unit-field');

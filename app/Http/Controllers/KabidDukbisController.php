@@ -19,6 +19,26 @@ use Illuminate\Http\Request;
 
 class KabidDukbisController extends Controller
 {
+    /** Absen kendaraan sopir di cabang Kabid, per tanggal. */
+    public function absenKendaraan(Request $request)
+    {
+        $cabangId = Auth::user()->cabang_id;
+        $tanggal = $request->input('tanggal');
+        $tanggal = $tanggal && strtotime($tanggal) ? Carbon::parse($tanggal)->toDateString() : now()->toDateString();
+
+        $hariIni = $tanggal === now()->toDateString();
+
+        $kendaraan = \App\Models\Kendaraan::diCabang($cabangId)->aktif()->orderBy('plat_nomor')
+            ->denganStatusHarian($tanggal, $hariIni)
+            ->get();
+
+        $historis = !$hariIni; // tanggal lampau: tampilkan apa yang terjadi pada tanggal itu
+        $total = $kendaraan->count();
+        $sudah = $kendaraan->filter(fn ($k) => $k->statusHarian($historis) !== 'belum')->count();
+
+        return view('kabid-dukbis.absen-kendaraan', compact('kendaraan', 'tanggal', 'total', 'sudah', 'historis'));
+    }
+
     public function dashboard()
     {
         $user = Auth::user();

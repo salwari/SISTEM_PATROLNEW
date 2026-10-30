@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    /** Role yang boleh dikelola admin cabang. Role 'ob' ditambahkan oleh modul kebersihan. */
+    private const ROLE_DIKELOLA = ['petugas_security', 'kabid_dukbis', 'sopir'];
+
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -23,7 +26,7 @@ class UserController extends Controller
                 });
             })
             ->where('cabang_id', Auth::user()->cabang_id) 
-            ->whereIn('role', ['petugas_security', 'kabid_dukbis']) 
+            ->whereIn('role', self::ROLE_DIKELOLA)
             ->orderBy('nama')
             ->paginate(10)
             ->withQueryString();
@@ -44,7 +47,7 @@ class UserController extends Controller
             'nomor_induk' => ['required', 'string', 'regex:/^\d+$/', 'unique:users,nomor_induk'],
             'no_telepon' => ['required', 'string', 'regex:/^\d+$/', 'digits_between:6,15', 'unique:users,no_telepon'],
             'alamat' => ['required', 'string'],
-            'role' => ['required', 'in:admin,petugas_security,kabid_dukbis'],
+            'role' => ['required', 'in:admin,' . implode(',', self::ROLE_DIKELOLA)],
             'password' => ['required', 'string', 'min:8', 'max:255'],
         ], [
             'nama.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
@@ -79,7 +82,7 @@ class UserController extends Controller
             'nomor_induk' => ['required', 'string', 'regex:/^\d+$/', 'unique:users,nomor_induk,' . $user->id],
             'no_telepon' => ['required', 'string', 'regex:/^\d+$/', 'digits_between:6,15', 'unique:users,no_telepon,' . $user->id],
             'alamat' => ['required', 'string'],
-            'role' => ['required', 'in:admin,petugas_security,kabid_dukbis'],
+            'role' => ['required', 'in:admin,' . implode(',', self::ROLE_DIKELOLA)],
         ]);
 
         $validated['cabang_id'] = Auth::user()->cabang_id;
@@ -92,6 +95,12 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        // cek_kendaraan.user_id memakai ON DELETE CASCADE: menghapus sopir akan ikut menghapus riwayat cek.
+        if ($user->cekKendaraan()->exists()) {
+            return redirect()->route('data-pengguna.index')
+                ->with('error', 'Pengguna sudah punya riwayat cek kendaraan, sehingga tidak bisa dihapus agar riwayat tidak hilang.');
+        }
+
         $user->delete();
 
         return redirect()->route('data-pengguna.index')

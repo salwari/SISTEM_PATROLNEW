@@ -2,16 +2,23 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CabangController;
+use App\Http\Controllers\ChecklistKendaraanController;
 use App\Http\Controllers\JadwalPatroliController;
 use App\Http\Controllers\KabidDukbisController;
 use App\Http\Controllers\KategoriKebersihanController;
 use App\Http\Controllers\KategoriKejadianController;
-use App\Http\Controllers\LokasiPatroliController;
+use App\Http\Controllers\KategoriKondisiKendaraanController;
+use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\LokasiKebersihanController;
+use App\Http\Controllers\LokasiPatroliController;
 use App\Http\Controllers\ObController;
 use App\Http\Controllers\PatroliController;
 use App\Http\Controllers\PetugasSecurityController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RiwayatKebersihanController;
+use App\Http\Controllers\RiwayatKendaraanController;
+use App\Http\Controllers\SopirAbsenController;
+use App\Http\Controllers\SopirController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -69,7 +76,6 @@ Route::middleware('auth')->group(function () {
             Route::put('/{jadwalPatroli}', [JadwalPatroliController::class, 'update'])->name('jadwal-patroli.update');
             Route::delete('/{jadwalPatroli}', [JadwalPatroliController::class, 'destroy'])->name('jadwal-patroli.destroy');
             Route::get('/cetak', [JadwalPatroliController::class, 'cetakJadwal'])->name('jadwal-patroli.cetak-jadwal');
-
         });
 
         Route::prefix('lokasi-patroli')->group(function () {
@@ -99,11 +105,46 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{checklistKamarMandi}', [KategoriKebersihanController::class, 'destroy'])->name('kategori-kebersihan.destroy');
         });
 
-        //Validasi Kejadian Darurat
-        // Route::get('/validasi-kejadian-darurat', [PatroliController::class, 'validasiKejadianDarurat'])->name('admin.validasi-kejadian-darurat');
-        // Route::put('/validasi-kejadian-darurat/{id}', [PatroliController::class, 'updateValidasiDarurat'])->name('admin.update-validasi-darurat');
-        
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');
+
+        // Kendaraan (modul Sopir, sisi Admin Cabang)
+        Route::prefix('kendaraan')->group(function () {
+            Route::get('/', [KendaraanController::class, 'index'])->name('kendaraan.index');
+            Route::get('/create', [KendaraanController::class, 'create'])->name('kendaraan.create');
+            Route::get('/cetak-qr', [KendaraanController::class, 'cetakQr'])->name('kendaraan.cetakQr');
+            Route::post('/', [KendaraanController::class, 'store'])->name('kendaraan.store');
+            Route::get('/{kendaraan}/edit', [KendaraanController::class, 'edit'])->name('kendaraan.edit');
+            Route::put('/{kendaraan}', [KendaraanController::class, 'update'])->name('kendaraan.update');
+            Route::delete('/{kendaraan}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy');
+            Route::get('/{kendaraan}/download-qr', [KendaraanController::class, 'downloadQrCode'])->name('kendaraan.downloadQrCode');
+        });
+
+        // Butir checklist kendaraan
+        Route::prefix('checklist-kendaraan')->group(function () {
+            Route::get('/', [ChecklistKendaraanController::class, 'index'])->name('checklist-kendaraan.index');
+            Route::get('/create', [ChecklistKendaraanController::class, 'create'])->name('checklist-kendaraan.create');
+            Route::post('/', [ChecklistKendaraanController::class, 'store'])->name('checklist-kendaraan.store');
+            Route::get('/{checklistKendaraan}/edit', [ChecklistKendaraanController::class, 'edit'])->name('checklist-kendaraan.edit');
+            Route::put('/{checklistKendaraan}', [ChecklistKendaraanController::class, 'update'])->name('checklist-kendaraan.update');
+            Route::delete('/{checklistKendaraan}', [ChecklistKendaraanController::class, 'destroy'])->name('checklist-kendaraan.destroy');
+        });
+
+        // Kategori kondisi kendaraan (untuk laporan darurat patroli sopir)
+        Route::prefix('kategori-kondisi-kendaraan')->group(function () {
+            Route::get('/', [KategoriKondisiKendaraanController::class, 'index'])->name('kategori-kondisi-kendaraan.index');
+            Route::post('/', [KategoriKondisiKendaraanController::class, 'store'])->name('kategori-kondisi-kendaraan.store');
+            Route::put('/{kategoriKondisiKendaraan}', [KategoriKondisiKendaraanController::class, 'update'])->name('kategori-kondisi-kendaraan.update');
+            Route::delete('/{kategoriKondisiKendaraan}', [KategoriKondisiKendaraanController::class, 'destroy'])->name('kategori-kondisi-kendaraan.destroy');
+        });
+
+        // Riwayat patroli kendaraan (+ penanganan laporan darurat)
+        Route::prefix('riwayat-kendaraan')->group(function () {
+            Route::get('/', [RiwayatKendaraanController::class, 'index'])->name('riwayat-kendaraan.index');
+            Route::get('/{riwayatKendaraan}', [RiwayatKendaraanController::class, 'show'])->name('riwayat-kendaraan.show');
+            Route::put('/{riwayatKendaraan}/penanganan', [RiwayatKendaraanController::class, 'updatePenanganan'])->name('riwayat-kendaraan.penanganan');
+        });
+
+        Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
     });
 
     Route::middleware('role:petugas_security')->prefix('petugas-security')->group(function () {
@@ -115,10 +156,26 @@ Route::middleware('auth')->group(function () {
         Route::post('/patroli/store', [PatroliController::class, 'store'])->name('patroli.store');
     });
 
+
+    // SOPIR ROUTES
+    Route::middleware('role:sopir')->prefix('sopir')->group(function () {
+        Route::get('/dashboard', [SopirController::class, 'dashboard'])->name('sopir.dashboard');
+        Route::get('/scan-qr', [SopirController::class, 'scanQr'])->name('sopir.scan-qr');
+
+        // Patroli kendaraan (QR mengarah ke sopir.absen.create)
+        Route::get('/absen/create', [SopirAbsenController::class, 'create'])->name('sopir.absen.create');
+        // QR lama (/sopir/cek/create) tetap valid: dialihkan ke form patroli.
+        Route::get('/cek/create', fn (\Illuminate\Http\Request $r) => redirect()->route('sopir.absen.create', ['kode' => $r->query('kode')]));
+        Route::post('/absen', [SopirAbsenController::class, 'store'])->name('sopir.absen.store');
+        Route::get('/riwayat-absen', [SopirAbsenController::class, 'riwayat'])->name('sopir.riwayat-absen');
+    });
+
+    // KABID DUKBIS ROUTES
     Route::middleware('role:kabid_dukbis')->prefix('kabid-dukbis')->group(function () {
         Route::get('/dashboard', [KabidDukbisController::class, 'dashboard'])->name('kabid-dukbis.dashboard');
         Route::get('/data-petugas-security', [KabidDukbisController::class, 'dataPetugasSecurity'])->name('kabid-dukbis.data-petugas-security');
         Route::get('/data-lokasi-patroli', [KabidDukbisController::class, 'dataLokasiPatroli'])->name('kabid-dukbis.data-lokasi-patroli');
+        Route::get('/absen-kendaraan', [KabidDukbisController::class, 'absenKendaraan'])->name('kabid-dukbis.absen-kendaraan');
         Route::get('/laporan-patroli', [KabidDukbisController::class, 'laporanPatroli'])->name('kabid-dukbis.laporan-patroli');
         Route::get('/laporan-patroli/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporan'])->name('kabid-dukbis.cetak-laporan-patroli-redirect');
         
@@ -128,6 +185,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-kebersihan/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporanKebersihan'])->name('kabid-dukbis.cetak-laporan-kebersihan-redirect');
     });
 
+    // OB ROUTES
     Route::middleware('role:ob')->prefix('ob')->name('ob.')->group(function () {
         Route::get('/dashboard', [ObController::class, 'dashboard'])->name('dashboard');
         Route::get('/scan-qr', [ObController::class, 'scanQr'])->name('scan-qr');
@@ -135,15 +193,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/kamar-mandi/{kamarMandi}/periksa', [ObController::class, 'periksa'])->name('kamar-mandi.periksa');
         Route::post('/kamar-mandi/{kamarMandi}/simpan', [ObController::class, 'simpanPemeriksaan'])->name('kamar-mandi.simpan');
 
-         Route::get('/riwayat-cek', [ObController::class, 'riwayat'])->name('riwayat-cek');
+        Route::get('/riwayat-cek', [ObController::class, 'riwayat'])->name('riwayat-cek');
     });
 });
 
 Route::get('/kabid-dukbis/laporan-patroli/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-patroli');
 Route::get('/kabid-dukbis/laporan-kebersihan/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanKebersihanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-kebersihan');
 
-//Verifikasi laporan
-// Route::get('/verifikasi-laporan/{token}', [KabidDukbisController::class, 'verifikasiLaporanToken'])
-//     ->name('verifikasi-laporan-patroli-token');
-
-require __DIR__ . '/auth.php';  
+require __DIR__ . '/auth.php';

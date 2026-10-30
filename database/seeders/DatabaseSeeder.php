@@ -15,7 +15,12 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(KategoriKejadianSeeder::class);
         $this->call(LokasiPatroliSeeder::class);
+
+
         $this->call(ChecklistKamarMandiSeeder::class);
         $this->call(KamarMandiSeeder::class);
+
+        $this->call(KendaraanSeeder::class);
+        $this->call(ChecklistKendaraanSeeder::class);
     }
 }

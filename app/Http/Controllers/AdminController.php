@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Cabang;
+use App\Models\AbsenKendaraan;
+use App\Models\PemeriksaanKamarMandi;
+use App\Models\ChecklistKamarMandi;
+use App\Models\Kendaraan;
+use App\Models\KamarMandi;
 use App\Models\LokasiPatroli;
 use App\Models\Patroli;
 use Carbon\Carbon;
@@ -20,7 +25,8 @@ class AdminController extends Controller
         $cabangId = $user->cabang_id; 
 
         $jumlahPengguna = User::where('cabang_id', $cabangId)
-            ->whereIn('role', ['petugas_security', 'kabid_petugas']) ->count();
+            ->whereIn('role', ['petugas_security', 'kabid_dukbis', 'sopir']) 
+            ->count();
 
         $jumlahLokasiPatroli = LokasiPatroli::where('cabang_id', $cabangId)->count();
         $jumlahPatroli = Patroli::where('cabang_id', $cabangId)->count();
@@ -78,7 +84,12 @@ class AdminController extends Controller
                 return $jumlah < $minimalPatroli;
             });
 
+        $kendaraan = $this->dataKendaraan($cabangId);
+        $kebersihan = $this->dataKebersihan($cabangId);
+
         return view('admin.dashboard', compact(
+            'kendaraan',
+            'kebersihan',
             'jumlahPengguna',
             'jumlahLokasiPatroli',
             'jumlahPatroli',
@@ -93,16 +104,129 @@ class AdminController extends Controller
         ));
     }
 
+    private function dataKendaraan(int $cabangId): array
+    {
+        $hariIni = Carbon::today();
+
+        $semua = Kendaraan::diCabang($cabangId)->aktif()
+            ->denganStatusHarian($hariIni)
+            ->with('patroliTerakhir')
+            ->orderBy('plat_nomor')
+            ->get();
+
+        $jumlahAktif = $semua->count();
+
+        // "Sudah dipatroli" = aman hari ini + darurat (sudah dilaporkan).
+        $sudahDipatroli = $semua->filter(fn ($k) => $k->statusHarian() !== 'belum')->count();
+
+        $belumDipatroliHariIni = $semua->filter(fn ($k) => $k->statusHarian() === 'belum')->values();
+
+        $laporanTerbuka = AbsenKendaraan::with(['kendaraan:id,plat_nomor,jenis', 'kategoriKejadian:id,nama_kategori'])
+            ->where('cabang_id', $cabangId)
+            ->daruratTerbuka()
+            ->orderByDesc('tanggal')
+            ->orderByDesc('waktu')
+            ->get();
+
+        $darurat = $semua->filter(fn ($k) => $k->statusHarian() === 'darurat')->count();
+        $belumPernah = $semua->filter(fn ($k) => $k->statusHarian() !== 'darurat' && $k->patroliTerakhir === null)->count();
+
+        $kondisi = [
+            'aman' => $jumlahAktif - $darurat - $belumPernah,
+            'darurat' => $darurat,
+            'belum_pernah' => $belumPernah,
+        ];
+
+        $mulai = Carbon::today()->subDays(6);
+        $perTanggal = AbsenKendaraan::where('cabang_id', $cabangId)
+            ->whereDate('tanggal', '>=', $mulai)
+            ->selectRaw('DATE(tanggal) as tgl, COUNT(*) as total')
+            ->groupBy('tgl')
+            ->pluck('total', 'tgl');
+
+        $labels = [];
+        $data = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $tgl = Carbon::today()->subDays($i);
+            $labels[] = Str::title($tgl->isoFormat('dddd'));
+            $data[] = (int) ($perTanggal[$tgl->toDateString()] ?? 0);
+        }
+
+        return [
+            'jumlahAktif' => $jumlahAktif,
+            'sudahDipatroli' => $sudahDipatroli,
+            'belumDipatroliHariIni' => $belumDipatroliHariIni,
+            'laporanTerbuka' => $laporanTerbuka,
+            'kondisi' => $kondisi,
+            'mingguLabels' => $labels,
+            'mingguData' => $data,
+        ];
+    }
+
+    private function dataKebersihan(int $cabangId): array
+    {
+        $hariIni = Carbon::today();
+    
+        $aktif = KamarMandi::diCabang($cabangId)->aktif();
+    
+        $jumlahKamarMandi = (clone $aktif)->count();
+        $sudahDicek = (clone $aktif)->sudahDicek($hariIni)->count();
+    
+        $terkini = (clone $aktif)->with('cekTerakhir.user')->get();
+    
+        $perluTindakan = $terkini
+            ->filter(fn ($k) => $k->cekTerakhir?->status_kondisi === 'perlu_tindakan')
+            ->values();
+    
+        $kondisi = [
+            'baik' => $terkini->filter(fn ($k) => $k->cekTerakhir?->status_kondisi === 'baik')->count(),
+            'perlu_tindakan' => $perluTindakan->count(),
+            'belum_pernah' => $terkini->filter(fn ($k) => $k->cekTerakhir === null)->count(),
+        ];
+    
+        $belumDicekHariIni = (clone $aktif)
+            ->belumDicek($hariIni)
+            ->orderBy('nama_kamar_mandi')
+            ->get(['id', 'nama_kamar_mandi', 'lantai']);
+    
+        $mulai = Carbon::today()->subDays(6);
+        $perTanggal = PemeriksaanKamarMandi::where('cabang_id', $cabangId)
+            ->whereDate('tanggal', '>=', $mulai)
+            ->selectRaw('DATE(tanggal) as tgl, COUNT(*) as total')
+            ->groupBy('tgl')
+            ->pluck('total', 'tgl');
+    
+        $labels = [];
+        $data = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $tgl = Carbon::today()->subDays($i);
+            $labels[] = Str::title($tgl->isoFormat('dddd'));
+            $data[] = (int) ($perTanggal[$tgl->toDateString()] ?? 0);
+        }
+    
+        return [
+            'jumlahKamarMandi' => $jumlahKamarMandi,
+            'sudahDicek' => $sudahDicek,
+            'belumDicekHariIni' => $belumDicekHariIni,
+            'perluTindakan' => $perluTindakan,
+            'kondisi' => $kondisi,
+            'mingguLabels' => $labels,
+            'mingguData' => $data,
+        ];
+    }
+
     public function dataPatroli(Request $request)
     {
         $user = Auth::user();
-        $cabangId = $user->cabang_id; 
+        $cabangId = $user->cabang_id;
 
         $search = $request->input('search');
         $status = $request->input('status');
 
         $patroli = Patroli::with(['user', 'lokasiPatroli'])
-            ->where('cabang_id', $cabangId) ->when($search, function ($query, $search) {
+            ->where('cabang_id', $cabangId)
+            ->when($search, function ($query, $search) {
+
                 $query->where(function ($q) use ($search) {
                     $q->whereHas('user', function ($subQuery) use ($search) {
                         $subQuery->where('nama', 'like', '%' . $search . '%');

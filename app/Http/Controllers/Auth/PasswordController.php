@@ -37,8 +37,13 @@ class PasswordController extends Controller
             return redirect()->route('petugas-security.dashboard')->with('success', 'Password berhasil diubah.');
         } elseif ($user->role === 'kabid_dukbis') {
             return redirect()->route('kabid-dukbis.dashboard')->with('success', 'Password berhasil diubah.');
+
         } elseif ($user->role === 'ob') {
             return redirect()->route('ob.dashboard')->with('success', 'Password berhasil diubah.');
+        } elseif ($user->role === 'sopir') {
+            return redirect()->route('sopir.dashboard')->with('success', 'Password berhasil diubah.');
+
+
         }
 
         return redirect()->route('login')->with('error', 'Role tidak dikenali.');

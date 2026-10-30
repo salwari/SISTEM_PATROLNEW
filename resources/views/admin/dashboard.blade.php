@@ -7,15 +7,15 @@
     @endif
 
     {{-- Notifikasi kendaraan --}}
-    @if ($kendaraan['belumDicekHariIni']->count() > 0)
+    @if ($kendaraan['belumDipatroliHariIni']->count() > 0)
         <div class="mt-4 mb-2 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg shadow-md">
-            Terdapat {{ $kendaraan['belumDicekHariIni']->count() }} kendaraan aktif yang belum dicek hari ini:
-            <span class="font-semibold">{{ $kendaraan['belumDicekHariIni']->pluck('plat_nomor')->join(', ') }}</span>.
+            Terdapat {{ $kendaraan['belumDipatroliHariIni']->count() }} kendaraan aktif yang belum dipatroli hari ini:
+            <span class="font-semibold">{{ $kendaraan['belumDipatroliHariIni']->pluck('plat_nomor')->join(', ') }}</span>.
         </div>
     @endif
-    @if ($kendaraan['perluTindakan']->count() > 0)
+    @if ($kendaraan['laporanTerbuka']->count() > 0)
         <div class="mt-2 mb-2 p-4 bg-red-100 border-l-4 border-red-500 text-red-800 rounded-lg shadow-md">
-            Terdapat {{ $kendaraan['perluTindakan']->count() }} kendaraan dengan hasil cek terakhir <span class="font-semibold">perlu tindakan</span>.
+            Terdapat {{ $kendaraan['laporanTerbuka']->count() }} laporan darurat kendaraan yang <span class="font-semibold">belum selesai ditangani</span>.
         </div>
     @endif
 
@@ -122,12 +122,12 @@
                     </svg>
                 </div>
                 <div class="ml-4 w-full">
-                    <h3 class="text-base font-semibold text-gray-500">Sudah Dicek Hari Ini</h3>
+                    <h3 class="text-base font-semibold text-gray-500">Sudah Dipatroli Hari Ini</h3>
                     <p class="text-2xl font-bold text-green-600 dark:text-white">
-                        {{ $kendaraan['sudahDicek'] }} / {{ $kendaraan['jumlahAktif'] }}
+                        {{ $kendaraan['sudahDipatroli'] }} / {{ $kendaraan['jumlahAktif'] }}
                     </p>
                     @php
-                        $persen = $kendaraan['jumlahAktif'] > 0 ? round($kendaraan['sudahDicek'] / $kendaraan['jumlahAktif'] * 100) : 0;
+                        $persen = $kendaraan['jumlahAktif'] > 0 ? round($kendaraan['sudahDipatroli'] / $kendaraan['jumlahAktif'] * 100) : 0;
                     @endphp
                     <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
                         <div class="bg-green-500 h-2 rounded-full" style="width: {{ $persen }}%"></div>
@@ -136,7 +136,7 @@
             </div>
         </a>
 
-        <a href="{{ route('riwayat-kendaraan.index', ['status' => 'perlu_tindakan']) }}">
+        <a href="{{ route('riwayat-kendaraan.index', ['penanganan' => 'terbuka']) }}">
             <div class="flex items-center p-4 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800 dark:border-gray-700">
                 <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
                     <svg class="w-6 h-6 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -144,8 +144,8 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-base font-semibold text-gray-500">Perlu Tindakan</h3>
-                    <p class="text-2xl font-bold text-red-600 dark:text-white">{{ $kendaraan['perluTindakan']->count() }}</p>
+                    <h3 class="text-base font-semibold text-gray-500">Laporan Darurat Belum Selesai</h3>
+                    <p class="text-2xl font-bold text-red-600 dark:text-white">{{ $kendaraan['laporanTerbuka']->count() }}</p>
                 </div>
             </div>
         </a>
@@ -153,7 +153,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-4">Cek Kendaraan 7 Hari Terakhir</h3>
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-4">Patroli Kendaraan 7 Hari Terakhir</h3>
             <div class="relative h-72">
                 <canvas id="cekKendaraanChart" class="w-full h-full"></canvas>
             </div>
@@ -166,32 +166,41 @@
         </div>
     </div>
 
-    @if ($kendaraan['perluTindakan']->count() > 0)
+    @if ($kendaraan['laporanTerbuka']->count() > 0)
         <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700 mt-6">
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-4">Kendaraan yang Perlu Tindakan</h3>
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-white mb-4">Laporan Darurat Kendaraan Belum Selesai</h3>
             <div class="overflow-x-auto">
                 <table class="table-auto w-full text-sm text-gray-700">
                     <thead class="bg-red-100 text-gray-800 uppercase text-xs">
                         <tr>
                             <th class="px-4 py-2 text-left">Kendaraan</th>
-                            <th class="px-4 py-2 text-left">Dicek oleh</th>
+                            <th class="px-4 py-2 text-left">Dilaporkan oleh</th>
                             <th class="px-4 py-2 text-center">Tanggal</th>
-                            <th class="px-4 py-2 text-left">Catatan</th>
+                            <th class="px-4 py-2 text-left">Kondisi</th>
+                            <th class="px-4 py-2 text-center">Penanganan</th>
                             <th class="px-4 py-2 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        @foreach ($kendaraan['perluTindakan'] as $k)
+                        @foreach ($kendaraan['laporanTerbuka'] as $l)
                             <tr>
                                 <td class="px-4 py-2 whitespace-nowrap">
-                                    <span class="font-semibold">{{ $k->plat_nomor }}</span>
-                                    <div class="text-xs text-gray-500">{{ $k->jenis }}</div>
+                                    <span class="font-semibold">{{ $l->kendaraan->plat_nomor ?? '-' }}</span>
+                                    <div class="text-xs text-gray-500">{{ $l->kendaraan->jenis ?? '' }}</div>
                                 </td>
-                                <td class="px-4 py-2">{{ $k->cekTerakhir->user->nama ?? '-' }}</td>
-                                <td class="px-4 py-2 text-center whitespace-nowrap">{{ $k->cekTerakhir->tanggal_cek->format('d-m-Y') }}</td>
-                                <td class="px-4 py-2">{{ \Illuminate\Support\Str::limit($k->cekTerakhir->catatan ?: '-', 60) }}</td>
+                                <td class="px-4 py-2">{{ $l->nama_sopir }}</td>
+                                <td class="px-4 py-2 text-center whitespace-nowrap">{{ $l->tanggal->format('d-m-Y') }}</td>
+                                <td class="px-4 py-2">
+                                    <div class="font-semibold">{{ $l->kategoriKejadian->nama_kategori ?? '-' }}</div>
+                                    <div class="text-xs text-gray-500">{{ \Illuminate\Support\Str::limit($l->keterangan ?: '-', 60) }}</div>
+                                </td>
                                 <td class="px-4 py-2 text-center">
-                                    <a href="{{ route('riwayat-kendaraan.show', $k->cekTerakhir->id) }}"
+                                    <span class="px-2 py-1 text-xs rounded-full {{ $l->status_penanganan === 'proses' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700' }}">
+                                        {{ $l->penanganan_label }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-2 text-center">
+                                    <a href="{{ route('riwayat-kendaraan.show', $l->id) }}"
                                         class="px-2 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded">Detail</a>
                                 </td>
                             </tr>
@@ -328,7 +337,7 @@
         data: {
             labels: @json($kendaraan['mingguLabels']),
             datasets: [{
-                label: 'Jumlah Cek Kendaraan',
+                label: 'Jumlah Patroli Kendaraan',
                 data: @json($kendaraan['mingguData']),
                 backgroundColor: 'rgba(16, 185, 129, 0.5)',
                 borderColor: 'rgba(16, 185, 129, 1)',
@@ -346,11 +355,11 @@
     new Chart(document.getElementById('kondisiKendaraanChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Baik', 'Perlu Tindakan', 'Belum Pernah Dicek'],
+            labels: ['Aman', 'Ada Laporan Darurat', 'Belum Pernah Dipatroli'],
             datasets: [{
                 data: [
-                    {{ $kendaraan['kondisi']['baik'] }},
-                    {{ $kendaraan['kondisi']['perlu_tindakan'] }},
+                    {{ $kendaraan['kondisi']['aman'] }},
+                    {{ $kendaraan['kondisi']['darurat'] }},
                     {{ $kendaraan['kondisi']['belum_pernah'] }}
                 ],
                 backgroundColor: ['rgba(34,197,94,0.8)', 'rgba(239,68,68,0.8)', 'rgba(156,163,175,0.8)'],
@@ -378,4 +387,3 @@
         plugins: [ChartDataLabels]
     });
 </script>
-

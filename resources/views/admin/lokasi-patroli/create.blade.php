@@ -5,8 +5,6 @@
         <div class="max-w-full md:max-w-3xl bg-white p-6 rounded-lg shadow-md border border-gray-200">
             <form action="{{ route('lokasi-patroli.store') }}" method="POST" class="space-y-6">
                 @csrf
-
-                {{-- Nama Lokasi --}}
                 <div>
                     <label for="nama_lokasi" class="block text-sm font-medium text-gray-700">
                         Nama Lokasi <span class="text-red-600">*</span>

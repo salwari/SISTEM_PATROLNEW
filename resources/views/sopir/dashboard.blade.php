@@ -11,8 +11,8 @@
     <div class="max-w-7xl mx-auto p-2 space-y-2">
         @if ($total > 0 && $jumlahBelum > 0)
             <div class="mt-6 mb-2 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg shadow-md">
-                <strong>Perhatian!</strong> Masih ada <strong>{{ $jumlahBelum }}</strong> kendaraan yang belum diabsen
-                hari ini. Segera lakukan absen untuk menyelesaikan tugas hari ini.
+                <strong>Perhatian!</strong> Masih ada <strong>{{ $jumlahBelum }}</strong> kendaraan yang belum dipatroli
+                hari ini. Segera lakukan patroli untuk menyelesaikan tugas hari ini.
             </div>
         @endif
 
@@ -24,12 +24,12 @@
 
         <div>
             <h1 class="text-2xl font-semibold text-gray-800 mt-6 mb-2">Selamat datang, {{ Auth::user()->nama }}</h1>
-            <p class="text-sm text-gray-600">Berikut adalah ringkasan absen kendaraan hari ini.</p>
+            <p class="text-sm text-gray-600">Berikut adalah ringkasan patroli kendaraan hari ini.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="p-5 bg-white border border-gray-200 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold text-gray-800 mb-2">Status Absen Hari Ini</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Status Patroli Hari Ini</h2>
                 <p class="text-xs text-gray-500 mb-3">{{ now()->locale('id')->isoFormat('dddd, D MMMM YYYY') }}</p>
 
                 <div class="space-y-1 text-sm text-gray-800">
@@ -39,12 +39,12 @@
                         <strong>{{ $total }}</strong>
                     </p>
                     <p class="flex space-x-1">
-                        <span class="w-44 text-left">Kendaraan sudah diabsen</span>
+                        <span class="w-44 text-left">Kendaraan sudah dipatroli</span>
                         <span>:</span>
                         <strong class="text-green-600">{{ $sudah }}</strong>
                     </p>
                     <p class="flex space-x-1">
-                        <span class="w-44 text-left">Kendaraan belum diabsen</span>
+                        <span class="w-44 text-left">Kendaraan belum dipatroli</span>
                         <span>:</span>
                         <strong class="text-red-700">{{ $jumlahBelum }}</strong>
                     </p>
@@ -89,7 +89,7 @@
         </div>
 
         <div class="mt-12 bg-white p-4">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">Daftar Kendaraan Belum Diabsen</h2>
+            <h2 class="text-lg font-bold text-gray-800 mb-4">Daftar Kendaraan Belum Dipatroli</h2>
             <div class="overflow-x-auto rounded-lg border border-gray-200">
                 <table class="table-auto w-full text-sm text-gray-700">
                     <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -114,7 +114,7 @@
                         @empty
                             <tr>
                                 <td colspan="4" class="px-4 py-4 text-center text-gray-500">Semua kendaraan sudah
-                                    diabsen.</td>
+                                    dipatroli.</td>
                             </tr>
                         @endforelse
                     </tbody>

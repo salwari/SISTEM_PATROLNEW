@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\AbsenKendaraan;
 use App\Models\Kendaraan;
+use App\Models\KategoriKondisiKendaraan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class SopirAbsenController extends Controller
 {
-    /** Form absen, dibuka dari hasil scan QR (?kode=KDR-...). */
     public function create(Request $request)
     {
         $kendaraan = $this->cariKendaraan((string) $request->query('kode'));
@@ -21,18 +22,17 @@ class SopirAbsenController extends Controller
                 ->with('error', 'QR tidak dikenali, kendaraan tidak aktif, atau bukan milik cabang kamu.');
         }
 
-        $sudahAbsen = AbsenKendaraan::where('kendaraan_id', $kendaraan->id)
+        $sudahPatroli = AbsenKendaraan::where('kendaraan_id', $kendaraan->id)
             ->whereDate('tanggal', now()->toDateString())
             ->first();
 
-        if ($sudahAbsen) {
+        if ($sudahPatroli) {
             return redirect()->route('sopir.dashboard')
-                ->with('error', $kendaraan->plat_nomor . ' sudah diabsen hari ini oleh ' . $sudahAbsen->nama_sopir . ' pukul ' . $sudahAbsen->jam . '.');
+                ->with('error', $kendaraan->plat_nomor . ' sudah dipatroli hari ini oleh ' . $sudahPatroli->nama_sopir . ' pukul ' . $sudahPatroli->jam . '.');
         }
 
         $cabang = Auth::user()->cabang;
 
-        // Data area kantor untuk badge "Dalam area" di browser (null bila belum diatur).
         $area = ($cabang && $cabang->punyaArea()) ? [
             'lat' => (float) $cabang->latitude,
             'lng' => (float) $cabang->longitude,
@@ -40,9 +40,19 @@ class SopirAbsenController extends Controller
             'nama' => $cabang->nama_cabang,
         ] : null;
 
+        $kategoriKejadian = KategoriKondisiKendaraan::orderBy('id')->get();
+
+        $laporanTerbuka = AbsenKendaraan::with('kategoriKejadian')
+            ->where('kendaraan_id', $kendaraan->id)
+            ->daruratTerbuka()
+            ->orderByDesc('tanggal')
+            ->get();
+
         return view('sopir.form-absen', [
             'kendaraan' => $kendaraan,
             'area' => $area,
+            'kategoriKejadian' => $kategoriKejadian,
+            'laporanTerbuka' => $laporanTerbuka,
         ]);
     }
 
@@ -55,13 +65,17 @@ class SopirAbsenController extends Controller
 
         $validated = $request->validate([
             'kode' => ['required', 'string'],
-            'nama_sopir' => ['required', 'string', 'max:100'],
+            'status' => ['required', 'in:aman,darurat'],
+            'kejadian_id' => [Rule::requiredIf($request->input('status') === 'darurat'), 'nullable', 'exists:kategori_kondisi_kendaraan,id'],
+            'keterangan' => ['required', 'string', 'max:1000'],
             'foto' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'akurasi' => ['nullable', 'numeric', 'min:0', 'max:65535'],
         ], [
-            'nama_sopir.required' => 'Nama sopir wajib diisi.',
+            'status.required' => 'Status patroli wajib dipilih.',
+            'kejadian_id.required' => 'Kondisi kendaraan wajib dipilih untuk status darurat.',
+            'keterangan.required' => 'Keterangan wajib diisi.',
             'foto.required' => 'Foto kendaraan wajib diambil.',
             'foto.image' => 'File harus berupa gambar.',
             'foto.max' => 'Ukuran foto maksimal 5 MB.',
@@ -73,10 +87,9 @@ class SopirAbsenController extends Controller
 
         if (AbsenKendaraan::where('kendaraan_id', $kendaraan->id)->whereDate('tanggal', $hariIni)->exists()) {
             return redirect()->route('sopir.dashboard')
-                ->with('error', $kendaraan->plat_nomor . ' sudah diabsen hari ini.');
+                ->with('error', $kendaraan->plat_nomor . ' sudah dipatroli hari ini.');
         }
 
-        // Area dicek ulang di server, jangan percaya hasil dari browser.
         $cabang = $user->cabang;
         $jarak = null;
         $dalamArea = null;
@@ -87,7 +100,7 @@ class SopirAbsenController extends Controller
 
             if (!$dalamArea) {
                 throw ValidationException::withMessages([
-                    'latitude' => "Kamu berada {$jarak} m dari kantor (batas {$cabang->radius_meter} m). Absen hanya bisa dilakukan di area kantor.",
+                    'latitude' => "Kamu berada {$jarak} m dari kantor (batas {$cabang->radius_meter} m). Patroli hanya bisa dilakukan di area kantor.",
                 ]);
             }
         }
@@ -99,7 +112,7 @@ class SopirAbsenController extends Controller
                 'user_id' => $user->id,
                 'kendaraan_id' => $kendaraan->id,
                 'cabang_id' => $user->cabang_id,
-                'nama_sopir' => $validated['nama_sopir'],
+                'nama_sopir' => $user->nama,
                 'tanggal' => $hariIni,
                 'waktu' => now()->format('H:i:s'),
                 'foto' => $fotoPath,
@@ -108,6 +121,10 @@ class SopirAbsenController extends Controller
                 'akurasi_meter' => isset($validated['akurasi']) ? (int) round($validated['akurasi']) : null,
                 'jarak_meter' => $jarak,
                 'dalam_area' => $dalamArea,
+                'status' => $validated['status'],
+                'kejadian_id' => $validated['status'] === 'darurat' ? $validated['kejadian_id'] : null,
+                'keterangan' => $validated['keterangan'],
+                'status_penanganan' => $validated['status'] === 'darurat' ? 'belum' : null,
             ]);
         } catch (\Throwable $e) {
             Storage::disk('public')->delete($fotoPath);
@@ -115,20 +132,34 @@ class SopirAbsenController extends Controller
         }
 
         return redirect()->route('sopir.dashboard')
-            ->with('success', 'Absen ' . $kendaraan->plat_nomor . ' tersimpan.');
+            ->with('success', 'Patroli ' . $kendaraan->plat_nomor . ' berhasil disimpan.');
     }
 
-    public function riwayat()
+    public function riwayat(Request $request)
     {
-        $riwayat = AbsenKendaraan::with('kendaraan:id,plat_nomor,jenis')
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        $riwayat = AbsenKendaraan::with(['kendaraan:id,plat_nomor,jenis', 'kategoriKejadian:id,nama_kategori'])
             ->where('user_id', Auth::id())
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('kendaraan', function ($sub) use ($search) {
+                        $sub->where('plat_nomor', 'like', '%' . $search . '%')
+                            ->orWhere('jenis', 'like', '%' . $search . '%');
+                    })
+                        ->orWhere('keterangan', 'like', '%' . $search . '%')
+                        ->orWhere('tanggal', 'like', '%' . $search . '%');
+                });
+            })
+            ->when($status, fn ($query) => $query->where('status', $status))
             ->orderByDesc('tanggal')->orderByDesc('waktu')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return view('sopir.riwayat-absen', compact('riwayat'));
     }
 
-    /** Kendaraan harus aktif dan milik cabang sopir yang login. */
     private function cariKendaraan(string $kode): ?Kendaraan
     {
         if ($kode === '') {

@@ -1,90 +1,157 @@
-<x-app-layout :title="'Absen Kendaraan'">
-    <div class="max-w-xl mx-auto p-2">
-        <p class="text-xs font-semibold tracking-widest text-gray-500 mt-4">ABSEN KENDARAAN</p>
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">{{ $kendaraan->plat_nomor }} · {{ $kendaraan->jenis }}</h2>
+<x-app-layout :title="'Form Patroli Kendaraan'">
+    <div class="container mx-auto p-4">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Form Patroli Kendaraan</h2>
 
         @if ($errors->any())
-            <div class="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-800 rounded-lg shadow-md text-sm">
+            <div class="max-w-full md:max-w-4xl mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-800 rounded-lg shadow-md text-sm">
                 @foreach ($errors->all() as $e)
                     <p>{{ $e }}</p>
                 @endforeach
             </div>
         @endif
 
-        <form id="form-absen" action="{{ route('sopir.absen.store') }}" method="POST" enctype="multipart/form-data"
-            class="bg-white border border-gray-200 rounded-lg shadow-md p-4 space-y-5">
-            @csrf
-            <input type="hidden" name="kode" value="{{ $kendaraan->kode_barcode }}">
-            <input type="hidden" name="latitude" id="latitude">
-            <input type="hidden" name="longitude" id="longitude">
-            <input type="hidden" name="akurasi" id="akurasi">
-
-            {{-- Nama sopir --}}
-            <div>
-                <label for="nama_sopir" class="block text-sm font-medium text-gray-700">Nama sopir <span class="text-red-600">*</span></label>
-                <input type="text" id="nama_sopir" name="nama_sopir" maxlength="100" required
-                    value="{{ old('nama_sopir', Auth::user()->nama) }}"
-                    class="mt-1 block w-full rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500">
+        @if ($laporanTerbuka->isNotEmpty())
+            <div class="max-w-full md:max-w-4xl mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg shadow-md text-sm">
+                <strong>Perhatian!</strong> Kendaraan ini masih punya laporan darurat yang belum selesai:
+                <ul class="list-disc ml-5 mt-1">
+                    @foreach ($laporanTerbuka as $lap)
+                        <li>{{ $lap->tanggal->format('d-m-Y') }} · {{ $lap->kategoriKejadian->nama_kategori ?? '-' }} ({{ $lap->penanganan_label }})</li>
+                    @endforeach
+                </ul>
             </div>
+        @endif
 
-            {{-- Nama kendaraan (terkunci, dari QR) --}}
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Nama kendaraan</label>
-                <input type="text" value="{{ $kendaraan->plat_nomor }} · {{ $kendaraan->jenis }}" readonly
-                    class="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-100 text-gray-500 text-sm">
-            </div>
+        <div class="max-w-full md:max-w-4xl bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <form id="form-absen" action="{{ route('sopir.absen.store') }}" method="POST" enctype="multipart/form-data"
+                class="space-y-6">
+                @csrf
+                <input type="hidden" name="kode" value="{{ $kendaraan->kode_barcode }}">
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+                <input type="hidden" name="akurasi" id="akurasi">
 
-            {{-- Foto (kamera langsung, seperti patroli Satpam) --}}
-            <div>
-                <span class="block text-sm font-medium text-gray-700">Foto <span class="text-red-600">*</span></span>
-                <div class="mt-1 relative rounded-lg border border-dashed border-gray-300 bg-gray-50 overflow-hidden" style="aspect-ratio: 4 / 3;">
-                    <video id="video" class="hidden w-full h-full object-cover" autoplay playsinline muted></video>
-                    <img id="foto-preview" class="hidden w-full h-full object-cover" alt="Pratinjau foto">
-                    <span id="foto-status" class="absolute inset-0 flex items-center justify-center text-sm text-gray-500 text-center px-4">Membuka kamera...</span>
-                </div>
-                <canvas id="canvas" class="hidden"></canvas>
-                {{-- Input file hanya dipakai untuk mengirim hasil jepretan (dan cadangan bila kamera tidak bisa dibuka) --}}
-                <input type="file" id="foto" name="foto" accept="image/*" capture="environment" class="hidden">
-                <div class="mt-2 flex flex-wrap gap-2">
-                    <button type="button" id="btn-jepret"
-                        class="hidden px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Ambil foto</button>
-                    <button type="button" id="btn-ulang"
-                        class="hidden px-4 py-2 text-sm font-semibold bg-white border border-gray-300 rounded-lg hover:bg-gray-100">Ambil ulang</button>
-                    <button type="button" id="btn-file"
-                        class="hidden px-4 py-2 text-sm font-semibold bg-white border border-gray-300 rounded-lg hover:bg-gray-100">Pilih dari perangkat</button>
-                </div>
-            </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            {{-- Lokasi --}}
-            <div>
-                <span class="block text-sm font-medium text-gray-700">Lokasi</span>
-                <div class="mt-1 rounded-lg border border-gray-300 p-3 text-sm">
-                    <p id="lok-judul" class="font-semibold text-gray-600">Mencari lokasi...</p>
-                    <p id="lok-koordinat" class="font-mono text-gray-500 mt-1"></p>
-                    <span id="lok-badge" class="hidden"></span>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Kendaraan</label>
+                        <input type="text" value="{{ $kendaraan->plat_nomor }} · {{ $kendaraan->jenis }}" readonly
+                            class="mt-1 block w-full rounded-lg border border-blue-300 shadow-sm bg-blue-100 text-gray-700 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Nama Sopir</label>
+                        <input type="text" value="{{ Auth::user()->nama }}" readonly
+                            class="mt-1 block w-full rounded-lg border border-blue-300 shadow-sm bg-blue-100 text-gray-700 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Tanggal Patroli</label>
+                        <input type="text" value="{{ now()->toDateString() }}" readonly
+                            class="mt-1 block w-full rounded-lg border border-blue-300 shadow-sm bg-blue-100 text-gray-700 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Waktu Patroli</label>
+                        <input type="text" value="{{ now()->format('H:i:s') }}" readonly
+                            class="mt-1 block w-full rounded-lg border border-blue-300 shadow-sm bg-blue-100 text-gray-700 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Status <span class="text-red-600">*</span>
+                        </label>
+                        <div class="flex items-center mb-2">
+                            <input id="status-aman" type="radio" name="status" value="aman" required
+                                {{ old('status') === 'aman' ? 'checked' : '' }}
+                                class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <label for="status-aman" class="ml-2 text-sm text-gray-700">Aman</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="status-darurat" type="radio" name="status" value="darurat" required
+                                {{ old('status') === 'darurat' ? 'checked' : '' }}
+                                class="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500">
+                            <label for="status-darurat" class="ml-2 text-sm text-gray-700">Darurat</label>
+                        </div>
+                    </div>
+
+                    <div id="kategoriDaruratForm" class="md:col-span-2 hidden">
+                        <label for="kejadian_id" class="block text-sm font-medium text-gray-700">
+                            Kondisi Kendaraan <span class="text-red-600">*</span>
+                        </label>
+                        <select name="kejadian_id" id="kejadian_id"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm bg-white focus:ring-red-500 focus:border-red-500 text-sm">
+                            <option value="">-- Pilih Kondisi Kendaraan --</option>
+                            @foreach ($kategoriKejadian as $kategori)
+                                <option value="{{ $kategori->id }}" {{ (string) old('kejadian_id') === (string) $kategori->id ? 'selected' : '' }}>
+                                    {{ $kategori->nama_kategori }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Keterangan <span class="text-red-600">*</span>
+                        </label>
+                        <textarea name="keterangan" rows="3" required maxlength="1000"
+                            class="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm bg-white focus:ring-blue-500 focus:border-blue-500 text-sm">{{ old('keterangan') }}</textarea>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Ambil Foto <span class="text-red-600">*</span>
+                        </label>
+                        <div class="w-full border border-gray-200 rounded-lg p-4 bg-gray-50 flex flex-col items-center">
+                            <div class="relative w-full rounded border border-gray-200 overflow-hidden bg-gray-100" style="aspect-ratio: 16 / 9;">
+                                <video id="video" class="hidden w-full h-full object-cover" autoplay playsinline muted></video>
+                                <img id="foto-preview" class="hidden w-full h-full object-cover" alt="Pratinjau foto">
+                                <span id="foto-status" class="absolute inset-0 flex items-center justify-center text-sm text-gray-500 text-center px-4">Membuka kamera...</span>
+                            </div>
+                            <canvas id="canvas" class="hidden"></canvas>
+                            <input type="file" id="foto" name="foto" accept="image/*" capture="environment" class="hidden">
+
+                            <p class="text-center text-gray-700 mt-2 text-sm">Foto posisi kendaraan saat ini. Jika kurang pas, kamu bisa <strong>ambil ulang</strong>.</p>
+
+                            <button type="button" id="btn-jepret"
+                                class="hidden mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold w-full">Ambil Foto</button>
+                            <button type="button" id="btn-ulang"
+                                class="hidden mt-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-semibold w-full">Ambil Ulang Foto</button>
+                            <button type="button" id="btn-file"
+                                class="hidden mt-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold w-full">Pilih dari perangkat</button>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <span class="block text-sm font-medium text-gray-700">Lokasi</span>
+                        <div class="mt-1 rounded-lg border border-gray-300 p-3 text-sm">
+                            <p id="lok-judul" class="font-semibold text-gray-600">Mencari lokasi...</p>
+                            <p id="lok-koordinat" class="font-mono text-gray-500 mt-1"></p>
+                            <span id="lok-badge" class="hidden"></span>
+                        </div>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <button type="button" id="btn-lokasi" class="hidden px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-100">
+                                Coba lagi
+                            </button>
+                            @if (app()->environment('local') && $area)
+                                <button type="button" id="btn-lokasi-contoh" class="px-3 py-1.5 text-sm bg-yellow-50 border border-yellow-400 text-yellow-800 rounded-lg hover:bg-yellow-100">
+                                    Pakai lokasi contoh (testing)
+                                </button>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-                <div class="mt-2 flex flex-wrap gap-2">
-                    <button type="button" id="btn-lokasi" class="hidden px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-100">
-                        Coba lagi
+
+                <div class="flex justify-end gap-4 pt-4">
+                    <a href="{{ route('sopir.dashboard') }}"
+                        class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg font-semibold">
+                        Kembali
+                    </a>
+                    <button type="submit" id="btn-simpan" disabled
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                        Simpan
                     </button>
-                    @if (app()->environment('local') && $area)
-                        {{-- Khusus testing di komputer lokal tanpa GPS. Tidak tampil di server produksi (APP_ENV=production). --}}
-                        <button type="button" id="btn-lokasi-contoh" class="px-3 py-1.5 text-sm bg-yellow-50 border border-yellow-400 text-yellow-800 rounded-lg hover:bg-yellow-100">
-                            Pakai lokasi contoh (testing)
-                        </button>
-                    @endif
                 </div>
-            </div>
-
-            <div class="flex justify-end gap-3 pt-2">
-                <a href="{{ route('sopir.dashboard') }}"
-                    class="px-4 py-2 bg-white border border-gray-300 text-gray-800 text-sm rounded-lg font-semibold hover:bg-gray-100">Batal</a>
-                <button type="submit" id="btn-simpan" disabled
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
-                    Simpan absen
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </x-app-layout>
 
@@ -97,6 +164,17 @@
         let lokasiSiap = false;
 
         function perbarui() { btnSimpan.disabled = !(lokasiSiap && foto.files && foto.files.length); }
+
+        const statusAman = $('status-aman'), statusDarurat = $('status-darurat'), kategoriForm = $('kategoriDaruratForm');
+        const kejadian = $('kejadian_id');
+        function toggleKategori() {
+            const darurat = statusDarurat.checked;
+            kategoriForm.classList.toggle('hidden', !darurat);
+            kejadian.required = darurat;
+        }
+        statusAman.addEventListener('change', toggleKategori);
+        statusDarurat.addEventListener('change', toggleKategori);
+        toggleKategori();
 
         // ---- Foto: kamera langsung (getUserMedia) lalu jepret ke canvas
         const video = $('video'), canvas = $('canvas'), preview = $('foto-preview'), status = $('foto-status');
@@ -145,7 +223,7 @@
 
             canvas.toBlob(function (blob) {
                 if (!blob) return;
-                const file = new File([blob], 'absen-' + Date.now() + '.jpg', { type: 'image/jpeg' });
+                const file = new File([blob], 'patroli-' + Date.now() + '.jpg', { type: 'image/jpeg' });
                 const dt = new DataTransfer();
                 dt.items.add(file);
                 foto.files = dt.files; // dikirim lewat input file, validasi server tetap sama

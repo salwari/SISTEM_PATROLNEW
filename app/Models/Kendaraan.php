@@ -43,6 +43,16 @@ class Kendaraan extends Model
         return $this->hasMany(AbsenKendaraan::class, 'kendaraan_id');
     }
 
+    public function patroliTerakhir()
+    {
+        return $this->hasOne(AbsenKendaraan::class, 'kendaraan_id')->latestOfMany('id');
+    }
+
+    public function laporanDaruratTerbuka()
+    {
+        return $this->hasMany(AbsenKendaraan::class, 'kendaraan_id')->daruratTerbuka();
+    }
+
     /** Cek paling baru, untuk menampilkan kondisi terkini kendaraan. */
     public function cekTerakhir()
     {

@@ -63,7 +63,7 @@
                         <th class="px-4 py-3">Jenis</th>
                         <th class="px-4 py-3">Kode Barcode</th>
                         <th class="px-4 py-3">QR Code</th>
-                        <th class="px-4 py-3">Cek Terakhir</th>
+                        <th class="px-4 py-3">Patroli Terakhir</th>
                         <th class="px-4 py-3">Status</th>
                         <th class="px-4 py-3">Aksi</th>
                     </tr>
@@ -87,12 +87,18 @@
                                 @endif
                             </td>
                             <td class="px-4 py-2 text-center whitespace-nowrap">
-                                @if ($data->cekTerakhir)
-                                    <div class="text-xs text-gray-600">{{ $data->cekTerakhir->tanggal_cek->format('d-m-Y') }}</div>
-                                    @if ($data->cekTerakhir->status_kondisi === 'baik')
-                                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Baik</span>
+                                @if ($data->patroliTerakhir)
+                                    <div class="text-xs text-gray-600">{{ $data->patroliTerakhir->tanggal->format('d-m-Y') }}</div>
+                                    @if ($data->patroliTerakhir->status === 'darurat')
+                                        <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Darurat</span>
                                     @else
-                                        <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Perlu Tindakan</span>
+                                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aman</span>
+                                    @endif
+                                    @if ($data->laporan_darurat_terbuka_count > 0)
+                                        <a href="{{ route('riwayat-kendaraan.index', ['kendaraan_id' => $data->id, 'penanganan' => 'terbuka']) }}"
+                                            class="block mt-1 text-xs font-semibold text-red-700 hover:underline">
+                                            {{ $data->laporan_darurat_terbuka_count }} laporan belum selesai
+                                        </a>
                                     @endif
                                 @else
                                     <span class="text-gray-400 italic">Belum pernah</span>
@@ -226,5 +232,5 @@
                 });
             });
         });
-    });
+    });d
 </script>

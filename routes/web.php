@@ -2,24 +2,25 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CabangController;
+use App\Http\Controllers\ChecklistKendaraanController;
 use App\Http\Controllers\JadwalPatroliController;
 use App\Http\Controllers\KabidDukbisController;
 use App\Http\Controllers\KategoriKebersihanController;
 use App\Http\Controllers\KategoriKejadianController;
-use App\Http\Controllers\LokasiPatroliController;
+use App\Http\Controllers\KategoriKondisiKendaraanController;
+use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\LokasiKebersihanController;
-use App\Http\Controllers\RiwayatKebersihanController;
+use App\Http\Controllers\LokasiPatroliController;
 use App\Http\Controllers\ObController;
 use App\Http\Controllers\PatroliController;
 use App\Http\Controllers\PetugasSecurityController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SopirController;
+use App\Http\Controllers\RiwayatKebersihanController;
+use App\Http\Controllers\RiwayatKendaraanController;
 use App\Http\Controllers\SopirAbsenController;
+use App\Http\Controllers\SopirController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\KendaraanController;
-use App\Http\Controllers\ChecklistKendaraanController;
-use App\Http\Controllers\RiwayatKendaraanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
 
-    //SUPER ADMIN ROUTES
+    // SUPER ADMIN ROUTES
     Route::middleware('role:super_admin')->prefix('super-admin')->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('super-admin.dashboard');
 
@@ -66,7 +67,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{user}', [UserController::class, 'destroy'])->name('data-pengguna.destroy');
         });
 
-        //Data Kategori Kejadian
+        // Data Kategori Kejadian
         Route::prefix('kategori-kejadian')->group(function () {
             Route::get('/', [KategoriKejadianController::class, 'index'])->name('kategori-kejadian.index');
             Route::post('/', [KategoriKejadianController::class, 'store'])->name('kategori-kejadian.store');
@@ -83,10 +84,9 @@ Route::middleware('auth')->group(function () {
             Route::put('/{jadwalPatroli}', [JadwalPatroliController::class, 'update'])->name('jadwal-patroli.update');
             Route::delete('/{jadwalPatroli}', [JadwalPatroliController::class, 'destroy'])->name('jadwal-patroli.destroy');
             Route::get('/cetak', [JadwalPatroliController::class, 'cetakJadwal'])->name('jadwal-patroli.cetak-jadwal');
-
         });
 
-        // Lokasi Patroli 
+        // Lokasi Patroli
         Route::prefix('lokasi-patroli')->group(function () {
             Route::get('/', [LokasiPatroliController::class, 'index'])->name('lokasi-patroli.index');
             Route::get('/create', [LokasiPatroliController::class, 'create'])->name('lokasi-patroli.create');
@@ -116,16 +116,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{checklistKamarMandi}', [KategoriKebersihanController::class, 'destroy'])->name('kategori-kebersihan.destroy');
         });
 
-        //Validasi Kejadian Darurat
-        // Route::get('/validasi-kejadian-darurat', [PatroliController::class, 'validasiKejadianDarurat'])->name('admin.validasi-kejadian-darurat');
-        // Route::put('/validasi-kejadian-darurat/{id}', [PatroliController::class, 'updateValidasiDarurat'])->name('admin.update-validasi-darurat');
-        
-        //Data Patroli
+        // Data Patroli
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');
-
-
-        // Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
-
 
         // Kendaraan (modul Sopir, sisi Admin Cabang)
         Route::prefix('kendaraan')->group(function () {
@@ -149,15 +141,22 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{checklistKendaraan}', [ChecklistKendaraanController::class, 'destroy'])->name('checklist-kendaraan.destroy');
         });
 
-        // Riwayat cek kendaraan
+        // Kategori kondisi kendaraan (untuk laporan darurat patroli sopir)
+        Route::prefix('kategori-kondisi-kendaraan')->group(function () {
+            Route::get('/', [KategoriKondisiKendaraanController::class, 'index'])->name('kategori-kondisi-kendaraan.index');
+            Route::post('/', [KategoriKondisiKendaraanController::class, 'store'])->name('kategori-kondisi-kendaraan.store');
+            Route::put('/{kategoriKondisiKendaraan}', [KategoriKondisiKendaraanController::class, 'update'])->name('kategori-kondisi-kendaraan.update');
+            Route::delete('/{kategoriKondisiKendaraan}', [KategoriKondisiKendaraanController::class, 'destroy'])->name('kategori-kondisi-kendaraan.destroy');
+        });
+
+        // Riwayat patroli kendaraan
         Route::prefix('riwayat-kendaraan')->group(function () {
             Route::get('/', [RiwayatKendaraanController::class, 'index'])->name('riwayat-kendaraan.index');
             Route::get('/{riwayatKendaraan}', [RiwayatKendaraanController::class, 'show'])->name('riwayat-kendaraan.show');
+            Route::put('/{riwayatKendaraan}/penanganan', [RiwayatKendaraanController::class, 'updatePenanganan'])->name('riwayat-kendaraan.penanganan');
         });
 
         Route::get('/riwayat-kebersihan', [RiwayatKebersihanController::class, 'index'])->name('riwayat-kebersihan.index');
-
-
     });
 
     // PETUGAS SECURITY ROUTES
@@ -175,9 +174,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [SopirController::class, 'dashboard'])->name('sopir.dashboard');
         Route::get('/scan-qr', [SopirController::class, 'scanQr'])->name('sopir.scan-qr');
 
-        // Absen kendaraan (QR mengarah ke sopir.absen.create)
+        // Patroli kendaraan (QR mengarah ke sopir.absen.create)
         Route::get('/absen/create', [SopirAbsenController::class, 'create'])->name('sopir.absen.create');
-        // QR lama (/sopir/cek/create) tetap valid: dialihkan ke form absen.
+        // QR lama (/sopir/cek/create) tetap valid: dialihkan ke form patroli.
         Route::get('/cek/create', fn (\Illuminate\Http\Request $r) => redirect()->route('sopir.absen.create', ['kode' => $r->query('kode')]));
         Route::post('/absen', [SopirAbsenController::class, 'store'])->name('sopir.absen.store');
         Route::get('/riwayat-absen', [SopirAbsenController::class, 'riwayat'])->name('sopir.riwayat-absen');
@@ -191,10 +190,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/absen-kendaraan', [KabidDukbisController::class, 'absenKendaraan'])->name('kabid-dukbis.absen-kendaraan');
         Route::get('/laporan-patroli', [KabidDukbisController::class, 'laporanPatroli'])->name('kabid-dukbis.laporan-patroli');
         Route::get('/laporan-patroli/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporan'])->name('kabid-dukbis.cetak-laporan-patroli-redirect');
-        // Route::get('/laporan-patroli/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-patroli');
-        // Route::get('/laporan-patroli/verifikasi', [KabidDukbisController::class, 'verifikasiLaporan'])->name('kabid-dukbis.verifikasi-laporan-patroli');
     });
 
+    // OB ROUTES
     Route::middleware('role:ob')->prefix('ob')->name('ob.')->group(function () {
         Route::get('/dashboard', [ObController::class, 'dashboard'])->name('dashboard');
         Route::get('/scan-qr', [ObController::class, 'scanQr'])->name('scan-qr');
@@ -202,15 +200,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/kamar-mandi/{kamarMandi}/periksa', [ObController::class, 'periksa'])->name('kamar-mandi.periksa');
         Route::post('/kamar-mandi/{kamarMandi}/simpan', [ObController::class, 'simpanPemeriksaan'])->name('kamar-mandi.simpan');
 
-         Route::get('/riwayat-cek', [ObController::class, 'riwayat'])->name('riwayat-cek');
+        Route::get('/riwayat-cek', [ObController::class, 'riwayat'])->name('riwayat-cek');
     });
 });
 
 Route::get('/kabid-dukbis/laporan-patroli/cetak/{token}', [KabidDukbisController::class, 'cetakLaporanTerenkripsi'])->name('kabid-dukbis.cetak-laporan-patroli');
 
-//Verifikasi laporan
-// Route::get('/verifikasi-laporan/{token}', [KabidDukbisController::class, 'verifikasiLaporanToken'])
-//     ->name('verifikasi-laporan-patroli-token');
-
-
-require __DIR__ . '/auth.php';  
+require __DIR__ . '/auth.php';

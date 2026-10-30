@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Cabang;
-use App\Models\CekKendaraan;
+use App\Models\AbsenKendaraan;
 use App\Models\Kendaraan;
 use App\Models\LokasiPatroli;
 use App\Models\Patroli;
@@ -106,8 +106,8 @@ class AdminController extends Controller
     }
 
     /**
-     * Ringkasan modul kendaraan untuk dashboard admin cabang.
-     * "Dicek hari ini" = kendaraan aktif yang punya minimal satu cek di tanggal hari ini.
+     * Ringkasan patroli kendaraan untuk dashboard admin cabang.
+     * Laporan terbuka = laporan darurat yang penanganannya belum selesai.
      */
     private function dataKendaraan(int $cabangId): array
     {
@@ -116,28 +116,39 @@ class AdminController extends Controller
         $aktif = Kendaraan::diCabang($cabangId)->aktif();
 
         $jumlahAktif = (clone $aktif)->count();
-        $sudahDicek = (clone $aktif)->sudahDicek($hariIni)->count();
 
-        // Kondisi terkini = hasil cek paling baru tiap kendaraan aktif.
-        $terkini = (clone $aktif)->with('cekTerakhir.user')->get();
+        $sudahDipatroli = (clone $aktif)
+            ->whereHas('absenKendaraan', fn ($q) => $q->whereDate('tanggal', $hariIni))
+            ->count();
 
-        $perluTindakan = $terkini
-            ->filter(fn ($k) => $k->cekTerakhir?->status_kondisi === 'perlu_tindakan')
-            ->values();
+        $belumDipatroliHariIni = (clone $aktif)
+            ->whereDoesntHave('absenKendaraan', fn ($q) => $q->whereDate('tanggal', $hariIni))
+            ->orderBy('plat_nomor')
+            ->get(['id', 'plat_nomor', 'jenis']);
+
+        $laporanTerbuka = AbsenKendaraan::with(['kendaraan:id,plat_nomor,jenis', 'kategoriKejadian:id,nama_kategori'])
+            ->where('cabang_id', $cabangId)
+            ->daruratTerbuka()
+            ->orderByDesc('tanggal')
+            ->orderByDesc('waktu')
+            ->get();
+
+        $idBermasalah = $laporanTerbuka->pluck('kendaraan_id')->unique();
+        $terkini = (clone $aktif)->with('patroliTerakhir')->get();
+
+        $darurat = $terkini->filter(fn ($k) => $idBermasalah->contains($k->id))->count();
+        $belumPernah = $terkini->filter(fn ($k) => !$idBermasalah->contains($k->id) && $k->patroliTerakhir === null)->count();
 
         $kondisi = [
-            'baik' => $terkini->filter(fn ($k) => $k->cekTerakhir?->status_kondisi === 'baik')->count(),
-            'perlu_tindakan' => $perluTindakan->count(),
-            'belum_pernah' => $terkini->filter(fn ($k) => $k->cekTerakhir === null)->count(),
+            'aman' => $terkini->count() - $darurat - $belumPernah,
+            'darurat' => $darurat,
+            'belum_pernah' => $belumPernah,
         ];
 
-        $belumDicekHariIni = (clone $aktif)->belumDicek($hariIni)->orderBy('plat_nomor')->get(['id', 'plat_nomor', 'jenis']);
-
-        // Jumlah cek 7 hari terakhir dalam satu query.
         $mulai = Carbon::today()->subDays(6);
-        $perTanggal = CekKendaraan::where('cabang_id', $cabangId)
-            ->whereDate('tanggal_cek', '>=', $mulai)
-            ->selectRaw('DATE(tanggal_cek) as tgl, COUNT(*) as total')
+        $perTanggal = AbsenKendaraan::where('cabang_id', $cabangId)
+            ->whereDate('tanggal', '>=', $mulai)
+            ->selectRaw('DATE(tanggal) as tgl, COUNT(*) as total')
             ->groupBy('tgl')
             ->pluck('total', 'tgl');
 
@@ -151,9 +162,9 @@ class AdminController extends Controller
 
         return [
             'jumlahAktif' => $jumlahAktif,
-            'sudahDicek' => $sudahDicek,
-            'belumDicekHariIni' => $belumDicekHariIni,
-            'perluTindakan' => $perluTindakan,
+            'sudahDipatroli' => $sudahDipatroli,
+            'belumDipatroliHariIni' => $belumDipatroliHariIni,
+            'laporanTerbuka' => $laporanTerbuka,
             'kondisi' => $kondisi,
             'mingguLabels' => $labels,
             'mingguData' => $data,

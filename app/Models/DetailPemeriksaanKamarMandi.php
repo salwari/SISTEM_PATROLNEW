@@ -21,7 +21,7 @@ class DetailPemeriksaanKamarMandi extends Model
     {
         return $this->belongsTo(PemeriksaanKamarMandi::class, 'pemeriksaan_id');
     }
-    
+
     public function checklist()
     {
         return $this->belongsTo(ChecklistKamarMandi::class, 'checklist_id');

@@ -1,43 +1,6 @@
-{{-- <<<<<<< HEAD
-<x-app-layout :title="'Riwayat Absen Kendaraan'">
-    <div class="max-w-7xl mx-auto p-2 space-y-4">
-        <h1 class="text-2xl font-semibold text-gray-800 mt-4">Riwayat Absen Kendaraan</h1>
-
-        <form method="GET" action="{{ route('riwayat-kendaraan.index') }}"
-            class="bg-white border border-gray-200 rounded-lg shadow-md p-4 space-y-3">
-            <div>
-                <label for="search" class="block text-xs text-gray-600">Cari plat, jenis, atau nama sopir</label>
-                <input type="text" id="search" name="search" value="{{ $search }}"
-                    class="mt-1 block w-full rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500">
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div class="md:col-span-3">
-                    <label for="kendaraan_id" class="block text-xs text-gray-600">Kendaraan</label>
-                    <select id="kendaraan_id" name="kendaraan_id"
-                        class="mt-1 block w-full rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="">Semua</option>
-                        @foreach ($daftarKendaraan as $k)
-                            <option value="{{ $k->id }}" @selected(request('kendaraan_id') == $k->id)>
-                                {{ $k->plat_nomor }} · {{ $k->jenis }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label for="lokasi" class="block text-xs text-gray-600">Lokasi</label>
-                    <select id="lokasi" name="lokasi"
-                        class="mt-1 block w-full rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="">Semua</option>
-                        <option value="dalam_area" @selected(request('lokasi') === 'dalam_area')>Dalam area</option>
-                        <option value="tanpa_area" @selected(request('lokasi') === 'tanpa_area')>Area belum diatur</option>
-                    </select>
-                </div>
-            </div>
-======= --}}
 <x-app-layout :title="'Riwayat Kendaraan'">
-    <div class="container mx-auto p-4">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Riwayat Patroli Kendaraan</h2>
+    <div class="container mx-auto p-4 space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800">Riwayat Patroli Kendaraan</h2>
 
         @php
             $status = request('status');
@@ -48,8 +11,12 @@
                 $status === 'aman' => 'aman',
                 default => 'semua',
             };
-            $bawa = array_filter(['search' => request('search'), 'kendaraan_id' => request('kendaraan_id'),
-                'tanggal_dari' => request('tanggal_dari'), 'tanggal_sampai' => request('tanggal_sampai')]);
+            $bawa = array_filter([
+                'search' => request('search'), 
+                'kendaraan_id' => request('kendaraan_id'),
+                'tanggal_dari' => request('tanggal_dari'), 
+                'tanggal_sampai' => request('tanggal_sampai')
+            ]);
             $tabs = [
                 'semua' => ['Semua', [], $hitung['semua']],
                 'perlu' => ['Perlu Ditangani', ['status' => 'darurat', 'penanganan' => 'terbuka'], $hitung['perlu']],
@@ -58,8 +25,8 @@
             ];
         @endphp
 
-        {{-- Tab cepat --}}
-        <div class="flex flex-wrap gap-2 mb-3">
+        {{-- Tab Cepat --}}
+        <div class="flex flex-wrap gap-2">
             @foreach ($tabs as $kunci => [$label, $param, $jumlah])
                 @php
                     $aktif = $tabAktif === $kunci;
@@ -75,14 +42,14 @@
             @endforeach
         </div>
 
-        {{-- Cari --}}
-        <div class="border border-gray-200 rounded-lg shadow-md mb-4 bg-white px-4 py-3">
+        {{-- Form Pencarian & Filter --}}
+        <div class="border border-gray-200 rounded-lg shadow-md bg-white px-4 py-3">
             <form action="{{ route('riwayat-kendaraan.index') }}" method="GET" class="space-y-3">
                 @if ($status) <input type="hidden" name="status" value="{{ $status }}"> @endif
                 @if ($pen) <input type="hidden" name="penanganan" value="{{ $pen }}"> @endif
 
                 <div class="flex gap-2">
-                    <input type="text" name="search" value="{{ $search }}" autocomplete="off"
+                    <input type="text" name="search" value="{{ $search ?? request('search') }}" autocomplete="off"
                         placeholder="Cari plat, jenis kendaraan, nama sopir, atau keterangan..."
                         class="flex-1 p-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                     <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Cari</button>
@@ -93,7 +60,7 @@
                 </div>
 
                 <details {{ request()->hasAny(['kendaraan_id', 'tanggal_dari', 'tanggal_sampai']) ? 'open' : '' }}>
-                    <summary class="text-sm text-blue-700 cursor-pointer">Filter lainnya (kendaraan, tanggal)</summary>
+                    <summary class="text-sm text-blue-700 cursor-pointer font-medium">Filter lainnya (kendaraan, tanggal)</summary>
                     <div class="grid gap-3 mt-3" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));">
                         <div>
                             <label class="block text-xs text-gray-600 mb-1" for="kendaraan_id">Kendaraan</label>
@@ -101,7 +68,9 @@
                                 class="block w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                                 <option value="">Semua</option>
                                 @foreach ($daftarKendaraan as $k)
-                                    <option value="{{ $k->id }}" @selected(request('kendaraan_id') == $k->id)>{{ $k->plat_nomor }}</option>
+                                    <option value="{{ $k->id }}" @selected(request('kendaraan_id') == $k->id)>
+                                        {{ $k->plat_nomor }} · {{ $k->jenis }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -123,38 +92,13 @@
             </form>
         </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div class="md:col-span-3">
-                    <label for="tanggal_dari" class="block text-xs text-gray-600">Dari</label>
-                    <input type="date" id="tanggal_dari" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
-                        class="mt-1 block w-full rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label for="tanggal_sampai" class="block text-xs text-gray-600">Sampai</label>
-                    <input type="date" id="tanggal_sampai" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
-                        class="mt-1 block w-full rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500">
-                </div>
-            </div>
-
-            @error('tanggal_sampai')
-                <p class="text-xs text-red-600">{{ $message }}</p>
-            @enderror
-
-            <div class="flex justify-end gap-2">
-                <a href="{{ route('riwayat-kendaraan.index') }}"
-                    class="px-4 py-2 bg-white border border-gray-300 text-gray-800 text-sm rounded-lg font-semibold hover:bg-gray-100">Reset</a>
-                <button type="submit"
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-semibold">Terapkan</button>
-            </div>
-        </form>
-
+        {{-- Tabel Riwayat --}}
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
                     <tr class="text-center">
                         <th class="px-4 py-3">No</th>
                         <th class="px-4 py-3">Tanggal</th>
-
                         <th class="px-4 py-3">Kendaraan</th>
                         <th class="px-4 py-3">Sopir</th>
                         <th class="px-4 py-3">Status</th>
@@ -168,39 +112,50 @@
                         <tr class="hover:bg-gray-100 text-center">
                             <td class="px-4 py-2">{{ $loop->iteration + ($riwayat->currentPage() - 1) * $riwayat->perPage() }}</td>
                             <td class="px-4 py-2 whitespace-nowrap">
-
-                                {{ $data->tanggal->format('d-m-Y') }}
-                                <div class="text-xs text-gray-500">{{ $data->jam }}</div>
+                                {{ optional($a->tanggal)->format('d-m-Y') }}
+                                <div class="text-xs text-gray-500">{{ $a->jam }}</div>
                             </td>
                             <td class="px-4 py-2 text-left whitespace-nowrap">
                                 <span class="font-semibold">{{ $a->kendaraan->plat_nomor ?? '-' }}</span>
                                 <div class="text-xs text-gray-500">{{ $a->kendaraan->jenis ?? '' }}</div>
                             </td>
-
-                            <td class="px-4 py-2 text-left">{{ $data->nama_sopir }}</td>
+                            <td class="px-4 py-2 text-left">{{ $a->nama_sopir }}</td>
                             <td class="px-4 py-2">
-                                @if ($data->status === 'darurat')
+                                @if (optional($a)->status === 'darurat' || $a->kejadian_id)
                                     <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs">Darurat</span>
                                 @else
                                     <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Aman</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-2 text-left">{{ $data->status === 'darurat' ? ($data->kategoriKejadian->nama_kategori ?? '-') : '-' }}</td>
+                            <td class="px-4 py-2 text-left">
+                                {{ ($a->status === 'darurat' || $a->kejadian_id) ? ($a->kategoriKejadian->nama_kategori ?? '-') : '-' }}
+                            </td>
                             <td class="px-4 py-2">
-                                @if ($data->status === 'darurat')
-                                    @php $warna = ['belum' => 'bg-red-100 text-red-700', 'proses' => 'bg-yellow-100 text-yellow-700', 'selesai' => 'bg-green-100 text-green-700']; @endphp
-                                    <span class="px-2 py-1 rounded-full text-xs {{ $warna[$data->status_penanganan] ?? 'bg-gray-100 text-gray-600' }}">{{ $data->penanganan_label }}</span>
+                                @if ($a->status === 'darurat' || $a->kejadian_id)
+                                    @php 
+                                        $warna = [
+                                            'belum' => 'bg-red-100 text-red-700', 
+                                            'proses' => 'bg-yellow-100 text-yellow-700', 
+                                            'selesai' => 'bg-green-100 text-green-700'
+                                        ]; 
+                                    @endphp
+                                    <span class="px-2 py-1 rounded-full text-xs {{ $warna[$a->status_penanganan] ?? 'bg-gray-100 text-gray-600' }}">
+                                        {{ $a->penanganan_label }}
+                                    </span>
                                 @else
                                     -
                                 @endif
                             </td>
                             <td class="px-4 py-2">
-                                <a href="{{ asset('storage/' . $a->foto) }}" target="_blank" class="text-blue-600 hover:underline">Lihat</a>
+                                @if($a->foto)
+                                    <a href="{{ asset('storage/' . $a->foto) }}" target="_blank" class="text-blue-600 hover:underline">Lihat</a>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-
                             <td colspan="8" class="px-4 py-4 text-center text-gray-700">Belum ada riwayat patroli kendaraan.</td>
                         </tr>
                     @endforelse
@@ -208,6 +163,7 @@
             </table>
         </div>
 
+        {{-- Pagination --}}
         <div class="flex justify-between items-center bg-white px-2 py-3">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $riwayat->firstItem() ?? 0 }} sampai {{ $riwayat->lastItem() ?? 0 }} dari {{ $riwayat->total() }} data

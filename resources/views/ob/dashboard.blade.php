@@ -31,10 +31,10 @@
         @endif
 
         <div>
-            <h1 class="text-2xl font-semibold text-gray-800 mt-2">Selamat datang, {{ Auth::user()->nama }}</h1>
-            <p class="text-sm text-gray-600">
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-white mt-2">Selamat datang, {{ Auth::user()->nama }}</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
                 Pengecekan Kebersihan & Kelengkapan Kamar Mandi &bull;
-                <span class="font-medium text-gray-700">{{ \Carbon\Carbon::parse($today)->translatedFormat('l, d F Y') }}</span>
+                <span class="font-medium text-gray-700 dark:text-gray-300">{{ \Carbon\Carbon::parse($today)->translatedFormat('l, d F Y') }}</span>
             </p>
         </div>
 

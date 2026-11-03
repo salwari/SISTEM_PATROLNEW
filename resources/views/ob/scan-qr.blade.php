@@ -7,7 +7,7 @@
                 <p class="text-xs text-gray-500">Arahkan kamera ke barcode/QR Code yang terpasang di kamar mandi</p>
             </div>
             <a href="{{ route('ob.dashboard') }}"
-                class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg transition">
+                class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 text-xs font-semibold rounded-lg transition">
                 &larr; Kembali
             </a>
         </div>

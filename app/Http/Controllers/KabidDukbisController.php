@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Cabang;
 use App\Models\User;
+use App\Models\AbsenKendaraan;
+use App\Models\Kendaraan;
 use App\Models\LokasiPatroli;
 use App\Models\Patroli;
 use App\Models\KamarMandi;
@@ -98,6 +100,54 @@ class KabidDukbisController extends Controller
             ->where('status_kondisi', 'perlu_tindakan')
             ->count();
 
+        $kendaraanHariIni = Kendaraan::diCabang($cabangId)
+            ->aktif()
+            ->denganStatusHarian(Carbon::today())
+            ->get();
+        $jumlahKendaraan = $kendaraanHariIni->count();
+        $kendaraanSudahPatroli = $kendaraanHariIni->filter(fn ($kendaraan) => $kendaraan->statusHarian() !== 'belum')->count();
+        $kendaraanDarurat = $kendaraanHariIni->filter(fn ($kendaraan) => $kendaraan->statusHarian() === 'darurat')->count();
+
+        $kendaraanHarianLabels = [];
+        $kendaraanHarianData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $kendaraanHarianLabels[] = Str::title($date->isoFormat('dddd'));
+            $kendaraanHarianData[] = AbsenKendaraan::where('cabang_id', $cabangId)
+                ->whereDate('tanggal', $date)
+                ->count();
+        }
+
+        $kendaraanMingguanLabels = [];
+        $kendaraanMingguanData = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $startOfWeek = Carbon::now()->startOfWeek()->subWeeks($i);
+            $endOfWeek = $startOfWeek->copy()->endOfWeek();
+            $kendaraanMingguanLabels[] = 'Minggu ke-' . (4 - $i);
+            $kendaraanMingguanData[] = AbsenKendaraan::where('cabang_id', $cabangId)
+                ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
+                ->count();
+        }
+
+        $kendaraanBulananLabels = [];
+        $kendaraanBulananData = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $kendaraanBulananLabels[] = Str::title($month->isoFormat('MMMM'));
+            $kendaraanBulananData[] = AbsenKendaraan::where('cabang_id', $cabangId)
+                ->whereYear('tanggal', $month->year)
+                ->whereMonth('tanggal', $month->month)
+                ->count();
+        }
+
+        $laporanDaruratKendaraan = AbsenKendaraan::with(['kendaraan', 'user', 'kategoriKejadian'])
+            ->where('cabang_id', $cabangId)
+            ->daruratTerbuka()
+            ->orderByDesc('tanggal')
+            ->orderByDesc('waktu')
+            ->take(3)
+            ->get();
+
         $temuanTerbaru = PemeriksaanKamarMandi::with(['kamarMandi', 'user'])
             ->where('cabang_id', $cabangId)
             ->where('status_kondisi', 'perlu_tindakan')
@@ -119,6 +169,16 @@ class KabidDukbisController extends Controller
             'jumlahKamarMandi',
             'toiletSelesaiHariIni',
             'jumlahTemuanAktif',
+            'jumlahKendaraan',
+            'kendaraanSudahPatroli',
+            'kendaraanDarurat',
+            'kendaraanHarianLabels',
+            'kendaraanHarianData',
+            'kendaraanMingguanLabels',
+            'kendaraanMingguanData',
+            'kendaraanBulananLabels',
+            'kendaraanBulananData',
+            'laporanDaruratKendaraan',
             'temuanTerbaru'
         ));
     }

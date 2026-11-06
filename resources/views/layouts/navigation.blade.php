@@ -29,13 +29,11 @@
                 class="flex mx-2 text-sm bg-white rounded-full md:mr-0 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-200"
                 id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
                 <span class="sr-only">Open user menu</span>
-                
                 <img class="w-8 h-8 rounded-full"
                     src="{{ Auth::user()->foto ? asset('storage/' . Auth::user()->foto) : 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png' }}"
                     alt="user photo" />
             </button>
-            
-            <div class="hidden z-50 my-4 w-56 text-base list-none bg-white divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
+            <div class="hidden z-50 my-4 w-56 overflow-hidden text-base list-none bg-white divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
                 id="dropdown">
                 <div class="py-3 px-4">
                     <span
@@ -43,24 +41,24 @@
                     <span
                         class="block text-sm text-gray-900 truncate dark:text-white">{{ auth()->user()->email }}</span>
                 </div>
-                <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
+                <ul class="py-1 text-gray-700 dark:text-white" aria-labelledby="dropdown">
                     <li>
                         <a href="{{ route('profile.index') }}"
-                            class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Profil
+                            class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:hover:bg-gray-600 dark:hover:text-white">Profil
                             Saya</a>
                     </li>
                     <li>
                         <a href="{{ route('ubah-password') }}"
-                            class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Ubah
+                            class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:hover:bg-gray-600 dark:hover:text-white">Ubah
                             Password</a>
                     </li>
                 </ul>
-                <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
+                <ul class="pt-1 pb-0 text-gray-700 dark:text-white" aria-labelledby="dropdown">
                     <li>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit"
-                                class="block w-full text-left py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                class="block w-full text-left py-2.5 px-4 text-sm rounded-b-xl text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:hover:bg-gray-600 dark:hover:text-white">
                                 Logout
                             </button>
                         </form>

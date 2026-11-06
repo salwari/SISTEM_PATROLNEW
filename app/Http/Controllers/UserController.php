@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     /** Role yang boleh dikelola admin cabang. Role 'ob' ditambahkan oleh modul kebersihan. */
-    private const ROLE_DIKELOLA = ['petugas_security', 'kabid_dukbis', 'sopir'];
+    private const ROLE_DIKELOLA = ['petugas_security', 'kabid_dukbis', 'sopir', 'ob'];
 
     public function index(Request $request)
     {

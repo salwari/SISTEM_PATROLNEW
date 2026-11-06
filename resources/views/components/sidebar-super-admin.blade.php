@@ -5,7 +5,6 @@
     <div class="h-full overflow-y-auto py-5 px-3 bg-white dark:bg-gray-800">
         <ul class="space-y-2">
 
-            
             <li class="px-3 text-sm font-semibold text-gray-500 uppercase">Dashboard</li>
             <li>
                 <a href="{{ route('super-admin.dashboard') }}"
@@ -21,12 +20,11 @@
                 </a>
             </li>
 
-            
-            <li class="px-3 text-sm font-semibold text-gray-500 uppercase">Master Data</li>
+            <li class="px-3 text-sm font-semibold text-gray-500 uppercase mt-6">Master Data</li>
             <li>
                 <a href="{{ route('data-cabang.index') }}"
                     class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
-                    {{ request()->routeIs('super-admin.data-cabang') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    {{ request()->routeIs('data-cabang.*') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                     <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                         fill="currentColor" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -36,50 +34,96 @@
                 </a>
             </li>
 
-            <li class="px-3 text-sm font-semibold text-gray-500 uppercase">Manajemen Patroli</li>
-            
-            <li>
-                <a href="{{ route('super-admin.data-petugas') }}"
-                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
-                   {{ request()->routeIs('super-admin.data-petugas') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                        fill="currentColor" viewBox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512h388.6c1.8 0 3.5-.2 5.3-.5c-76.3-55.1-99.8-141-103.1-200.2c-16.1-4.8-33.1-7.3-50.7-7.3H178.3zm308.8-78.3l-120 48C358 277.4 352 286.2 352 296c0 63.3 25.9 168.8 134.8 214.2c5.9 2.5 12.6 2.5 18.5 0C614.1 464.8 640 359.3 640 296c0-9.8-6-18.6-15.1-22.3l-120-48c-5.7-2.3-12.1-2.3-17.8 0zM591.4 312c-3.9 50.7-27.2 116.7-95.4 149.7V273.8l95.4 38.2z" />
-                    </svg>
-                    <span class="ml-3">Data Petugas Security</span>
-                </a>
-            </li>
+            <li class="px-3 text-sm font-semibold text-gray-500 uppercase mt-6">Menu Utama</li>
 
-            
-            <li>
-                <a href="{{ route('super-admin.data-lokasi') }}"
-                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
-                        {{ request()->routeIs('lokasi-patroli.*') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor">
-                        <path
-                            d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z">
-                        </path>
-                    </svg>
-                    <span class="ml-3"> Data Lokasi Patroli</span>
-                </a>
-            </li>
+            @php
+                $menuGroups = [
+                    [
+                        'key' => 'patroli',
+                        'label' => 'Patroli',
+                        'viewBox' => '0 0 24 24',
+                        'icon' => 'M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.735c0 5.906 3.01 11.4 8.04 14.28 1.05.6 2.37.6 3.42 0 5.03-2.88 8.04-8.374 8.04-14.28a12.738 12.738 0 00-.635-3.97.75.75 0 00-.722-.515 11.209 11.209 0 01-7.877-3.08z',
+                        'items' => [
+                            ['label' => 'Data Petugas Security', 'route' => 'super-admin.data-petugas'],
+                            ['label' => 'Data Lokasi Patroli', 'route' => 'super-admin.data-lokasi'],
+                            ['label' => 'Data Patroli', 'route' => 'super-admin.data-patroli-petugas'],
+                        ],
+                    ],
+                    [
+                        'key' => 'kebersihan',
+                        'label' => 'Kebersihan',
+                        'viewBox' => '0 0 24 24',
+                        'icon' => 'M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z',
+                        'items' => [
+                            ['label' => 'Data OB', 'route' => 'super-admin.data-ob'],
+                            ['label' => 'Data Lokasi Kebersihan', 'route' => 'super-admin.data-lokasi-kebersihan'],
+                        ],
+                    ],
+                    [
+                        'key' => 'kendaraan',
+                        'label' => 'Kendaraan',
+                        'viewBox' => '0 0 24 24',
+                        'icon' => 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z',
+                        'items' => [
+                            ['label' => 'Data Sopir', 'route' => 'super-admin.data-sopir'],
+                            ['label' => 'Data Kendaraan', 'route' => 'super-admin.data-kendaraan'],
+                        ],
+                    ],
+                ];
+            @endphp
 
-            
-            <li>
-                <a href="{{ route('super-admin.data-patroli-petugas') }}"
-                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
-                        {{ request()->routeIs('super-admin.data-patroli-petugas') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
-                        <path
-                            d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8l0 378.1C394 378 431.1 230.1 432 141.4L256 66.8s0 0 0 0z">
-                        </path>
-                    </svg>
-                    <span class="ml-3">Data Patroli</span>
-                </a>
-            </li>
+            @foreach ($menuGroups as $group)
+                @php
+                    $groupActive = collect($group['items'])->contains(fn($item) => request()->routeIs($item['route']));
+                @endphp
+                <li>
+                    <button type="button" onclick="toggleSidebarDropdown('{{ $group['key'] }}')"
+                        class="flex items-center w-full p-2 text-base font-medium transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700 
+                                {{ $groupActive ? 'text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white' }}">
+
+                        <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="{{ $group['viewBox'] }}" fill="currentColor">
+                            <path fill-rule="evenodd" d="{{ $group['icon'] }}" clip-rule="evenodd" />
+                        </svg>
+
+                        <span class="flex-1 ml-3 text-left whitespace-nowrap">{{ $group['label'] }}</span>
+                        <svg id="chevron-{{ $group['key'] }}" class="w-6 h-6 text-gray-400"
+                            style="transition: transform 0.3s ease; transform: rotate({{ $groupActive ? '180deg' : '0deg' }});"
+                            fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div id="dropdown-{{ $group['key'] }}"
+                        style="display: grid; transition: grid-template-rows 0.3s ease; grid-template-rows: {{ $groupActive ? '1fr' : '0fr' }};">
+                        <ul class="space-y-1 py-1" style="overflow: hidden; min-height: 0;">
+                            @foreach ($group['items'] as $item)
+                                @php $itemActive = request()->routeIs($item['route']); @endphp
+                                <li>
+                                    <a href="{{ route($item['route']) }}"
+                                        class="flex items-center gap-3 w-full p-2 pl-11 text-base font-medium rounded-lg transition-all duration-200
+                                            {{ $itemActive ? 'text-blue-600 bg-blue-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 hover:pl-12 dark:text-white dark:hover:bg-gray-700' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full shrink-0 {{ $itemActive ? 'bg-blue-600 dark:bg-blue-400' : 'bg-gray-300 dark:bg-gray-500' }}"></span>
+                                        <span>{{ $item['label'] }}</span>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </li>
+            @endforeach
+
         </ul>
     </div>
 </aside>
+
+<script>
+    function toggleSidebarDropdown(name) {
+        var panel = document.getElementById('dropdown-' + name);
+        var chevron = document.getElementById('chevron-' + name);
+        var isOpen = panel.style.gridTemplateRows.indexOf('1fr') !== -1;
+        panel.style.gridTemplateRows = isOpen ? '0fr' : '1fr';
+        chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+</script>

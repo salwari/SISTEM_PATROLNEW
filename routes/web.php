@@ -47,6 +47,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/data-petugas', [SuperAdminController::class, 'dataPetugas'])->name('super-admin.data-petugas');
         Route::get('/data-lokasi', [SuperAdminController::class, 'dataLokasi'])->name('super-admin.data-lokasi');
         Route::get('/data-patroli-petugas', [SuperAdminController::class, 'dataPatroliPetugas'])->name('super-admin.data-patroli-petugas');
+        Route::get('/data-ob', [SuperAdminController::class, 'dataOb'])->name('super-admin.data-ob');
+        Route::get('/data-sopir', [SuperAdminController::class, 'dataSopir'])->name('super-admin.data-sopir');
+        Route::get('/data-lokasi-kebersihan', [SuperAdminController::class, 'dataLokasiKebersihan'])->name('super-admin.data-lokasi-kebersihan');
+        Route::get('/data-kendaraan', [SuperAdminController::class, 'dataKendaraan'])->name('super-admin.data-kendaraan');
     });
 
     Route::middleware('role:admin')->prefix('admin')->group(function () {

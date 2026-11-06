@@ -15,6 +15,11 @@
                     <span>Patroli</span>
                 </button>
 
+                <button type="button" onclick="switchDashboardTab('kendaraan')" id="tab-btn-kendaraan"
+                    class="tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    <span>Kendaraan</span>
+                </button>
+
                 <button type="button" onclick="switchDashboardTab('kebersihan')" id="tab-btn-kebersihan"
                     class="tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
                     <span>Kebersihan</span>
@@ -81,6 +86,100 @@
                 </div>
                 <div class="relative h-80">
                     <canvas id="patroliChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-content-kendaraan" class="hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <a href="{{ route('kabid-dukbis.absen-kendaraan') }}" class="group">
+                    <div class="flex items-center p-4 bg-white border border-gray-200 rounded-xl shadow-sm group-hover:shadow-md group-hover:border-amber-400 transition">
+                        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex-shrink-0">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 11l1.5-4.5A2 2 0 018.4 5h7.2a2 2 0 011.9 1.5L19 11l1.5 1.5c.3.3.5.8.5 1.2V18a1 1 0 01-1 1h-1v1a1 1 0 01-2 0v-1H7v1a1 1 0 01-2 0v-1H4a1 1 0 01-1-1v-4.3c0-.5.2-.9.5-1.2L5 11zm2.1 0h9.8l-1.2-4H8.4l-1.3 4zM6.5 16a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm11 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xs font-medium text-gray-500">Kendaraan Aktif</h3>
+                            <p class="text-2xl font-bold text-gray-900">{{ $jumlahKendaraan }} <span class="text-xs font-normal text-gray-400">Unit</span></p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="{{ route('kabid-dukbis.absen-kendaraan') }}" class="group">
+                    <div class="flex items-center p-4 bg-white border border-gray-200 rounded-xl shadow-sm group-hover:shadow-md group-hover:border-emerald-400 transition">
+                        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xs font-medium text-gray-500">Patroli Kendaraan Hari Ini</h3>
+                            <p class="text-2xl font-bold text-gray-900">{{ $kendaraanSudahPatroli }} <span class="text-sm font-normal text-gray-400">/ {{ $jumlahKendaraan }} Unit</span></p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="{{ route('kabid-dukbis.absen-kendaraan') }}" class="group">
+                    <div class="flex items-center p-4 bg-white border {{ $kendaraanDarurat > 0 ? 'border-red-300 bg-red-50/30' : 'border-gray-200' }} rounded-xl shadow-sm group-hover:shadow-md group-hover:border-red-400 transition">
+                        <div class="flex items-center justify-center w-12 h-12 rounded-xl {{ $kendaraanDarurat > 0 ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500' }} flex-shrink-0">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xs font-medium text-gray-500">Laporan Darurat Terbuka</h3>
+                            <p class="text-2xl font-bold {{ $kendaraanDarurat > 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $kendaraanDarurat }} <span class="text-xs font-normal text-gray-400">Laporan</span></p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800">Aktivitas Patroli Kendaraan</h3>
+                        <p class="text-xs text-gray-400">Jumlah laporan patroli kendaraan di cabang ini</p>
+                    </div>
+                    <select id="kendaraan-filter" class="border-gray-300 rounded-lg text-xs text-gray-700 focus:ring-amber-500 focus:border-amber-500 p-2 w-full sm:w-auto">
+                        <option value="harian" selected>Harian (7 Hari Terakhir)</option>
+                        <option value="mingguan">Mingguan (4 Minggu)</option>
+                        <option value="bulanan">Bulanan (1 Tahun)</option>
+                    </select>
+                </div>
+                <div class="relative h-80">
+                    <canvas id="kendaraanChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800">Laporan Darurat Kendaraan Terbaru</h3>
+                        <p class="text-xs text-gray-400">Laporan yang belum selesai ditangani</p>
+                    </div>
+                    <a href="{{ route('kabid-dukbis.absen-kendaraan') }}" class="text-xs font-semibold text-amber-700 hover:underline">Buka Absen Kendaraan &rarr;</a>
+                </div>
+
+                <div class="space-y-3">
+                    @forelse ($laporanDaruratKendaraan as $laporan)
+                        <div class="p-4 rounded-xl bg-red-50/60 border border-red-100 text-xs space-y-2">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 font-bold text-gray-800">
+                                <span class="text-sm font-semibold text-red-700">{{ $laporan->kendaraan->plat_nomor ?? 'Kendaraan' }} - {{ $laporan->kendaraan->jenis ?? '-' }}</span>
+                                <span class="text-[11px] text-gray-500 font-normal">{{ $laporan->tanggal?->format('d M Y') }} • {{ $laporan->jam }} WIB</span>
+                            </div>
+                            <p class="text-gray-700"><strong class="text-gray-900">Kejadian:</strong> {{ $laporan->kategoriKejadian->nama_kategori ?? 'Darurat' }}</p>
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-[11px] text-gray-500">
+                                <span>Sopir: <strong class="text-gray-800">{{ $laporan->nama_sopir ?? $laporan->user->nama ?? '-' }}</strong></span>
+                                <span>Penanganan: <strong class="text-red-700">{{ $laporan->status_penanganan_label }}</strong></span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="py-10 text-center text-gray-400 text-xs">
+                            <p class="font-bold text-gray-700 text-sm">Tidak Ada Laporan Darurat Terbuka</p>
+                            <p class="mt-1">Semua laporan darurat kendaraan sudah ditangani.</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -219,15 +318,19 @@
         function switchDashboardTab(tabName) {
             const contentPatroli = document.getElementById('tab-content-patroli');
             const contentKebersihan = document.getElementById('tab-content-kebersihan');
+            const contentKendaraan = document.getElementById('tab-content-kendaraan');
             const btnPatroli = document.getElementById('tab-btn-patroli');
             const btnKebersihan = document.getElementById('tab-btn-kebersihan');
+            const btnKendaraan = document.getElementById('tab-btn-kendaraan');
 
             if (tabName === 'patroli') {
                 contentPatroli.classList.remove('hidden');
                 contentKebersihan.classList.add('hidden');
+                contentKendaraan.classList.add('hidden');
 
                 btnPatroli.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-blue-600 text-blue-600';
                 btnKebersihan.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                btnKendaraan.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
 
                 if (typeof patroliChart !== 'undefined') {
                     setTimeout(() => { patroliChart.resize(); }, 50);
@@ -235,9 +338,23 @@
             } else if (tabName === 'kebersihan') {
                 contentPatroli.classList.add('hidden');
                 contentKebersihan.classList.remove('hidden');
+                contentKendaraan.classList.add('hidden');
 
                 btnKebersihan.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-emerald-600 text-emerald-600';
                 btnPatroli.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                btnKendaraan.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+            } else if (tabName === 'kendaraan') {
+                contentPatroli.classList.add('hidden');
+                contentKebersihan.classList.add('hidden');
+                contentKendaraan.classList.remove('hidden');
+
+                btnKendaraan.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-amber-600 text-amber-700';
+                btnPatroli.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                btnKebersihan.className = 'tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300';
+
+                if (typeof kendaraanChart !== 'undefined') {
+                    setTimeout(() => { kendaraanChart.resize(); }, 50);
+                }
             }
         }
 
@@ -317,6 +434,53 @@
             patroliChart.data.labels = dataSet[selected].labels;
             patroliChart.data.datasets[0].data = dataSet[selected].data;
             patroliChart.update();
+        });
+
+        const kendaraanCtx = document.getElementById('kendaraanChart').getContext('2d');
+        const kendaraanDataSet = {
+            harian: {
+                labels: @json($kendaraanHarianLabels),
+                data: @json($kendaraanHarianData)
+            },
+            mingguan: {
+                labels: @json($kendaraanMingguanLabels),
+                data: @json($kendaraanMingguanData)
+            },
+            bulanan: {
+                labels: @json($kendaraanBulananLabels),
+                data: @json($kendaraanBulananData)
+            }
+        };
+
+        let kendaraanChart = new Chart(kendaraanCtx, {
+            type: 'bar',
+            data: {
+                labels: kendaraanDataSet.harian.labels,
+                datasets: [{
+                    label: 'Jumlah Patroli Kendaraan',
+                    data: kendaraanDataSet.harian.data,
+                    backgroundColor: 'rgba(217, 119, 6, 0.75)',
+                    borderColor: 'rgba(245, 158, 11, 1)',
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { color: chartTextColor, font: { size: 11 } }, grid: { color: chartGridColor } },
+                    y: { beginAtZero: true, ticks: { precision: 0, color: chartTextColor, font: { size: 11 } }, grid: { color: chartGridColor } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        document.getElementById('kendaraan-filter').addEventListener('change', function() {
+            const selected = this.value;
+            kendaraanChart.data.labels = kendaraanDataSet[selected].labels;
+            kendaraanChart.data.datasets[0].data = kendaraanDataSet[selected].data;
+            kendaraanChart.update();
         });
     </script>
 </x-app-layout>

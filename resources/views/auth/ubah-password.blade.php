@@ -1,21 +1,23 @@
 <x-app-layout :title="'Ubah Password'">
-    <h2 class="text-center text-2xl font-semibold text-gray-800 mt-4 mb-6">Ubah Password</h2>
+    <h2 class="text-center text-2xl font-semibold text-gray-800 dark:text-white mt-4 mb-6">Ubah Password</h2>
 
-    <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6 md:p-10 max-w-3xl mx-auto">
+    <div
+        class="bg-white border border-gray-200 rounded-xl shadow-lg p-6 md:p-10 max-w-3xl mx-auto mb-8 dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
         <form action="{{ route('password.update') }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
 
             <div>
                 <label for="current_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Password Lama <span class="text-red-600">*</span>
+                    Password Lama <span class="text-red-600 dark:text-red-500">*</span>
                 </label>
                 <div class="relative">
                     <input type="password" name="current_password" id="current_password"
                         class="w-full p-2.5 pr-12 border border-gray-200 bg-gray-100 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600
-                        dark:bg-gray-700 dark:text-white">
+                        dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <div class="absolute inset-y-0 right-2.5 flex items-center">
-                        <button type="button" onclick="togglePasswordVisibility('current_password', 'eyeCurrent')" tabindex="-1">
+                        <button type="button" onclick="togglePasswordVisibility('current_password', 'eyeCurrent')"
+                            tabindex="-1">
                             <svg id="eyeCurrent" class="w-5 h-5 text-gray-500 dark:text-gray-300"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
@@ -26,20 +28,20 @@
                         </button>
                     </div>
                 </div>
-                
                 @if ($errors->updatePassword->has('current_password'))
-                    <p class="text-red-600 text-sm mt-2">{{ $errors->updatePassword->first('current_password') }}</p>
+                    <p class="text-red-600 dark:text-red-500 text-sm mt-2">
+                        {{ $errors->updatePassword->first('current_password') }}</p>
                 @endif
             </div>
 
             <div>
                 <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Password Baru <span class="text-red-600">*</span>
-                </label> 
+                    Password Baru <span class="text-red-600 dark:text-red-500">*</span>
+                </label>
                 <div class="relative">
                     <input type="password" name="password" id="password"
                         class="w-full p-2.5 pr-12 border border-gray-200 bg-gray-100 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600
-                        dark:bg-gray-700 dark:text-white">
+                        dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <div class="absolute inset-y-0 right-2.5 flex items-center">
                         <button type="button" onclick="togglePasswordVisibility('password', 'eyeNew')" tabindex="-1">
                             <svg id="eyeNew" class="w-5 h-5 text-gray-500 dark:text-gray-300"
@@ -52,22 +54,25 @@
                         </button>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Minimal berisi 8 karakter.</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Minimal berisi 8 karakter.</p>
                 @if ($errors->updatePassword->has('password'))
-                    <p class="text-red-600 text-sm mt-2">{{ $errors->updatePassword->first('password') }}</p>
+                    <p class="text-red-600 dark:text-red-500 text-sm mt-2">
+                        {{ $errors->updatePassword->first('password') }}</p>
                 @endif
             </div>
 
             <div>
-                <label for="password_confirmation" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Konfirmasi Password Baru <span class="text-red-600">*</span>
+                <label for="password_confirmation"
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Konfirmasi Password Baru <span class="text-red-600 dark:text-red-500">*</span>
                 </label>
                 <div class="relative">
                     <input type="password" name="password_confirmation" id="password_confirmation"
                         class="w-full p-2.5 pr-12 border border-gray-200 bg-gray-100 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600
-                        dark:bg-gray-700 dark:text-white">
+                        dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <div class="absolute inset-y-0 right-2.5 flex items-center">
-                        <button type="button" onclick="togglePasswordVisibility('password_confirmation', 'eyeConfirm')" tabindex="-1">
+                        <button type="button"
+                            onclick="togglePasswordVisibility('password_confirmation', 'eyeConfirm')" tabindex="-1">
                             <svg id="eyeConfirm" class="w-5 h-5 text-gray-500 dark:text-gray-300"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
@@ -79,13 +84,14 @@
                     </div>
                 </div>
                 @if ($errors->updatePassword->has('password_confirmation'))
-                    <p class="text-red-600 text-sm mt-2">{{ $errors->updatePassword->first('password_confirmation') }}</p>
+                    <p class="text-red-600 dark:text-red-500 text-sm mt-2">
+                        {{ $errors->updatePassword->first('password_confirmation') }}</p>
                 @endif
             </div>
 
             <div class="flex justify-end pt-4">
                 <button type="submit"
-                    class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
+                    class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transition duration-200">
                     Simpan Perubahan
                 </button>
             </div>
@@ -97,16 +103,15 @@
     function togglePasswordVisibility(fieldId, eyeId) {
         const input = document.getElementById(fieldId);
         const icon = document.getElementById(eyeId);
-        
+
         if (input.type === "password") {
             input.type = "text";
             icon.classList.remove("text-gray-500", "dark:text-gray-300");
-            icon.classList.add("text-blue-600");
+            icon.classList.add("text-blue-600", "dark:text-blue-400");
         } else {
             input.type = "password";
-            icon.classList.remove("text-blue-600");
+            icon.classList.remove("text-blue-600", "dark:text-blue-400");
             icon.classList.add("text-gray-500", "dark:text-gray-300");
         }
     }
 </script>
-

@@ -13,23 +13,11 @@
                 <button type="button" onclick="switchDashboardTab('patroli')" id="tab-btn-patroli"
                     class="tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-blue-600 text-blue-600">
                     <span>Patroli</span>
-                    <span class="ml-1.5 py-0.5 px-2 rounded-full text-[11px] bg-blue-100 text-blue-800 font-semibold">
-                        {{ $jumlahLaporanPatroli }} Log
-                    </span>
                 </button>
 
                 <button type="button" onclick="switchDashboardTab('kebersihan')" id="tab-btn-kebersihan"
                     class="tab-btn flex items-center gap-2 py-3 px-4 border-b-2 font-bold text-sm transition duration-150 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
                     <span>Kebersihan</span>
-                    @if ($jumlahTemuanAktif > 0)
-                        <span class="ml-1.5 py-0.5 px-2 rounded-full text-[11px] bg-red-100 text-red-800 font-bold animate-pulse">
-                            {{ $jumlahTemuanAktif }} Temuan Rusak
-                        </span>
-                    @else
-                        <span class="ml-1.5 py-0.5 px-2 rounded-full text-[11px] bg-emerald-100 text-emerald-800 font-semibold">
-                            {{ $toiletSelesaiHariIni }}/{{ $jumlahKamarMandi }} Selesai
-                        </span>
-                    @endif
                 </button>
             </nav>
         </div>
@@ -272,16 +260,20 @@
 
         let currentFilter = 'harian';
 
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const chartTextColor = isDarkMode ? '#9ca3af' : '#6b7280';
+        const chartGridColor = isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+
         let patroliChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: dataSet[currentFilter].labels,
                 datasets: [{
-                    label: 'Jumlah Aktivitas Patroli',
+                    label: 'Jumlah Aktfivitas Patroli',
                     data: dataSet[currentFilter].data,
-                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 1,
+                    backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                    borderColor: 'rgba(96, 165, 250, 1)',
+                    borderWidth: 1.5,
                     borderRadius: 6
                 }]
             },
@@ -289,10 +281,24 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
+                    x: {
+                        ticks: {
+                            color: chartTextColor,
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: chartGridColor
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            precision: 0
+                            precision: 0,
+                            color: chartTextColor,
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: chartGridColor
                         }
                     }
                 },

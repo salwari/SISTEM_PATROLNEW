@@ -339,7 +339,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 <script>
+    const isDark = document.documentElement.classList.contains('dark');
+    const chartTextColor = isDark ? '#e5e7eb' : '#374151';       
+    const chartSubTextColor = isDark ? '#9ca3af' : '#6b7280';    
+    const chartGridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'; 
     Chart.defaults.font.size = 11;
+    Chart.defaults.color = chartSubTextColor;
+    Chart.defaults.borderColor = chartGridColor;
 
     const tabButtons = document.querySelectorAll('.dashboard-tab-btn');
     const tabPanels = document.querySelectorAll('.dashboard-tab-panel');
@@ -404,17 +410,23 @@
             responsive: true,
             maintainAspectRatio: false,
             scales: {
+                x: {
+                    ticks: { color: chartSubTextColor },
+                    grid: { color: chartGridColor }
+                },
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        precision: 0
-                    }
+                        precision: 0,
+                        color: chartSubTextColor
+                    },
+                    grid: { color: chartGridColor }
                 }
             },
             plugins: {
                 legend: {
                     labels: {
-                        color: '#111',
+                        color: chartTextColor, 
                         boxWidth: 12
                     }
                 }
@@ -455,7 +467,7 @@
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: '#6B7280',
+                        color: chartSubTextColor,
                         boxWidth: 12
                     }
                 },
@@ -518,7 +530,7 @@
             maintainAspectRatio: false,
             cutout: '55%',
             plugins: {
-                legend: { position: 'bottom', labels: { color: '#6B7280', boxWidth: 12 } },
+                legend: { position: 'bottom', labels: { color: chartTextColor, boxWidth: 12 } },
                 datalabels: {
                     color: '#fff',
                     display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0,
@@ -574,7 +586,7 @@
             maintainAspectRatio: false,
             cutout: '55%',
             plugins: {
-                legend: { position: 'bottom', labels: { color: '#6B7280', boxWidth: 12 } },
+                legend: { position: 'bottom', labels: { color: chartTextColor, boxWidth: 12 } },
                 datalabels: {
                     color: '#fff',
                     display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0,

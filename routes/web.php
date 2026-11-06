@@ -174,11 +174,13 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:kabid_dukbis')->prefix('kabid-dukbis')->group(function () {
         Route::get('/dashboard', [KabidDukbisController::class, 'dashboard'])->name('kabid-dukbis.dashboard');
         Route::get('/data-petugas-security', [KabidDukbisController::class, 'dataPetugasSecurity'])->name('kabid-dukbis.data-petugas-security');
+        Route::get('/data-ob', [KabidDukbisController::class, 'dataOb'])->name('kabid-dukbis.data-ob');
+        Route::get('/data-sopir', [KabidDukbisController::class, 'dataSopir'])->name('kabid-dukbis.data-sopir');
         Route::get('/data-lokasi-patroli', [KabidDukbisController::class, 'dataLokasiPatroli'])->name('kabid-dukbis.data-lokasi-patroli');
         Route::get('/absen-kendaraan', [KabidDukbisController::class, 'absenKendaraan'])->name('kabid-dukbis.absen-kendaraan');
         Route::get('/laporan-patroli', [KabidDukbisController::class, 'laporanPatroli'])->name('kabid-dukbis.laporan-patroli');
         Route::get('/laporan-patroli/cetak/redirect', [KabidDukbisController::class, 'redirectCetakLaporan'])->name('kabid-dukbis.cetak-laporan-patroli-redirect');
-        
+    
         Route::get('/data-lokasi-kebersihan', [KabidDukbisController::class, 'dataLokasiKebersihan'])->name('kabid-dukbis.data-lokasi-kebersihan');
         Route::get('/temuan-kamar-mandi', [KabidDukbisController::class, 'temuanKamarMandi'])->name('kabid-dukbis.temuan-kamar-mandi');
         Route::get('/laporan-kebersihan', [KabidDukbisController::class, 'laporanKebersihan'])->name('kabid-dukbis.laporan-kebersihan');

@@ -535,4 +535,49 @@ class KabidDukbisController extends Controller
 
         return $pdf->stream('laporan_kebersihan_' . now()->format('Ymd_His') . '.pdf');
     }
+    public function dataOb(Request $request)
+{
+    $search = $request->input('search');
+    $cabangId = Auth::user()->cabang_id;
+
+    $users = User::query()
+        ->where('role', 'ob')
+        ->where('cabang_id', $cabangId)
+        ->when($search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%')
+                    ->orWhere('nomor_induk', 'like', '%' . $search . '%')
+                    ->orWhere('no_telepon', 'like', '%' . $search . '%');
+            });
+        })
+        ->orderBy('nama')
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('kabid-dukbis.data-ob', compact('users', 'search'));
+}
+
+public function dataSopir(Request $request)
+{
+    $search = $request->input('search');
+    $cabangId = Auth::user()->cabang_id;
+
+    $users = User::query()
+        ->where('role', 'sopir')
+        ->where('cabang_id', $cabangId)
+        ->when($search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%')
+                    ->orWhere('nomor_induk', 'like', '%' . $search . '%')
+                    ->orWhere('no_telepon', 'like', '%' . $search . '%');
+            });
+        })
+        ->orderBy('nama')
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('kabid-dukbis.data-sopir', compact('users', 'search'));
+}
 }

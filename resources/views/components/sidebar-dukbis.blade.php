@@ -19,10 +19,8 @@
                 </a>
             </li>
 
-            {{-- Menu Navigasi / Fitur --}}
             <li class="px-3 text-sm font-semibold text-gray-500 uppercase mt-6 mb-2">Menu Utama</li>
 
-            {{-- Patroli Dropdown --}}
             @php
                 $isKeamananActive = request()->routeIs('kabid-dukbis.data-petugas-security', 'kabid-dukbis.data-lokasi-patroli', 'kabid-dukbis.laporan-patroli*');
                 $menuKeamanan = [
@@ -30,17 +28,12 @@
                     ['label' => 'Data Lokasi Patroli', 'route' => 'kabid-dukbis.data-lokasi-patroli', 'active' => request()->routeIs('kabid-dukbis.data-lokasi-patroli')],
                     ['label' => 'Laporan Patroli', 'route' => 'kabid-dukbis.laporan-patroli', 'active' => request()->routeIs('kabid-dukbis.laporan-patroli*')],
                 ];
-// =======
-//             <li class="px-3 text-sm font-semibold text-gray-500 uppercase mt-6 mb-2">Master Data</li>
-//             @php 
-//                 $isKeamananActive = request()->routeIs('kabid-dukbis.data-petugas-security', 'kabid-dukbis.data-lokasi-patroli', 'kabid-dukbis.laporan-patroli*'); 
-// >>>>>>> 2cb7a2493b31c5b93e35c74c4b46ecbc1832c561
             @endphp
             <li>
                 <button type="button" onclick="toggleSidebarDropdown('keamanan')"
                     class="flex items-center w-full p-2 text-base font-medium transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700 
                             {{ $isKeamananActive ? 'text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white' }}">
-                    
+
                     <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.735c0 5.906 3.01 11.4 8.04 14.28 1.05.6 2.37.6 3.42 0 5.03-2.88 8.04-8.374 8.04-14.28a12.738 12.738 0 00-.635-3.97.75.75 0 00-.722-.515 11.209 11.209 0 01-7.877-3.08z" clip-rule="evenodd" />
                     </svg>
@@ -66,7 +59,28 @@
                 </div>
             </li>
 
-            {{-- Absen Kendaraan (Single Menu) --}}
+            <li>
+                <a href="{{ route('kabid-dukbis.data-ob') }}"
+                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
+                    {{ request()->routeIs('kabid-dukbis.data-ob') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
+                    </svg>
+                    <span class="ml-3">Data OB</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('kabid-dukbis.data-sopir') }}"
+                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
+                    {{ request()->routeIs('kabid-dukbis.data-sopir') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                    <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
+                    </svg>
+                    <span class="ml-3">Data Sopir</span>
+                </a>
+            </li>
+
             <li>
                 <a href="{{ route('kabid-dukbis.absen-kendaraan') }}"
                     class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
@@ -78,9 +92,7 @@
                 </a>
             </li>
 
-            {{-- Kebersihan Dropdown --}}
-
-            @php 
+            @php
                 $isKebersihanActive = request()->routeIs('kabid-dukbis.data-lokasi-kebersihan', 'kabid-dukbis.temuan-kamar-mandi', 'kabid-dukbis.laporan-kebersihan');
                 $menuKebersihan = [
                     ['label' => 'Data Lokasi Kebersihan', 'route' => 'kabid-dukbis.data-lokasi-kebersihan', 'active' => request()->routeIs('kabid-dukbis.data-lokasi-kebersihan')],
@@ -92,7 +104,7 @@
                 <button type="button" onclick="toggleSidebarDropdown('kebersihan')"
                     class="flex items-center w-full p-2 text-base font-medium transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700 
                             {{ $isKebersihanActive ? 'text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white' }}">
-                    
+
                     <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z" clip-rule="evenodd" />
                     </svg>

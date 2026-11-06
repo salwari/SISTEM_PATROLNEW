@@ -28,7 +28,22 @@
                     ['label' => 'Data Lokasi Patroli', 'route' => 'kabid-dukbis.data-lokasi-patroli', 'active' => request()->routeIs('kabid-dukbis.data-lokasi-patroli')],
                     ['label' => 'Laporan Patroli', 'route' => 'kabid-dukbis.laporan-patroli', 'active' => request()->routeIs('kabid-dukbis.laporan-patroli*')],
                 ];
+
+                $isKebersihanActive = request()->routeIs('kabid-dukbis.data-ob', 'kabid-dukbis.data-lokasi-kebersihan', 'kabid-dukbis.temuan-kamar-mandi', 'kabid-dukbis.laporan-kebersihan');
+                $menuKebersihan = [
+                    ['label' => 'Data OB', 'route' => 'kabid-dukbis.data-ob', 'active' => request()->routeIs('kabid-dukbis.data-ob')],
+                    ['label' => 'Data Lokasi Kebersihan', 'route' => 'kabid-dukbis.data-lokasi-kebersihan', 'active' => request()->routeIs('kabid-dukbis.data-lokasi-kebersihan')],
+                    ['label' => 'Temuan Kamar Mandi', 'route' => 'kabid-dukbis.temuan-kamar-mandi', 'active' => request()->routeIs('kabid-dukbis.temuan-kamar-mandi')],
+                    ['label' => 'Laporan Kebersihan', 'route' => 'kabid-dukbis.laporan-kebersihan', 'active' => request()->routeIs('kabid-dukbis.laporan-kebersihan')],
+                ];
+
+                $isKendaraanActive = request()->routeIs('kabid-dukbis.data-sopir', 'kabid-dukbis.absen-kendaraan');
+                $menuKendaraan = [
+                    ['label' => 'Data Sopir', 'route' => 'kabid-dukbis.data-sopir', 'active' => request()->routeIs('kabid-dukbis.data-sopir')],
+                    ['label' => 'Absen Kendaraan', 'route' => 'kabid-dukbis.absen-kendaraan', 'active' => request()->routeIs('kabid-dukbis.absen-kendaraan')],
+                ];
             @endphp
+
             <li>
                 <button type="button" onclick="toggleSidebarDropdown('keamanan')"
                     class="flex items-center w-full p-2 text-base font-medium transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700 
@@ -60,47 +75,6 @@
             </li>
 
             <li>
-                <a href="{{ route('kabid-dukbis.data-ob') }}"
-                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
-                    {{ request()->routeIs('kabid-dukbis.data-ob') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
-                    </svg>
-                    <span class="ml-3">Data OB</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('kabid-dukbis.data-sopir') }}"
-                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
-                    {{ request()->routeIs('kabid-dukbis.data-sopir') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
-                    </svg>
-                    <span class="ml-3">Data Sopir</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('kabid-dukbis.absen-kendaraan') }}"
-                    class="flex items-center p-2 text-base font-medium rounded-lg transition duration-75 group
-                    {{ request()->routeIs('kabid-dukbis.absen-kendaraan') ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
-                        <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
-                    </svg>
-                    <span class="ml-3">Absen Kendaraan</span>
-                </a>
-            </li>
-
-            @php
-                $isKebersihanActive = request()->routeIs('kabid-dukbis.data-lokasi-kebersihan', 'kabid-dukbis.temuan-kamar-mandi', 'kabid-dukbis.laporan-kebersihan');
-                $menuKebersihan = [
-                    ['label' => 'Data Lokasi Kebersihan', 'route' => 'kabid-dukbis.data-lokasi-kebersihan', 'active' => request()->routeIs('kabid-dukbis.data-lokasi-kebersihan')],
-                    ['label' => 'Temuan Kamar Mandi', 'route' => 'kabid-dukbis.temuan-kamar-mandi', 'active' => request()->routeIs('kabid-dukbis.temuan-kamar-mandi')],
-                    ['label' => 'Laporan Kebersihan', 'route' => 'kabid-dukbis.laporan-kebersihan', 'active' => request()->routeIs('kabid-dukbis.laporan-kebersihan')],
-                ];
-            @endphp
-            <li>
                 <button type="button" onclick="toggleSidebarDropdown('kebersihan')"
                     class="flex items-center w-full p-2 text-base font-medium transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700 
                             {{ $isKebersihanActive ? 'text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white' }}">
@@ -117,6 +91,36 @@
                 <div id="dropdown-kebersihan" style="display: grid; transition: grid-template-rows 0.3s ease; grid-template-rows: {{ $isKebersihanActive ? '1fr' : '0fr' }};">
                     <ul class="space-y-1 py-1" style="overflow: hidden; min-height: 0;">
                         @foreach ($menuKebersihan as $item)
+                            <li>
+                                <a href="{{ route($item['route']) }}"
+                                    class="flex items-center gap-3 w-full p-2 pl-11 text-base font-medium rounded-lg transition-all duration-200
+                                        {{ $item['active'] ? 'text-blue-600 bg-blue-50 dark:bg-gray-600 dark:text-blue-400' : 'text-gray-900 hover:bg-gray-100 hover:pl-12 dark:text-white dark:hover:bg-gray-700' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full shrink-0 {{ $item['active'] ? 'bg-blue-600 dark:bg-blue-400' : 'bg-gray-300 dark:bg-gray-500' }}"></span>
+                                    <span>{{ $item['label'] }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </li>
+
+            <li>
+                <button type="button" onclick="toggleSidebarDropdown('kendaraan')"
+                    class="flex items-center w-full p-2 text-base font-medium transition duration-75 rounded-lg group hover:bg-gray-100 dark:hover:bg-gray-700 
+                            {{ $isKendaraanActive ? 'text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white' : 'text-gray-900 dark:text-white' }}">
+
+                    <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" />
+                    </svg>
+
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Kendaraan</span>
+                    <svg id="chevron-kendaraan" class="w-6 h-6 text-gray-400" style="transition: transform 0.3s ease; transform: rotate({{ $isKendaraanActive ? '180deg' : '0deg' }});" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+                <div id="dropdown-kendaraan" style="display: grid; transition: grid-template-rows 0.3s ease; grid-template-rows: {{ $isKendaraanActive ? '1fr' : '0fr' }};">
+                    <ul class="space-y-1 py-1" style="overflow: hidden; min-height: 0;">
+                        @foreach ($menuKendaraan as $item)
                             <li>
                                 <a href="{{ route($item['route']) }}"
                                     class="flex items-center gap-3 w-full p-2 pl-11 text-base font-medium rounded-lg transition-all duration-200

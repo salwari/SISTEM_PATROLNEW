@@ -10,7 +10,7 @@
                     <select name="cabang_id"
                         class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-full md:w-48">
                         <option value="" {{ request('cabang_id') == '' ? 'selected' : '' }}>Semua Cabang</option>
-                        @foreach ($cabangs as $cabang)
+                        @foreach ($cabangs->unique('nama_cabang') as $cabang)
                             <option value="{{ $cabang->id }}"
                                 {{ request('cabang_id') == $cabang->id ? 'selected' : '' }}>
                                 {{ $cabang->nama_cabang }}

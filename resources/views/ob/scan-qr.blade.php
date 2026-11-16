@@ -15,7 +15,6 @@
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 text-center">
             <div id="reader" class="w-full rounded-lg overflow-hidden border border-gray-200 bg-black min-h-[300px]"></div>
 
-            
             <div id="result" class="mt-4 text-sm font-semibold text-blue-600 min-h-[24px]"></div>
 
             <p class="text-xs text-gray-400 mt-2">
@@ -25,19 +24,23 @@
 
     </div>
 
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const resultContainer = document.getElementById('result');
             const html5QrCode = new Html5Qrcode("reader");
             let hasScanned = false;
 
+            function showError(message) {
+                resultContainer.className = "mt-4 text-sm font-semibold text-red-600 min-h-[24px]";
+                resultContainer.innerText = message;
+            }
+
             function onScanSuccess(decodedText) {
                 if (hasScanned) return;
 
                 if (decodedText.includes('/petugas-security') || decodedText.includes('/patroli/')) {
-                    resultContainer.className = "mt-4 text-sm font-semibold text-red-600 min-h-[24px]";
-                    resultContainer.innerText = "❌ Ini adalah Barcode Pos Patroli Satpam, bukan Kamar Mandi.";
+                    showError("❌ Ini adalah Barcode Pos Patroli Satpam, bukan Kamar Mandi.");
                     return;
                 }
 
@@ -45,7 +48,7 @@
 
                 html5QrCode.stop().then(() => {
                     resultContainer.className = "mt-4 text-sm font-semibold text-blue-600 min-h-[24px]";
-                    resultContainer.innerText = `Barcode Terbaca: Mengalihkan...`;
+                    resultContainer.innerText = "Barcode Terbaca: Mengalihkan...";
 
                     let targetUrl = '';
 
@@ -55,14 +58,10 @@
 
                             if (urlObj.pathname.includes('/ob/kamar-mandi/')) {
                                 targetUrl = urlObj.pathname;
-                            }
-                            
-                            else if (urlObj.searchParams.has('kamar_mandi')) {
+                            } else if (urlObj.searchParams.has('kamar_mandi')) {
                                 const kmId = urlObj.searchParams.get('kamar_mandi');
                                 targetUrl = `/ob/kamar-mandi/${kmId}/periksa`;
-                            } 
-                            
-                            else {
+                            } else {
                                 const match = urlObj.pathname.match(/lokasi-kebersihan\/(\d+)/);
                                 if (match) {
                                     targetUrl = `/ob/kamar-mandi/${match[1]}/periksa`;
@@ -71,7 +70,6 @@
                                 }
                             }
                         } else {
-                            
                             targetUrl = `/ob/kamar-mandi/${decodedText}/periksa`;
                         }
                     } catch (e) {
@@ -87,29 +85,17 @@
                 });
             }
 
-            Html5Qrcode.getCameras().then(devices => {
-                if (devices && devices.length) {
-                    const backCam = devices.find(device =>
-                        device.label.toLowerCase().includes('back') ||
-                        device.label.toLowerCase().includes('environment')
-                    );
-                    const cameraId = backCam ? backCam.id : devices[0].id;
+            if (!window.isSecureContext || !navigator.mediaDevices) {
+                showError("Kamera hanya bisa dipakai lewat HTTPS. Buka halaman ini dengan alamat https://.");
+                return;
+            }
 
-                    html5QrCode.start(
-                        cameraId,
-                        {
-                            fps: 10,
-                            qrbox: { width: 250, height: 250 }
-                        },
-                        onScanSuccess
-                    ).catch(err => {
-                        resultContainer.innerText = "Gagal menyalakan kamera: " + err;
-                    });
-                } else {
-                    resultContainer.innerText = "Kamera tidak ditemukan pada perangkat ini.";
-                }
-            }).catch(err => {
-                resultContainer.innerText = "Izin akses kamera ditolak atau tidak didukung.";
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                onScanSuccess
+            ).catch(err => {
+                showError("Gagal menyalakan kamera: " + err);
             });
         });
     </script>

@@ -1,7 +1,43 @@
 <nav
     class="bg-white border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed top-0 left-0 w-full z-50">
-    <div class="flex flex-wrap justify-between items-center">
-        <div class="flex justify-start items-center">
+    <style>
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .nav-logo {
+            height: 2.75rem;
+            margin-right: 0.5rem;
+        }
+
+        .nav-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 639px) {
+            .nav-logo {
+                height: 2rem;
+                margin-right: 0.375rem;
+            }
+
+            .nav-title {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 359px) {
+            .nav-title {
+                display: none;
+            }
+        }
+    </style>
+
+    <div class="flex flex-nowrap justify-between items-center">
+        <div class="flex justify-start items-center min-w-0">
             <button data-drawer-target="drawer-navigation" data-drawer-toggle="drawer-navigation"
                 aria-controls="drawer-navigation"
                 class="p-2 mr-2 text-gray-600 rounded-lg cursor-pointer md:hidden hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -19,12 +55,12 @@
                 </svg>
                 <span class="sr-only">Toggle sidebar</span>
             </button>
-            <a href="" class="flex items-center justify-between mr-4">
-                <img src="{{ asset('assets/sucofindo-nobg.png') }}" class="mr-2 h-11" alt="Logo" />
-                <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">SIM PATROLI</span>
+            <a href="" class="nav-brand">
+                <img src="{{ asset('assets/sucofindo-nobg.png') }}" class="nav-logo" alt="Logo" />
+                <span class="nav-title text-gray-900 dark:text-white">SIM PATROLI</span>
             </a>
         </div>
-        <div class="flex items-center lg:order-2">
+        <div class="flex items-center shrink-0 lg:order-2">
             <button id="theme-toggle" type="button"
                 class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none rounded-lg text-sm p-2 mr-2 transition-colors duration-200">
                 <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

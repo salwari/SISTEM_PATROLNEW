@@ -96,7 +96,7 @@
                 <div>
                     <h3 class="text-base font-bold text-gray-800">3. Status Kondisi Akhir</h3>
                     <p class="text-xs text-gray-500 mt-0.5">
-                        💡 <strong>Panduan:</strong> Jika kotor/habis, bersihkan atau isi terlebih dahulu lalu pilih <em>Kondisi Baik</em>. 
+                        <strong>Panduan:</strong> Jika kotor/habis, bersihkan atau isi terlebih dahulu lalu pilih <em>Kondisi Baik</em>.
                         Pilih <em>Perlu Tindakan</em> hanya jika terdapat kerusakan fasilitas yang membutuhkan teknisi/perbaikan.
                     </p>
                 </div>
@@ -137,29 +137,24 @@
             <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
                 <div>
                     <h3 class="text-base font-bold text-gray-800">
-                        4. Foto Bukti Lapangan 
+                        4. Foto Bukti Lapangan
                         <span id="fotoBadgeWajib" class="hidden text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-semibold ml-2">Wajib</span>
                     </h3>
                     <p class="text-xs text-gray-500">Ambil foto kondisi kamar mandi langsung dari kamera perangkat</p>
                 </div>
 
                 <div class="border border-gray-200 rounded-xl p-4 bg-gray-50 flex flex-col items-center max-w-md mx-auto">
-                    <video id="cameraVideo" class="w-full rounded-lg border border-gray-300 bg-black aspect-video object-cover" autoplay playsinline></video>
-                    <img id="photoPreview" class="w-full rounded-lg border border-gray-300 aspect-video object-cover hidden" />
+                    <img id="photoPreview" alt="Pratinjau Foto" class="w-full rounded-lg border border-gray-300 aspect-video object-cover hidden" />
 
-                    <div class="w-full mt-3 flex gap-2">
-                        <button type="button" id="snapBtn"
-                            class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition shadow-sm">
+                    <div class="w-full mt-3">
+                        <label for="fotoFile" id="fotoLabel"
+                            class="block w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold text-center rounded-lg transition shadow-sm cursor-pointer">
                             Ambil Foto
-                        </button>
-                        <button type="button" id="retakeBtn"
-                            class="w-full py-2 bg-gray-600 hover:bg-gray-700 text-white text-xs font-bold rounded-lg transition shadow-sm hidden">
-                            Ambil Ulang
-                        </button>
+                        </label>
+                        <input type="file" id="fotoFile" accept="image/*" capture="environment" class="hidden">
                     </div>
                 </div>
 
-                <canvas id="photoCanvas" class="hidden"></canvas>
                 <input type="hidden" name="foto" id="fotoInput">
                 @error('foto')
                     <p class="text-xs text-red-600 text-center">{{ $message }}</p>
@@ -220,54 +215,35 @@
                 });
             });
 
-            const video = document.getElementById('cameraVideo');
             const preview = document.getElementById('photoPreview');
-            const snapBtn = document.getElementById('snapBtn');
-            const retakeBtn = document.getElementById('retakeBtn');
-            const canvas = document.getElementById('photoCanvas');
+            const fotoFile = document.getElementById('fotoFile');
+            const fotoLabel = document.getElementById('fotoLabel');
             const fotoInput = document.getElementById('fotoInput');
-            let streamObj = null;
 
-            function startCamera() {
-                navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: "environment" } },
-                    audio: false
-                }).then(stream => {
-                    streamObj = stream;
-                    video.srcObject = stream;
-                    video.classList.remove('hidden');
-                    preview.classList.add('hidden');
-                    snapBtn.classList.remove('hidden');
-                    retakeBtn.classList.add('hidden');
-                }).catch(err => {
-                    console.log("Kamera tidak aktif atau izin ditolak: ", err);
-                });
-            }
+            fotoFile.addEventListener('change', function () {
+                const file = this.files[0];
+                if (!file) return;
 
-            startCamera();
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        const maxWidth = 1024;
+                        const scale = Math.min(1, maxWidth / img.width);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
 
-            snapBtn.addEventListener('click', function () {
-                canvas.width = video.videoWidth || 640;
-                canvas.height = video.videoHeight || 480;
-                const context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-                fotoInput.value = dataUrl;
-                preview.src = dataUrl;
-
-                video.classList.add('hidden');
-                preview.classList.remove('hidden');
-                snapBtn.classList.add('hidden');
-                retakeBtn.classList.remove('hidden');
-            });
-
-            retakeBtn.addEventListener('click', function () {
-                fotoInput.value = '';
-                video.classList.remove('hidden');
-                preview.classList.add('hidden');
-                snapBtn.classList.remove('hidden');
-                retakeBtn.classList.add('hidden');
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        fotoInput.value = dataUrl;
+                        preview.src = dataUrl;
+                        preview.classList.remove('hidden');
+                        fotoLabel.textContent = 'Ambil Ulang';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             });
         });
     </script>

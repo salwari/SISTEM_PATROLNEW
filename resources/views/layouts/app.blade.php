@@ -38,10 +38,10 @@
         .dark h2.text-xl {
             color: #ffffff !important;
         }
-        .dark h1 + p,
-        .dark h1 ~ p,
-        .dark h2.text-2xl + p,
-        .dark h2.text-xl + p {
+        .dark h1 + p:not([style*="rgba(255, 255, 255"]),
+        .dark h1 ~ p:not([style*="rgba(255, 255, 255"]),
+        .dark h2.text-2xl + p:not([style*="rgba(255, 255, 255"]),
+        .dark h2.text-xl + p:not([style*="rgba(255, 255, 255"]) {
             color: #9ca3af !important;
         }
 
@@ -87,12 +87,13 @@
             color: #bfdbfe !important;
         }
 
-        .dark .bg-gray-50 {
+        .dark .bg-gray-50:not(main):not(.min-h-screen) {
             background-color: #111827 !important; 
             border-color: #374151 !important;     
         }
-        .dark .bg-gray-50 span.text-gray-800,
-        .dark .bg-gray-50 span {
+        .dark .bg-gray-50:not(main):not(.min-h-screen) span.text-gray-800,
+        .dark .bg-gray-50:not(main):not(.min-h-screen) span.text-gray-700,
+        .dark .bg-gray-50:not(main):not(.min-h-screen) span.text-gray-600 {
             color: #e5e7eb !important;            
         }
 
@@ -313,6 +314,188 @@
         .dark input::placeholder,
         .dark textarea::placeholder {
             color: #9ca3af !important; 
+        }
+
+        .dark .ob-card,
+        .dark .sp-card,
+        .dark .sc-card,
+        .dark .ad-card,
+        .dark .ad-stat,
+        .dark .dash-kartu {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+            color: #f3f4f6 !important;
+        }
+        .dark .ad-stat:hover,
+        .dark .dash-kartu:hover {
+            border-color: #3b82f6 !important;
+        }
+
+        .dark [style*="color: #1B4A82"] {
+            color: #93c5fd !important;
+        }
+        .dark h2[style*="color: #1B4A82"],
+        .dark h3[style*="color: #1B4A82"],
+        .dark .ad-stat p[style*="color: #1B4A82"],
+        .dark .dash-kartu p[style*="color: #1B4A82"],
+        .dark .rounded-full [style*="color: #1B4A82"] {
+            color: #ffffff !important;
+        }
+        .dark [style*="color: #035CA8"] {
+            color: #60a5fa !important;
+        }
+        .dark [style*="color: #475569"],
+        .dark [style*="color: #334155"] {
+            color: #d1d5db !important;
+        }
+        .dark [style*="color: #64748B"] {
+            color: #9ca3af !important;
+        }
+        .dark strong[style*="color: #16A34A"] {
+            color: #4ade80 !important;
+        }
+        .dark strong[style*="color: #D97706"] {
+            color: #fbbf24 !important;
+        }
+        .dark strong[style*="color: #DC2626"],
+        .dark p[style*="color: #DC2626"] {
+            color: #f87171 !important;
+        }
+
+        .dark [style*="border: 1px solid #e2e8f0"] {
+            border-color: #374151 !important;
+        }
+        .dark thead[style*="background: #E6F3FB"] {
+            background: #374151 !important;
+            color: #93c5fd !important;
+        }
+        .dark thead[style*="background: #FEE2E2"] {
+            background: rgba(127, 29, 29, 0.5) !important;
+            color: #fca5a5 !important;
+        }
+        .dark tbody[style*="background: #ffffff"] {
+            background: #1f2937 !important;
+            border-color: #374151 !important;
+            color: #e5e7eb !important;
+        }
+        .dark .ob-row:hover,
+        .dark .sp-row:hover,
+        .dark .sc-row:hover,
+        .dark .ad-row:hover {
+            background: #2d3748 !important;
+        }
+
+        .dark [style*="background: #FFFBEB"] {
+            background: rgba(113, 63, 18, 0.35) !important;
+            border-color: rgba(245, 158, 11, 0.5) !important;
+            color: #fde047 !important;
+        }
+        .dark [style*="background: #F0FDF4"] {
+            background: rgba(6, 78, 59, 0.45) !important;
+            border-color: rgba(16, 185, 129, 0.45) !important;
+            color: #6ee7b7 !important;
+        }
+        .dark [style*="background: #F0FDF4"] span[style*="color: #15803D"] {
+            color: #34d399 !important;
+        }
+        .dark [style*="background: #F0FDF4"] span[style*="color: #166534"] {
+            color: #a7f3d0 !important;
+        }
+        .dark [style*="background: #FEF2F2"] {
+            background: rgba(127, 29, 29, 0.4) !important;
+            border-color: rgba(239, 68, 68, 0.45) !important;
+            color: #fca5a5 !important;
+        }
+        .dark [style*="background: #FEF2F2"] span[style*="color: #B91C1C"],
+        .dark [style*="background: #FEF2F2"] span[style*="color: #991B1B"] {
+            color: #f87171 !important;
+        }
+        .dark #modalCatatan[style*="background: #FEF2F2"] {
+            color: #fecaca !important;
+        }
+        .dark [style*="background: #E6F3FB"] {
+            background: rgba(30, 58, 138, 0.4) !important;
+            border-color: rgba(59, 130, 246, 0.45) !important;
+            color: #93c5fd !important;
+        }
+        .dark [style*="background: #F1F7FC"] {
+            background: #111827 !important;
+            border-color: #374151 !important;
+            color: #e5e7eb !important;
+        }
+
+        .dark .ob-badge-baik,
+        .dark span[style*="background: #DCFCE7"] {
+            background: rgba(6, 78, 59, 0.5) !important;
+            color: #34d399 !important;
+        }
+        .dark .ob-badge-temuan,
+        .dark span[style*="background: #FEE2E2"] {
+            background: rgba(127, 29, 29, 0.5) !important;
+            color: #f87171 !important;
+        }
+        .dark .ob-badge-belum {
+            background: #374151 !important;
+            color: #cbd5e1 !important;
+        }
+        .dark span[style*="background: #FEF3C7"] {
+            background: rgba(120, 53, 15, 0.5) !important;
+            color: #fcd34d !important;
+        }
+        .dark .ob-btn-outline {
+            background: rgba(30, 58, 138, 0.3) !important;
+            color: #60a5fa !important;
+            border-color: #3b82f6 !important;
+        }
+        .dark .ob-btn-outline:hover {
+            background: rgba(30, 58, 138, 0.6) !important;
+            color: #ffffff !important;
+        }
+        .dark .dash-kartu [style*="background: #F1F7FC"] {
+            background: rgba(59, 130, 246, 0.1) !important;
+        }
+        .dark .dash-kartu .dash-bg-icon {
+            color: rgba(59, 130, 246, 0.08) !important;
+        }
+        .dark .dash-kartu .dash-link {
+            color: #60a5fa !important;
+        }
+        .dark .dash-kartu:hover .dash-link {
+            color: #93c5fd !important;
+        }
+        .dark .dashboard-tab-btn {
+            color: #9ca3af !important;
+        }
+        .dark .dashboard-tab-btn:hover,
+        .dark .dashboard-tab-btn.aktif {
+            color: #60a5fa !important;
+        }
+        .dark .dashboard-tab-btn.aktif {
+            border-bottom-color: #3b82f6 !important;
+        }
+        .dark [style*="border-bottom: 1px solid #D6E8F5"] {
+            border-color: #374151 !important;
+        }
+        .dark .ad-select {
+            background: #374151 !important;
+            border-color: #4b5563 !important;
+            color: #ffffff !important;
+        }
+        .dark #modalChecklistItems > div {
+            background: #111827 !important;
+            border-color: #374151 !important;
+            color: #e5e7eb !important;
+        }
+        .dark #modalChecklistItems span[style*="334155"],
+        .dark #modalChecklistItems span[style*="51, 65, 85"] {
+            color: #e5e7eb !important;
+        }
+        .dark #modalChecklistItems span[style*="B91C1C"],
+        .dark #modalChecklistItems span[style*="185, 28, 28"] {
+            color: #f87171 !important;
+        }
+        .dark #detailModal [style*="border-top: 1px solid #e2e8f0"] {
+            border-color: #374151 !important;
         }
     </style>
 </head>

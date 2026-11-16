@@ -96,14 +96,6 @@ class SopirAbsenController extends Controller
         if ($cabang && $cabang->punyaArea()) {
             $jarak = $cabang->jarakKe((float) $validated['latitude'], (float) $validated['longitude']);
             $dalamArea = $jarak <= $cabang->radius_meter;
-
-            // Darurat bisa terjadi di jalan, jadi tidak dibatasi area kantor:
-            // posisi tetap dicatat agar admin tahu di mana kendaraan berada.
-            if (!$dalamArea && !$darurat) {
-                throw ValidationException::withMessages([
-                    'latitude' => "Kamu berada {$jarak} m dari kantor (batas {$cabang->radius_meter} m). Patroli hanya bisa dilakukan di area kantor.",
-                ]);
-            }
         }
 
         $fotoPath = $request->file('foto')->store('absen-kendaraan', 'public');

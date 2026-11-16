@@ -266,7 +266,7 @@
             const b = $('lok-badge');
             b.textContent = teks;
             b.className = 'inline-block mt-2 px-2 py-1 rounded-full text-xs font-semibold ' +
-                (hijau ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700');
+                (hijau === null ? 'bg-amber-100 text-amber-800' : (hijau ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'));
         }
 
         function gagal(pesan) {
@@ -291,29 +291,21 @@
             evaluasiLokasi();
         }
 
-        // Patroli aman wajib di area kantor; laporan darurat boleh di mana saja.
         function evaluasiLokasi() {
             if (!posisi) return;
-            const darurat = statusDarurat.checked;
             $('lok-judul').className = 'font-semibold text-gray-700';
             if (AREA) {
                 const j = posisi.jarak;
-                $('lok-judul').textContent = 'Kawasan Kantor Cabang ' + AREA.nama;
+                $('lok-judul').textContent = 'Posisi Kendaraan';
                 if (j <= AREA.radius) {
-                    badge('Dalam area', true);
-                    lokasiSiap = true;
-                } else if (darurat) {
-                    badge('Di luar area (' + j + ' m dari kantor) - posisi dicatat untuk penanganan', false);
-                    lokasiSiap = true;
+                    badge('Di dalam area kantor ' + AREA.nama, true);
                 } else {
-                    badge('Di luar area (' + j + ' m dari kantor)', false);
-                    lokasiSiap = false;
-                    $('btn-lokasi').classList.remove('hidden');
+                    badge('Di luar area kantor (' + j + ' m) - posisi dicatat', null);
                 }
             } else {
                 $('lok-judul').textContent = 'Lokasi terdeteksi';
-                lokasiSiap = true;
             }
+            lokasiSiap = true;
             perbarui();
         }
 

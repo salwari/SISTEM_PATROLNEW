@@ -27,9 +27,6 @@ class SopirAbsenController extends Controller
             return redirect()->route('sopir.dashboard')->with('error', $this->pesanDaruratTerbuka($kendaraan, $terbuka));
         }
 
-        // Patroli aman cukup sekali per hari, tapi laporan darurat boleh kapan saja.
-        $sudahPatroli = $this->patroliAmanHariIni($kendaraan);
-
         $cabang = Auth::user()->cabang;
 
         $area = ($cabang && $cabang->punyaArea()) ? [
@@ -45,7 +42,6 @@ class SopirAbsenController extends Controller
             'kendaraan' => $kendaraan,
             'area' => $area,
             'kategoriKejadian' => $kategoriKejadian,
-            'sudahPatroli' => $sudahPatroli,
         ]);
     }
 
@@ -82,11 +78,6 @@ class SopirAbsenController extends Controller
         // Aturan dijaga di server (bukan hanya di tampilan), supaya tidak bisa ditembus lewat kiriman langsung.
         if ($terbuka = $this->laporanDaruratTerbuka($kendaraan)) {
             return redirect()->route('sopir.dashboard')->with('error', $this->pesanDaruratTerbuka($kendaraan, $terbuka));
-        }
-
-        if (!$darurat && $this->patroliAmanHariIni($kendaraan)) {
-            return redirect()->route('sopir.dashboard')
-                ->with('error', $kendaraan->plat_nomor . ' sudah dipatroli hari ini.');
         }
 
         $cabang = $user->cabang;
@@ -169,14 +160,6 @@ class SopirAbsenController extends Controller
         return $kendaraan->plat_nomor . ' sedang berstatus DARURAT (' . ($laporan->kategoriKejadian->nama_kategori ?? 'lainnya')
             . ', ' . strtolower($laporan->penanganan_label) . ') dan menunggu penanganan admin. '
             . 'Patroli atau laporan baru bisa dibuat setelah penanganannya selesai.';
-    }
-
-    private function patroliAmanHariIni(Kendaraan $kendaraan): ?AbsenKendaraan
-    {
-        return AbsenKendaraan::where('kendaraan_id', $kendaraan->id)
-            ->where('status', 'aman')
-            ->whereDate('tanggal', now()->toDateString())
-            ->first();
     }
 
     private function cariKendaraan(string $kode): ?Kendaraan

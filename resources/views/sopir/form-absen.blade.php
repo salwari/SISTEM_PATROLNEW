@@ -10,13 +10,6 @@
             </div>
         @endif
 
-        @if ($sudahPatroli)
-            <div class="max-w-full md:max-w-4xl mb-4 p-4 bg-blue-100 border-l-4 border-blue-500 text-blue-800 rounded-lg shadow-md text-sm">
-                {{ $kendaraan->plat_nomor }} sudah dipatroli aman hari ini oleh {{ $sudahPatroli->nama_sopir }} pukul {{ $sudahPatroli->jam }}.
-                Form ini hanya bisa dipakai untuk melaporkan kondisi <strong>darurat</strong>.
-            </div>
-        @endif
-
         <div class="max-w-full md:max-w-4xl bg-white p-6 rounded-lg shadow-md border border-gray-200">
             <form id="form-absen" action="{{ route('sopir.absen.store') }}" method="POST" enctype="multipart/form-data"
                 class="space-y-6">
@@ -156,7 +149,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const AREA = @json($area);
-        const SUDAH_AMAN = @json((bool) $sudahPatroli);
 
         const $ = (id) => document.getElementById(id);
         const foto = $('foto'), btnSimpan = $('btn-simpan');
@@ -176,7 +168,6 @@
             $('opsi-ket').classList.toggle('hidden', darurat);
             if (typeof evaluasiLokasi === 'function') evaluasiLokasi();
         }
-        if (SUDAH_AMAN) { statusAman.disabled = true; statusDarurat.checked = true; toggleKategori(); }
         statusAman.addEventListener('change', toggleKategori);
         statusDarurat.addEventListener('change', toggleKategori);
         toggleKategori();

@@ -40,7 +40,7 @@
                 if (hasScanned) return;
 
                 if (decodedText.includes('/petugas-security') || decodedText.includes('/patroli/')) {
-                    showError("❌ Ini adalah Barcode Pos Patroli Satpam, bukan Kamar Mandi.");
+                    showError("Ini adalah Barcode Pos Patroli Satpam, bukan Kamar Mandi.");
                     return;
                 }
 
@@ -86,7 +86,7 @@
             }
 
             if (!window.isSecureContext || !navigator.mediaDevices) {
-                showError("Kamera hanya bisa dipakai lewat HTTPS. Buka halaman ini dengan alamat https://.");
+                showError("Kamera di halaman ini hanya bisa dipakai lewat HTTPS. Scan QR memakai kamera bawaan HP.");
                 return;
             }
 

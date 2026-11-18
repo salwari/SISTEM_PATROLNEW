@@ -112,9 +112,11 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('jadwal-kebersihan')->group(function () {
             Route::get('/', [JadwalKebersihanController::class, 'index'])->name('jadwal-kebersihan.index');
+            Route::post('/generate-ulang', [JadwalKebersihanController::class, 'generateUlang'])->name('jadwal-kebersihan.generate-ulang');
             Route::post('/', [JadwalKebersihanController::class, 'store'])->name('jadwal-kebersihan.store');
             Route::put('/{jadwalKebersihan}', [JadwalKebersihanController::class, 'update'])->name('jadwal-kebersihan.update');
             Route::delete('/{jadwalKebersihan}', [JadwalKebersihanController::class, 'destroy'])->name('jadwal-kebersihan.destroy');
+            Route::get('/cetak', [JadwalKebersihanController::class, 'cetakJadwal'])->name('jadwal-kebersihan.cetak-jadwal');
         });
 
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');

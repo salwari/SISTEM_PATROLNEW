@@ -53,7 +53,7 @@
                     <tr class="text-center">
                         <th class="px-4 py-3">No</th>
                         <th class="px-4 py-3 text-left">Nama Lokasi</th>
-                        <th class="px-4 py-3">Cabang</th>
+                        <th class="px-4 py-3">Unit Kerja</th>
                         <th class="px-4 py-3 text-left">Deskripsi</th>
                         <th class="px-4 py-3">QR Code</th>
                     </tr>

@@ -77,6 +77,7 @@
                 $menuKebersihan = [
                     ['label' => 'Kategori Kebersihan', 'route' => 'kategori-kebersihan.index', 'active' => request()->routeIs('kategori-kebersihan.*')],
                     ['label' => 'Lokasi Kebersihan', 'route' => 'lokasi-kebersihan.index', 'active' => request()->routeIs('lokasi-kebersihan.*')],
+                    ['label' => 'Jadwal Kebersihan', 'route' => 'jadwal-kebersihan.index', 'active' => request()->routeIs('jadwal-kebersihan.*')],
                     ['label' => 'Riwayat Kebersihan', 'route' => 'riwayat-kebersihan.index', 'active' => request()->routeIs('riwayat-kebersihan.*')],
                 ];
             @endphp

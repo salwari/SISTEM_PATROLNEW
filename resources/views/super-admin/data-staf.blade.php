@@ -138,7 +138,7 @@
             <form action="{{ route($routeName) }}" method="GET" class="dt-filter">
 
                 <select name="cabang_id" class="dt-select">
-                    <option value="" {{ request('cabang_id') == '' ? 'selected' : '' }}>Semua Cabang</option>
+                    <option value="" {{ request('cabang_id') == '' ? 'selected' : '' }}>Semua Unit kerja</option>
                     @foreach ($cabangs->unique('nama_cabang') as $cabang)
                         <option value="{{ $cabang->id }}"
                             {{ request('cabang_id') == $cabang->id ? 'selected' : '' }}>
@@ -174,7 +174,7 @@
                         <tr class="text-center">
                             <th class="px-4 py-3">No</th>
                             <th class="px-4 py-3">Nama</th>
-                            <th class="px-4 py-3">Cabang</th>
+                            <th class="px-4 py-3">Unit Kerja</th>
                             <th class="px-4 py-3">Foto</th>
                             <th class="px-4 py-3">Email</th>
                             <th class="px-4 py-3">Nomor Induk</th>

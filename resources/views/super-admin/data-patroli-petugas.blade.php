@@ -10,7 +10,7 @@
                     
                     <select name="cabang_id"
                         class="border border-gray-300 rounded-lg p-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 w-full md:w-48">
-                        <option value="" {{ request('cabang_id') == '' ? 'selected' : '' }}>Semua cabang</option>
+                        <option value="" {{ request('cabang_id') == '' ? 'selected' : '' }}>Semua Unit Kerja</option>
                         @foreach ($cabangs as $cabang)
                             <option value="{{ $cabang->id }}"
                                 {{ request('cabang_id') == $cabang->id ? 'selected' : '' }}>
@@ -64,7 +64,7 @@
                     <tr class="text-center">
                         <th class="px-4 py-3">No</th>
                         <th class="px-4 py-3">Nama Petugas</th>
-                        <th class="px-4 py-3">Cabang</th>
+                        <th class="px-4 py-3">Unit Kerja</th>
                         <th class="px-4 py-3">Lokasi</th>
                         <th class="px-4 py-3">Tanggal</th>
                         <th class="px-4 py-3">Waktu</th>

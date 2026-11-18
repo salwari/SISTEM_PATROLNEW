@@ -1,6 +1,6 @@
 <x-app-layout :title="'Data Cabang'">
     <div class="container mx-auto p-4">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Daftar Cabang</h2>
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Daftar Unit Kerja</h2>
 
         
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-md mb-4">
@@ -17,7 +17,7 @@
                             </svg>
                         </div>
                         <input type="text" id="search" name="search" value="{{ request('search') }}"
-                            placeholder="Cari cabang..." autocomplete="off"
+                            placeholder="Cari unit kerja..." autocomplete="off"
                             class="block w-full p-2 pl-10 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500" />
                         <button type="submit"
                             class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-r-lg">
@@ -35,7 +35,7 @@
                 
                 <a href="{{ route('data-cabang.create') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold whitespace-nowrap text-center">
-                    Tambah Cabang
+                    Tambah Unit Kerja
                 </a>
             </div>
         </div>
@@ -46,7 +46,7 @@
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
                     <tr class="text-center">
                         <th class="px-4 py-3">No</th>
-                        <th class="px-4 py-3">Nama Cabang</th>
+                        <th class="px-4 py-3">Nama Unit Kerja</th>
                         <th class="px-4 py-3">Alamat</th>
                         <th class="px-4 py-3">Email</th>
                         <th class="px-4 py-3">No Telepon</th>

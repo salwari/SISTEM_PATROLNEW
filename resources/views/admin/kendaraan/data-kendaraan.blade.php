@@ -88,16 +88,24 @@
                             </td>
                             <td class="px-4 py-2 text-center whitespace-nowrap">
                                 @if ($data->patroliTerakhir)
+                                    @php
+                                        $laporanTerbuka = (int) $data->laporan_darurat_terbuka_count;
+                                        $daruratAktif = $data->patroliTerakhir->status === 'darurat' && $laporanTerbuka > 0;
+                                        $daruratSudahDitangani = $data->patroliTerakhir->status === 'darurat' && $laporanTerbuka === 0;
+                                    @endphp
                                     <div class="text-xs text-gray-600">{{ $data->patroliTerakhir->tanggal->format('d-m-Y') }}</div>
-                                    @if ($data->patroliTerakhir->status === 'darurat')
+                                    @if ($daruratAktif)
                                         <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Darurat</span>
                                     @else
                                         <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aman</span>
+                                        @if ($daruratSudahDitangani)
+                                            <div class="mt-1 text-[10px] text-gray-500">Darurat Selesai</div>
+                                        @endif
                                     @endif
-                                    @if ($data->laporan_darurat_terbuka_count > 0)
+                                    @if ($laporanTerbuka > 0)
                                         <a href="{{ route('riwayat-kendaraan.index', ['kendaraan_id' => $data->id, 'penanganan' => 'terbuka']) }}"
                                             class="block mt-1 text-xs font-semibold text-red-700 hover:underline">
-                                            {{ $data->laporan_darurat_terbuka_count }} laporan belum selesai
+                                            {{ $laporanTerbuka }} laporan belum selesai
                                         </a>
                                     @endif
                                 @else
@@ -232,5 +240,5 @@
                 });
             });
         });
-    });d
+    });
 </script>

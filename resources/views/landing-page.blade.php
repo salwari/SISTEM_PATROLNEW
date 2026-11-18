@@ -143,10 +143,15 @@
                 <h1 class="text-3xl md:text-4xl font-extrabold text-blue-600 dark:text-blue-400 leading-tight mb-6">
                     Selamat Datang di SIM PATROLI
                 </h1>
+                <p class="text-gray-700 dark:text-gray-300 text-lg mb-4 leading-relaxed">
+                    SIM PATROLI adalah Sistem Informasi Manajemen Patroli berbasis website
+                    untuk mencatat dan memantau kegiatan patroli di lingkungan kerja
+                    PT SUCOFINDO Cilacap secara tertib, transparan, dan terdokumentasi.
+                </p>
                 <p class="text-gray-700 dark:text-gray-300 text-lg mb-6 leading-relaxed">
-                    SIM PATROLI adalah sistem berbasis website untuk memantau
-                    aktivitas patroli petugas security secara real-time, efisien,
-                    dan akurat di lingkungan kerja PT SUCOFINDO Cilacap.
+                    Mencakup patroli keamanan oleh petugas security, pengecekan kebersihan
+                    toilet oleh petugas kebersihan, serta patroli kendaraan operasional oleh sopir,
+                    dari scan QR Code hingga foto bukti lokasi.
                 </p>
                 <a href="{{ route('login') }}"
                     class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
@@ -214,38 +219,11 @@
     
     <section id="fitur" class="py-16 px-6 md:px-4 bg-blue-50/60 dark:bg-gray-900 transition-colors duration-200">
         <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-400 mb-10">Fitur Unggulan SIM PATROLI</h2>
+            <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-400 mb-3">Fitur Unggulan SIM PATROLI</h2>
+            <p class="text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Satu sistem untuk tiga jenis patroli: keamanan, kebersihan toilet, dan kendaraan operasional.
+            </p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-                
-                
-                <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
-                    <div>
-                        <div class="text-blue-600 dark:text-blue-400 mb-4">
-                            <svg class="mx-auto w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                                <path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Scan QR Pos Patroli</h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                            Petugas security memindai QR Code di setiap pos titik lokasi untuk validasi kehadiran patroli secara otomatis dan presisi.
-                        </p>
-                    </div>
-                </div>
-
-                
-                <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
-                    <div>
-                        <div class="text-blue-600 dark:text-blue-400 mb-4">
-                            <svg class="mx-auto w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                <path d="M128 0c17.7 0 32 14.3 32 32l0 32 128 0 0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32 48 0c26.5 0 48 21.5 48 48l0 48L0 160l0-48C0 85.5 21.5 64 48 64l48 0 0-32c0-17.7 14.3-32 32-32zM0 192l448 0 0 272c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 192zm64 80l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zm128 0l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0zM64 400l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0zm112 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Jadwal & Reminder</h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                            Admin mengatur jadwal shift terpadu, dan sistem mengirimkan pengingat kepada petugas sesuai jam operasional tugas.
-                        </p>
-                    </div>
-                </div>
 
                 <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
                     <div>
@@ -254,14 +232,13 @@
                                 <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 47-92.8 37.1c-21.3 8.5-35.2 29.1-35.2 52c0 56.6 18.9 148 94.2 208.3c-9 4.8-19.3 7.6-30.2 7.6L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zm39.1 97.7c5.7-2.3 12.1-2.3 17.8 0l120 48C570 277.4 576 286.2 576 296c0 63.3-25.9 168.8-134.8 214.2c-5.9 2.5-12.6 2.5-18.5 0C313.9 464.8 288 359.3 288 296c0-9.8 6-18.6 15.1-22.3l120-48zM527.4 312L432 273.8l0 187.8c68.2-33 91.5-99 95.4-149.7z" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Laporan & Insiden</h3>
+                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Patroli Security</h3>
                         <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                            Petugas mengisi form patroli dan dapat melaporkan kejadian insiden darurat langsung ke admin via integrasi WhatsApp.
+                            Petugas security memindai QR Code di setiap titik lokasi untuk memastikan area kantor telah dipatroli dan memeriksa apakah kondisinya aman.
                         </p>
                     </div>
                 </div>
 
-              
                 <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
                     <div>
                         <div class="text-blue-600 dark:text-blue-400 mb-4">
@@ -269,29 +246,13 @@
                                 <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Sanitasi & Kebersihan</h3>
+                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Kebersihan Toilet</h3>
                         <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                            Petugas OB memindai QR Code di fasilitas kamar mandi/toilet untuk checklist kebersihan berkala dan evaluasi sanitasi lingkungan.
+                            Petugas kebersihan memindai QR Code di setiap kamar mandi dan melaporkan kondisinya, dengan alur yang sama seperti patroli security.
                         </p>
                     </div>
                 </div>
 
-                
-                <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
-                    <div>
-                        <div class="text-blue-600 dark:text-blue-400 mb-4">
-                            <svg class="mx-auto w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                                <path d="M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM305 273L177 401c-9.4 9.4-24.6 9.4-33.9 0L79 337c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L271 239c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Temuan Fasilitas</h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                            Pencatatan fasilitas toilet rusak atau butuh perbaikan agar dapat segera ditindaklanjuti oleh teknisi dan bagian pemeliharaan gedung.
-                        </p>
-                    </div>
-                </div>
-
-                
                 <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
                     <div>
                         <div class="text-blue-600 dark:text-blue-400 mb-4">
@@ -300,9 +261,52 @@
                                 <path d="M8.25 19.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM15 6.75a.75.75 0 00-.75.75V13.5h5.348c.128 0 .253-.05.346-.142l3.129-3.129a.75.75 0 00.22-.53V8.25a.75.75 0 00-.75-.75h-7.53zM15 15v.75a.75.75 0 00.75.75h.375a3 3 0 106 0h.375a.75.75 0 00.75-.75V15h-8.25zM19.5 19.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Checklist Kendaraan</h3>
+                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Patroli Kendaraan</h3>
                         <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                            Sopir memindai QR armada untuk cek fisik, kondisi mesin, kilometer/BBM, serta penanganan laporan darurat armada operasional.
+                            Sopir memindai QR Code pada kendaraan untuk mencatat posisi dan kondisi kendaraan, lengkap dengan foto bukti.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
+                    <div>
+                        <div class="text-blue-600 dark:text-blue-400 mb-4">
+                            <svg class="mx-auto w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 9a3.75 3.75 0 100 7.5A3.75 3.75 0 0012 9z" />
+                                <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 015.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 01-3 3h-15a3 3 0 01-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.151-.178a1.56 1.56 0 001.11-.71l.822-1.315a2.942 2.942 0 012.332-1.39zM6.75 12.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0zm12-1.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Foto Lokasi</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                            Setiap pemeriksaan dilengkapi foto lokasi sebagai bukti, sehingga hasil patroli dapat dipertanggungjawabkan.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
+                    <div>
+                        <div class="text-blue-600 dark:text-blue-400 mb-4">
+                            <svg class="mx-auto w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                <path d="M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM305 273L177 401c-9.4 9.4-24.6 9.4-33.9 0L79 337c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L271 239c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Status & Keterangan</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                            Petugas menandai kondisi aman atau tidak aman. Jika tidak aman, alasan wajib dicantumkan agar mudah ditindaklanjuti.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow p-6 hover:shadow-lg transition text-center flex flex-col justify-between">
+                    <div>
+                        <div class="text-blue-600 dark:text-blue-400 mb-4">
+                            <svg class="mx-auto w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                <path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">Deteksi Lokasi Otomatis</h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                            Sistem mendeteksi posisi petugas secara otomatis saat patroli dicatat, termasuk posisi kendaraan saat dicek oleh sopir.
                         </p>
                     </div>
                 </div>

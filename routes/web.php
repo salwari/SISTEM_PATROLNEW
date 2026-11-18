@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CabangController;
 use App\Http\Controllers\ChecklistKendaraanController;
 use App\Http\Controllers\JadwalPatroliController;
+use App\Http\Controllers\JadwalSopirController;
 use App\Http\Controllers\KabidDukbisController;
 use App\Http\Controllers\KategoriKebersihanController;
 use App\Http\Controllers\KategoriKejadianController;
@@ -121,6 +122,15 @@ Route::middleware('auth')->group(function () {
             Route::put('/{kendaraan}', [KendaraanController::class, 'update'])->name('kendaraan.update');
             Route::delete('/{kendaraan}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy');
             Route::get('/{kendaraan}/download-qr', [KendaraanController::class, 'downloadQrCode'])->name('kendaraan.downloadQrCode');
+        });
+
+                Route::prefix('jadwal-sopir')->group(function () {
+            Route::get('/', [JadwalSopirController::class, 'index'])->name('jadwal-sopir.index');
+            Route::get('/cetak', [JadwalSopirController::class, 'cetakJadwal'])->name('jadwal-sopir.cetak-jadwal');
+            Route::post('/generate', [JadwalSopirController::class, 'generate'])->name('jadwal-sopir.generate');
+            Route::post('/', [JadwalSopirController::class, 'store'])->name('jadwal-sopir.store');
+            Route::put('/{jadwalSopir}', [JadwalSopirController::class, 'update'])->name('jadwal-sopir.update');
+            Route::delete('/{jadwalSopir}', [JadwalSopirController::class, 'destroy'])->name('jadwal-sopir.destroy');
         });
 
         // Butir checklist kendaraan

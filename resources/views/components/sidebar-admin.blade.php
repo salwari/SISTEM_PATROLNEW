@@ -114,9 +114,10 @@
 
 
             @php
-                $isKendaraanActive = request()->routeIs('kendaraan.*', 'kategori-kondisi-kendaraan.*', 'riwayat-kendaraan.*');
+                $isKendaraanActive = request()->routeIs('kendaraan.*', 'jadwal-sopir.*', 'kategori-kondisi-kendaraan.*', 'riwayat-kendaraan.*');
                 $menuKendaraan = [
                     ['label' => 'Data Kendaraan', 'route' => 'kendaraan.index', 'active' => request()->routeIs('kendaraan.*')],
+                    ['label' => 'Jadwal Sopir', 'route' => 'jadwal-sopir.index', 'active' => request()->routeIs('jadwal-sopir.*')],
                     ['label' => 'Kategori Kondisi', 'route' => 'kategori-kondisi-kendaraan.index', 'active' => request()->routeIs('kategori-kondisi-kendaraan.*')],
                     ['label' => 'Riwayat Kendaraan', 'route' => 'riwayat-kendaraan.index', 'active' => request()->routeIs('riwayat-kendaraan.*')],
                 ];

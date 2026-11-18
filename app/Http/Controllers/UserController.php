@@ -43,7 +43,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'nama' => ['required', 'regex:/^[A-Za-z\s]+$/', 'max:30'],
-            'email' => ['required', 'email', 'regex:/@gmail\.com$/', 'max:30', 'unique:users,email'],
+            'email' => ['required', 'email', 'max:30', 'unique:users,email'],
             'nomor_induk' => ['required', 'string', 'regex:/^\d+$/', 'unique:users,nomor_induk'],
             'no_telepon' => ['required', 'string', 'regex:/^\d+$/', 'digits_between:6,15', 'unique:users,no_telepon'],
             'alamat' => ['required', 'string'],
@@ -51,7 +51,6 @@ class UserController extends Controller
             'password' => ['required', 'string', 'min:8', 'max:255'],
         ], [
             'nama.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
-            'email.regex' => 'Email harus menggunakan domain @gmail.com.',
             'email.unique' => 'Email sudah terdaftar.',
             'nomor_induk.regex' => 'Nomor induk harus berupa angka.',
             'nomor_induk.unique' => 'Nomor induk sudah ada.',
@@ -78,7 +77,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'nama' => ['required', 'regex:/^[A-Za-z\s]+$/', 'max:30'],
-            'email' => ['required', 'email', 'regex:/@gmail\.com$/', 'max:30', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'email', 'max:30', 'unique:users,email,' . $user->id],
             'nomor_induk' => ['required', 'string', 'regex:/^\d+$/', 'unique:users,nomor_induk,' . $user->id],
             'no_telepon' => ['required', 'string', 'regex:/^\d+$/', 'digits_between:6,15', 'unique:users,no_telepon,' . $user->id],
             'alamat' => ['required', 'string'],
@@ -95,7 +94,6 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        // cek_kendaraan.user_id memakai ON DELETE CASCADE: menghapus sopir akan ikut menghapus riwayat cek.
         if ($user->cekKendaraan()->exists()) {
             return redirect()->route('data-pengguna.index')
                 ->with('error', 'Pengguna sudah punya riwayat cek kendaraan, sehingga tidak bisa dihapus agar riwayat tidak hilang.');

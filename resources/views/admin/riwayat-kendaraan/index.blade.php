@@ -25,7 +25,6 @@
             ];
         @endphp
 
-        {{-- Tab Cepat --}}
         <div class="flex flex-wrap gap-2">
             @foreach ($tabs as $kunci => [$label, $param, $jumlah])
                 @php
@@ -42,7 +41,6 @@
             @endforeach
         </div>
 
-        {{-- Form Pencarian & Filter --}}
         <div class="border border-gray-200 rounded-lg shadow-md bg-white px-4 py-3">
             <form action="{{ route('riwayat-kendaraan.index') }}" method="GET" class="space-y-3">
                 @if ($status) <input type="hidden" name="status" value="{{ $status }}"> @endif
@@ -92,7 +90,6 @@
             </form>
         </div>
 
-        {{-- Tabel Riwayat --}}
         <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-lg">
             <table class="table-auto w-full text-sm text-gray-700">
                 <thead class="bg-blue-200 text-gray-800 uppercase text-xs">
@@ -146,12 +143,20 @@
                                     -
                                 @endif
                             </td>
-                            <td class="px-4 py-2">
-                                @if($a->foto)
-                                    <a href="{{ asset('storage/' . $a->foto) }}" target="_blank" class="text-blue-600 hover:underline">Lihat</a>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
+                            <td class="px-4 py-2 whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-2">
+                                    @if ($a->status === 'darurat' && $a->status_penanganan !== 'selesai')
+                                        <a href="{{ route('riwayat-kendaraan.show', $a->id) }}"
+                                            class="px-3 py-1 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded">Tangani</a>
+                                    @else
+                                        <a href="{{ route('riwayat-kendaraan.show', $a->id) }}"
+                                            class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded">Detail</a>
+                                    @endif
+                                    @if ($a->foto)
+                                        <a href="{{ asset('storage/' . $a->foto) }}" target="_blank"
+                                            class="text-xs text-blue-600 hover:underline">Foto</a>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -163,7 +168,6 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
         <div class="flex justify-between items-center bg-white px-2 py-3">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $riwayat->firstItem() ?? 0 }} sampai {{ $riwayat->lastItem() ?? 0 }} dari {{ $riwayat->total() }} data

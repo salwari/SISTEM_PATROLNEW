@@ -1,0 +1,362 @@
+<x-app-layout :title="'Data Jadwal Kebersihan'">
+    <div class="container mx-auto p-4">
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                Jadwal Kebersihan Bulan {{ $currentMonth->translatedFormat('F Y') }}
+            </h2>
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border border-gray-200 rounded-lg shadow-md p-4 bg-white">
+
+                {{-- Filter Bulan --}}
+                <form method="GET" action="{{ route('jadwal-kebersihan.index') }}" class="w-full sm:w-auto">
+                    <input type="month" name="month" value="{{ $currentMonth->format('Y-m') }}"
+                        onchange="this.form.submit()"
+                        class="border border-gray-300 rounded px-4 py-2 text-sm text-gray-700 shadow-sm w-full min-w-[150px] sm:min-w-[180px]">
+                </form>
+
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    {{-- Tombol Tambah Jadwal --}}
+                    <button data-modal-target="tambahModal" data-modal-toggle="tambahModal"
+                        class="w-full min-w-[80px] sm:min-w-[100px] whitespace-nowrap px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold text-center">
+                        Tambah Jadwal
+                    </button>
+                    
+                    {{-- Modal Tambah Jadwal --}}
+                    <div id="tambahModal" tabindex="-1" aria-hidden="true"
+                        class="hidden fixed top-0 left-0 right-0 z-50 items-center justify-center w-full h-full bg-black bg-opacity-50">
+                        <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
+                            <div class="p-4 border-b">
+                                <h3 class="text-lg font-semibold text-gray-800">Tambah Jadwal Kebersihan</h3>
+                            </div>
+                            <form action="{{ route('jadwal-kebersihan.store') }}" method="POST" class="p-6 space-y-5">
+                                @csrf
+                                
+                                <div>
+                                    <label for="user_id" class="block mb-1 text-sm font-medium text-gray-700">
+                                        Petugas OB
+                                    </label>
+                                    <select id="user_id" name="user_id" required
+                                        class="mt-1 w-full border border-gray-300 rounded-lg shadow-sm text-sm px-3 py-2 focus:ring focus:ring-blue-300">
+                                        <option value="">-- Pilih Petugas OB --</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label for="tanggal" class="block mb-1 text-sm font-medium text-gray-700">
+                                        Tanggal
+                                    </label>
+                                    <input type="date" id="tanggal" name="tanggal" required value="{{ now()->format('Y-m-d') }}"
+                                        class="mt-1 w-full border border-gray-300 rounded-lg shadow-sm text-sm px-3 py-2 focus:ring focus:ring-blue-300">
+                                </div>
+                                
+                                <div>
+                                    <label for="shift" class="block mb-1 text-sm font-medium text-gray-700">
+                                        Shift
+                                    </label>
+                                    <select id="shift" name="shift" required
+                                        class="mt-1 w-full border border-gray-300 rounded-lg shadow-sm text-sm px-3 py-2 focus:ring focus:ring-blue-300">
+                                        <option value="">-- Pilih Shift --</option>
+                                        <option value="pagi">Pagi</option>
+                                        <option value="sore">Sore</option>
+                                        <option value="malam">Malam</option>
+                                    </select>
+                                </div>
+
+                                <div class="flex justify-end gap-3 pt-4">
+                                    <button type="button" data-modal-hide="tambahModal"
+                                        class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg font-semibold">
+                                        Batal
+                                    </button>
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-semibold">
+                                        Simpan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Kalender Jadwal --}}
+        <div class="w-full overflow-x-auto border border-gray-200 rounded-lg shadow-md bg-white">
+            <div class="min-w-[700px] grid grid-cols-7 gap-px text-center text-sm select-none">
+                
+                @foreach (['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'] as $day)
+                    <div class="font-semibold py-2 bg-blue-200 text-gray-800 text-xs uppercase border border-gray-200">
+                        {{ $day }}
+                    </div>
+                @endforeach
+
+                @php
+                    $startOfMonth = $currentMonth->copy()->startOfMonth();
+                    $endOfMonth = $currentMonth->copy()->endOfMonth();
+                    $startDayOfWeek = $startOfMonth->dayOfWeek;
+                    $daysInMonth = $currentMonth->daysInMonth;
+
+                    $warnaPetugas = [];
+                    $daftarWarna = ['bg-red-500', 'bg-yellow-500', 'bg-blue-500', 'bg-orange-500', 'bg-purple-500', 'bg-teal-500', 'bg-emerald-500'];
+
+                    foreach ($users as $index => $user) {
+                        $warnaPetugas[$user->id] = $daftarWarna[$index % count($daftarWarna)];
+                    }
+                @endphp
+
+                {{-- Kolom Kosong Sebelum Hari Pertama --}}
+                @for ($i = 0; $i < $startDayOfWeek; $i++)
+                    <div class="border border-gray-200 h-24 bg-gray-100"></div>
+                @endfor
+
+                {{-- Tanggal-Tanggal Bulan Terpilih --}}
+                @for ($day = 1; $day <= $daysInMonth; $day++)
+                    @php
+                        $date = $currentMonth->copy()->day($day)->format('Y-m-d');
+                        $jadwalHariIni = $jadwalKebersihan[$date] ?? [];
+                    @endphp
+
+                    {{-- Cell dibuat min-h-24 dan overflow-y-auto agar jika >3 orang tetap muat rapi --}}
+                    <div class="border border-gray-200 p-1.5 min-h-[5.5rem] sm:min-h-[6rem] text-left relative group bg-white hover:bg-blue-50 rounded transition-all">
+                        
+                        <div class="text-xs font-semibold text-gray-800">{{ $day }}</div>
+
+                        @if (!empty($jadwalHariIni) && count($jadwalHariIni) > 0)
+                            @php
+                                $shiftOrder = ['pagi' => 1, 'sore' => 2, 'malam' => 3];
+                                $jadwalHariIni = collect($jadwalHariIni)->sortBy(fn($j) => $shiftOrder[$j->shift] ?? 99);
+                            @endphp
+
+                            <div class="space-y-1 max-h-20 overflow-y-auto pr-0.5 mt-1">
+                                @foreach ($jadwalHariIni as $jadwal)
+                                    <div class="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded text-white leading-tight whitespace-nowrap overflow-hidden {{ $warnaPetugas[$jadwal->user->id] ?? 'bg-gray-400' }}"
+                                        title="{{ $jadwal->user->nama ?? 'Tidak ditemukan' }}">
+                                        <span class="whitespace-nowrap truncate max-w-[90px]">
+                                            {{ $jadwal->user->nama ?? 'Tidak ditemukan' }}
+                                        </span>
+                                        <span class="italic opacity-90 whitespace-nowrap">({{ ucfirst($jadwal->shift) }})</span>
+                                    </div>
+
+                                    {{-- Tombol Aksi (Muncul saat hover cell) --}}
+                                    <div class="absolute top-1 right-1 hidden group-hover:flex flex-col gap-0.5 z-20">
+                                        {{-- Tombol Edit --}}
+                                        <button data-modal-target="editModal{{ $jadwal->id }}"
+                                            class="w-5 h-5 flex items-center justify-center text-white bg-yellow-400 hover:bg-yellow-500 rounded"
+                                            type="button" aria-label="Edit jadwal {{ $jadwal->user->nama }}">
+                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                                <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+
+                                        {{-- Modal Edit --}}
+                                        <div id="editModal{{ $jadwal->id }}" tabindex="-1"
+                                            class="hidden fixed top-0 left-0 right-0 z-50 w-full h-full items-center justify-center bg-black bg-opacity-50">
+                                            <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
+                                                <div class="p-4 border-b">
+                                                    <h3 class="text-lg font-semibold text-gray-800">Edit Jadwal Kebersihan</h3>
+                                                </div>
+                                                <form action="{{ route('jadwal-kebersihan.update', $jadwal->id) }}" method="POST" class="p-6 space-y-5">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    
+                                                    <div>
+                                                        <label for="user_id_edit_{{ $jadwal->id }}" class="block mb-1 text-sm font-medium text-gray-700">Petugas OB</label>
+                                                        <select id="user_id_edit_{{ $jadwal->id }}" name="user_id" required
+                                                            class="mt-1 w-full border border-gray-300 rounded-lg shadow-sm text-sm px-3 py-2 focus:ring focus:ring-blue-300">
+                                                            @foreach ($users as $user)
+                                                                <option value="{{ $user->id }}" {{ $jadwal->user_id == $user->id ? 'selected' : '' }}>
+                                                                    {{ $user->nama }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div>
+                                                        <label for="shift_edit_{{ $jadwal->id }}" class="block mb-1 text-sm font-medium text-gray-700">Shift</label>
+                                                        <select id="shift_edit_{{ $jadwal->id }}" name="shift" required
+                                                            class="mt-1 w-full border border-gray-300 rounded-lg shadow-sm text-sm px-3 py-2 focus:ring focus:ring-blue-300">
+                                                            <option value="pagi" {{ $jadwal->shift == 'pagi' ? 'selected' : '' }}>Pagi</option>
+                                                            <option value="sore" {{ $jadwal->shift == 'sore' ? 'selected' : '' }}>Sore</option>
+                                                            <option value="malam" {{ $jadwal->shift == 'malam' ? 'selected' : '' }}>Malam</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="flex justify-end gap-3 pt-4">
+                                                        <button type="button" data-modal-hide="editModal{{ $jadwal->id }}"
+                                                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg font-semibold">
+                                                            Batal
+                                                        </button>
+                                                        <button type="submit"
+                                                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-semibold">
+                                                            Perbarui
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        {{-- Tombol Hapus (SweetAlert) --}}
+                                        <form action="{{ route('jadwal-kebersihan.destroy', $jadwal->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button"
+                                                class="w-5 h-5 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded btn-hapus"
+                                                data-nama="{{ $jadwal->user->nama }}" title="Hapus Jadwal">
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <span class="text-gray-700 text-[10px] italic mt-1 block">Belum dijadwalkan</span>
+                        @endif
+
+                    </div>
+                @endfor
+                
+                {{-- Kolom Kosong Setelah Tanggal Akhir --}}
+                @php
+                    $totalCells = $startDayOfWeek + $daysInMonth;
+                    $remainingCells = 7 - ($totalCells % 7);
+                    if ($remainingCells < 7) {
+                        for ($i = 0; $i < $remainingCells; $i++) {
+                            echo '<div class="border border-gray-200 h-24 bg-gray-100"></div>';
+                        }
+                    }
+                @endphp
+            </div>
+        </div>
+
+        {{-- Tabel Rekap Jumlah Kebersihan --}}
+        <div class="mt-4 bg-white p-2">
+            <h2 class="text-lg font-bold text-gray-800 mb-2">
+                Rekap Jumlah Kebersihan Bulan {{ $currentMonth->translatedFormat('F Y') }}
+            </h2>
+            <div class="overflow-x-auto rounded-lg shadow-lg border border-gray-200">
+                <table class="table-auto w-full text-sm text-gray-700">
+                    <thead class="bg-blue-200 text-gray-800 text-xs uppercase">
+                        <tr class="text-center">
+                            <th class="px-4 py-2">No</th>
+                            <th class="px-4 py-2 text-left">Nama Petugas</th>
+                            <th class="px-4 py-2">Jumlah Tugas</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse ($jumlahKebersihanPerUser as $index => $rekap)
+                            <tr class="hover:bg-gray-50 text-center">
+                                <td class="px-4 py-2">{{ $index + 1 }}</td>
+                                <td class="px-4 py-2 text-left">{{ $rekap->user->nama }}</td>
+                                <td class="px-4 py-2">{{ $rekap->total }} kali</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="px-4 py-3 text-center text-gray-700">Belum ada jadwal kebersihan.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Modal Open / Close Handler (Sama seperti Jadwal Patroli)
+        document.querySelectorAll("[data-modal-target]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const modalId = btn.dataset.modalTarget;
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove("hidden");
+                    modal.classList.add("flex");
+                }
+            });
+        });
+
+        document.querySelectorAll("[data-modal-hide]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const modalId = btn.dataset.modalHide;
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove("flex");
+                    modal.classList.add("hidden");
+                }
+            });
+        });
+
+        document.querySelectorAll('[id^="tambahModal"], [id^="editModal"]').forEach(modal => {
+            modal.addEventListener('click', e => {
+                if (e.target === modal) {
+                    modal.classList.remove("flex");
+                    modal.classList.add("hidden");
+                }
+            });
+        });
+
+        // SweetAlert Konfirmasi Hapus
+        document.querySelectorAll('.btn-hapus').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const form = this.closest('form');
+                const nama = this.dataset.nama || 'jadwal ini';
+
+                Swal.fire({
+                    title: 'Konfirmasi Hapus',
+                    text: `Apakah Anda yakin ingin menghapus jadwal kebersihan "${nama}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // Loading Indicator & Anti Double-Click pada Tombol Simpan & Perbarui
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            const method = form.getAttribute('method');
+            if (!method || method.toUpperCase() !== 'POST') return;
+            if (form.querySelector('input[name="_method"][value="DELETE"]')) return;
+
+            form.addEventListener('submit', function (e) {
+                if (this.dataset.submitting === 'true') {
+                    e.preventDefault();
+                    return;
+                }
+
+                if (!this.checkValidity()) return;
+
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    this.dataset.submitting = 'true';
+                    const btnText = submitBtn.innerText.trim().toLowerCase();
+                    let loadingText = btnText.includes('perbarui') ? 'Memperbarui...' : 'Menyimpan...';
+
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-75', 'cursor-not-allowed', 'pointer-events-none');
+                    submitBtn.innerHTML = `
+                        <span class="inline-flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>${loadingText}</span>
+                        </span>
+                    `;
+                }
+            });
+        });
+    });
+</script>

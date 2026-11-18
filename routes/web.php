@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CabangController;
 use App\Http\Controllers\ChecklistKendaraanController;
 use App\Http\Controllers\JadwalPatroliController;
+use App\Http\Controllers\JadwalKebersihanController;
 use App\Http\Controllers\KabidDukbisController;
 use App\Http\Controllers\KategoriKebersihanController;
 use App\Http\Controllers\KategoriKejadianController;
@@ -107,6 +108,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/', [KategoriKebersihanController::class, 'store'])->name('kategori-kebersihan.store');
             Route::put('/{checklistKamarMandi}', [KategoriKebersihanController::class, 'update'])->name('kategori-kebersihan.update');
             Route::delete('/{checklistKamarMandi}', [KategoriKebersihanController::class, 'destroy'])->name('kategori-kebersihan.destroy');
+        });
+
+        Route::prefix('jadwal-kebersihan')->group(function () {
+            Route::get('/', [JadwalKebersihanController::class, 'index'])->name('jadwal-kebersihan.index');
+            Route::post('/', [JadwalKebersihanController::class, 'store'])->name('jadwal-kebersihan.store');
+            Route::put('/{jadwalKebersihan}', [JadwalKebersihanController::class, 'update'])->name('jadwal-kebersihan.update');
+            Route::delete('/{jadwalKebersihan}', [JadwalKebersihanController::class, 'destroy'])->name('jadwal-kebersihan.destroy');
         });
 
         Route::get('/data-patroli', [AdminController::class, 'dataPatroli'])->name('admin.data-patroli');

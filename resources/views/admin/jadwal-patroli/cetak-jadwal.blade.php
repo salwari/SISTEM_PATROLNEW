@@ -31,17 +31,20 @@
             font-weight: bold;
         }
 
-        /* Kalender */
         table.calendar {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed !important;
         }
 
+        table.calendar tr {
+            page-break-inside: avoid;
+        }
+
         table.calendar th,
         table.calendar td {
             border: 1px solid #000;
-            width: 14.28%; 
+            width: 14.28%;
             height: 70px;
             vertical-align: top;
             padding: 2px 4px;
@@ -49,9 +52,8 @@
             line-height: 1.1;
         }
 
-        /* Header Hari */
         table.calendar th {
-            background-color: #bfdbfe; /* bg-blue-200 */
+            background-color: #bfdbfe;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 14px;
@@ -67,7 +69,6 @@
             margin-bottom: 3px;
         }
 
-        /* Kotak nama petugas */
         .petugas {
             display: block;
             padding: 2px 4px;
@@ -98,13 +99,12 @@
         $totalDays = $currentMonth->daysInMonth;
         $currentDay = 1;
 
-        /* Warna solid seperti Tailwind bg-red-500 dst */
         $daftarWarna = [
-            '#ef4444', // red-500
-            '#eab308', // yellow-500
-            '#3b82f6', // blue-500
-            '#f97316', // orange-500
-            '#a855f7', // purple-500
+            '#ef4444',
+            '#eab308',
+            '#3b82f6',
+            '#f97316',
+            '#a855f7',
         ];
 
         function warnaPetugas($userId, $daftarWarna)

@@ -70,7 +70,7 @@
         <div class="relative z-10">
             <p class="text-sm font-medium" style="color: rgba(255, 255, 255, 0.85);">{{ now()->locale('id')->isoFormat('dddd, D MMMM YYYY') }}</p>
             <h1 class="mt-1 text-2xl font-bold md:text-3xl" style="color: #ffffff;">Selamat datang, {{ Auth::user()->nama }}</h1>
-            <p class="mt-1 text-sm" style="color: rgba(255, 255, 255, 0.85);">Ringkasan patroli, kendaraan, dan kebersihan cabang.</p>
+            <p class="mt-1 text-sm" style="color: rgba(255, 255, 255, 0.85);">Ringkasan patroli, kendaraan, dan kebersihan unit kerja.</p>
         </div>
     </div>
 

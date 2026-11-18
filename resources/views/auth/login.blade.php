@@ -41,6 +41,15 @@
             outline: none;
             box-shadow: 0 0 0 4px rgba(7, 128, 201, 0.3);
         }
+
+        .lg-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+            filter: none !important;
+        }
+
         .lg-link {
             color: #035CA8;
             transition: color 0.2s ease;
@@ -77,7 +86,7 @@
 
             <x-auth-session-status class="mb-4" :status="session('status')" />
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-4">
+            <form id="loginForm" method="POST" action="{{ route('login') }}" class="space-y-4">
                 @csrf
 
                 <div>
@@ -127,15 +136,39 @@
                     @endif
                 </div>
 
-                <button type="submit"
-                    class="lg-btn w-full font-semibold rounded-xl text-sm px-5 py-3">
-                    Masuk
+                <button type="submit" id="btnSubmit"
+                    class="lg-btn w-full font-semibold rounded-xl text-sm px-5 py-3 flex items-center justify-center gap-2">
+                    <svg id="btnSpinner" class="hidden w-4 h-4 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span id="btnText">Masuk</span>
                 </button>
             </form>
         </div>
     </div>
 </x-guest-layout>
 <script>
+    const loginForm = document.getElementById('loginForm');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const btnText = document.getElementById('btnText');
+
+    let isSubmitting = false;
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', function (e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return;
+            }
+            isSubmitting = true;
+
+            btnSpinner.classList.remove('hidden');
+            btnText.textContent = 'Memproses...';
+            btnSubmit.disabled = true;
+        });
+    }
     function togglePasswordVisibility() {
         const passwordInput = document.getElementById("password");
         const eyeIcon = document.getElementById("eyeIcon");

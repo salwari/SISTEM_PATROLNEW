@@ -4,7 +4,7 @@
         $kartu = [
             [
                 'modul' => 'Cabang',
-                'label' => 'Jumlah Cabang',
+                'label' => 'Jumlah Unit Kerja',
                 'route' => 'data-cabang.index',
                 'value' => $jumlahCabang,
                 'viewBox' => '0 0 640 640',
@@ -122,12 +122,12 @@
             <div>
                 <p class="text-sm font-medium" style="color: rgba(255, 255, 255, 0.85);">{{ now()->isoFormat('dddd, D MMMM Y') }}</p>
                 <h2 class="mt-1 text-2xl font-bold md:text-3xl" style="color: #ffffff;">Selamat datang, {{ auth()->user()->nama ?? 'Super Admin' }}</h2>
-                <p class="mt-1 text-sm" style="color: rgba(255, 255, 255, 0.85);">Ringkasan data dari seluruh cabang. Klik kartu untuk melihat detail.</p>
+                <p class="mt-1 text-sm" style="color: rgba(255, 255, 255, 0.85);">Ringkasan data dari seluruh unit kerja. Klik kartu untuk melihat detail.</p>
             </div>
             <div class="mt-4 px-6 py-3 text-center rounded-xl md:mt-0"
                 style="background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.25);">
                 <p class="text-3xl font-bold" style="color: #ffffff;">{{ $jumlahCabang }}</p>
-                <p class="text-xs font-medium uppercase tracking-wide" style="color: rgba(255, 255, 255, 0.85);">Cabang Aktif</p>
+                <p class="text-xs font-medium uppercase tracking-wide" style="color: rgba(255, 255, 255, 0.85);">Unit Kerja Aktif</p>
             </div>
         </div>
     </div>

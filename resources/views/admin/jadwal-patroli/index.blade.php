@@ -7,7 +7,6 @@
             <div
                 class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border border-gray-200 rounded-lg shadow-md p-4">
 
-                
                 <form method="GET" action="{{ route('jadwal-patroli.index') }}" class="w-full sm:w-auto">
                     <input type="month" name="month" value="{{ $currentMonth->format('Y-m') }}"
                         onchange="this.form.submit()"
@@ -15,7 +14,7 @@
                 </form>
 
                 <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    
+
                     <form action="{{ route('jadwal-patroli.generate-ulang') }}" method="POST" class="w-full sm:w-auto">
                         @csrf
                         <input type="hidden" name="month" value="{{ $currentMonth->format('Y-m') }}">
@@ -25,12 +24,11 @@
                         </button>
                     </form>
 
-                    
                     <button data-modal-target="tambahModal" data-modal-toggle="tambahModal"
                         class="w-full min-w-[80px] sm:min-w-[100px] whitespace-nowrap px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold text-center">
                         Tambah Jadwal
                     </button>
-                    
+
                     <div id="tambahModal" tabindex="-1" aria-hidden="true"
                         class="hidden fixed top-0 left-0 right-0 z-50 items-center justify-center w-full h-full bg-black bg-opacity-50">
                         <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
@@ -39,7 +37,7 @@
                             </div>
                             <form action="{{ route('jadwal-patroli.store') }}" method="POST" class="p-6 space-y-5">
                                 @csrf
-                                
+
                                 <div>
                                     <label for="user_id" class="block mb-1 text-sm font-medium text-gray-700">
                                         Petugas
@@ -52,7 +50,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                
+
                                 <div>
                                     <label for="tanggal" class="block mb-1 text-sm font-medium text-gray-700">
                                         Tanggal
@@ -60,7 +58,7 @@
                                     <input type="date" id="tanggal" name="tanggal" required
                                         class="mt-1 w-full border border-gray-300 rounded-lg shadow-sm text-sm px-3 py-2 focus:ring focus:ring-blue-300">
                                 </div>
-                                
+
                                 <div>
                                     <label for="shift" class="block mb-1 text-sm font-medium text-gray-700">
                                         Shift
@@ -87,7 +85,6 @@
                         </div>
                     </div>
 
-                    
                     <form action="{{ route('jadwal-patroli.cetak-jadwal') }}" method="GET" class="w-full sm:w-auto">
                         <input type="hidden" name="month" value="{{ $currentMonth->format('Y-m') }}">
                         <button type="submit"
@@ -104,10 +101,9 @@
             </div>
         </div>
 
-        
         <div class="w-full overflow-x-auto border border-gray-200 rounded-lg shadow-md">
             <div class="min-w-[700px] grid grid-cols-7 gap-px text-center text-sm select-none">
-                
+
                 @foreach (['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'] as $day)
                     <div class="font-semibold py-2 bg-blue-200 text-gray-800 text-xs uppercase border border-gray-200">
                         {{ $day }}
@@ -121,9 +117,8 @@
                     $daysInMonth = $currentMonth->daysInMonth;
                 @endphp
 
-                
                 @for ($i = 0; $i < $startDayOfWeek; $i++)
-                    <div class="border border-gray-200 h-24 bg-gray-100"></div>
+                    <div class="border border-gray-200 min-h-[6rem] bg-gray-100"></div>
                 @endfor
 
                 @php
@@ -135,7 +130,6 @@
                     }
                 @endphp
 
-                
                 @for ($day = 1; $day <= $daysInMonth; $day++)
                     @php
                         $date = $currentMonth->copy()->day($day)->format('Y-m-d');
@@ -147,14 +141,12 @@
                     @endphp
 
                     <div
-                        class="border border-gray-200 p-1.5 h-20 sm:h-24 text-left relative group {{ $bgColor }} hover:bg-blue-50 rounded transition-all overflow-hidden">
+                        class="border border-gray-200 p-1.5 min-h-[6rem] text-left relative {{ $bgColor }} hover:bg-blue-50 rounded transition-all">
 
-                        
                         <div class="text-xs font-semibold text-gray-800">{{ $day }}</div>
 
                         @if (!empty($jadwalHariIni))
                             @php
-                                // Urutkan Pagi → Sore → Malam
                                 $shiftOrder = ['pagi' => 1, 'sore' => 2, 'malam' => 3];
 
                                 $jadwalHariIni = collect($jadwalHariIni)->sortBy(function ($j) use ($shiftOrder) {
@@ -163,33 +155,49 @@
                             @endphp
 
                             @foreach ($jadwalHariIni as $jadwal)
-                                
-                                <div class="flex items-center gap-1 text-xs mt-1 px-1.5 py-0.5 rounded text-white leading-tight whitespace-nowrap overflow-hidden {{ $warnaPetugas[$jadwal->user->id] ?? 'bg-gray-400' }}"
-                                    title="{{ $jadwal->user->nama ?? 'Tidak ditemukan' }}">
-                                    <span class="whitespace-nowrap">
-                                        {{ $jadwal->user->nama ?? 'Tidak ditemukan' }}
-                                    </span>
-                                    <span
-                                        class="italic opacity-90 whitespace-nowrap">({{ ucfirst($jadwal->shift) }})</span>
-                                </div>
+                                <div class="relative group mt-1">
 
-                                
-                                <div class="absolute top-1 right-1 hidden group-hover:flex flex-col gap-0.5 z-20">
+                                    <div class="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded text-white leading-tight whitespace-nowrap overflow-hidden group-hover:pr-12 {{ $warnaPetugas[$jadwal->user->id] ?? 'bg-gray-400' }}"
+                                        title="{{ $jadwal->user->nama ?? 'Tidak ditemukan' }}">
+                                        <span class="whitespace-nowrap">
+                                            {{ $jadwal->user->nama ?? 'Tidak ditemukan' }}
+                                        </span>
+                                        <span
+                                            class="italic opacity-90 whitespace-nowrap">({{ ucfirst($jadwal->shift) }})</span>
+                                    </div>
 
-                                    
-                                    <button data-modal-target="editModal{{ $jadwal->id }}"
-                                        class="w-5 h-5 flex items-center justify-center text-white bg-yellow-400 hover:bg-yellow-500 rounded"
-                                        type="button" aria-label="Edit jadwal {{ $jadwal->user->nama }}">
-                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                            <path fill-rule="evenodd"
-                                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
+                                    <div class="absolute right-0.5 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-row gap-0.5 z-20">
 
-                                     <div id="editModal{{ $jadwal->id }}" tabindex="-1"
+                                        <button data-modal-target="editModal{{ $jadwal->id }}"
+                                            class="w-5 h-5 flex items-center justify-center text-white bg-yellow-400 hover:bg-yellow-500 rounded"
+                                            type="button" aria-label="Edit jadwal {{ $jadwal->user->nama }}">
+                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+
+                                        <form action="{{ route('jadwal-patroli.destroy', $jadwal->id) }}" method="POST"
+                                            class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="button"
+                                                class="w-5 h-5 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded btn-hapus"
+                                                data-nama="{{ $jadwal->user->nama }}" title="Hapus Jadwal">
+                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <div id="editModal{{ $jadwal->id }}" tabindex="-1"
                                         class="hidden fixed top-0 left-0 right-0 z-50 w-full h-full items-center justify-center bg-black bg-opacity-50">
                                         <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
                                             <div class="p-4 border-b">
@@ -197,7 +205,7 @@
                                             </div>
                                             <form action="{{ route('jadwal-patroli.update', $jadwal->id) }}"
                                                 method="POST" class="p-6 space-y-5"> @csrf @method('PUT')
-                                                 <div> <label
+                                                <div> <label
                                                         for="user_id_edit_{{ $jadwal->id }}"
                                                         class="block mb-1 text-sm font-medium text-gray-700">Petugas</label>
                                                     <select id="user_id_edit_{{ $jadwal->id }}" name="user_id"
@@ -209,7 +217,7 @@
                                                                 {{ $jadwal->user_id == $user->id ? 'selected' : '' }}>
                                                                 {{ $user->nama }} </option>
                                                         @endforeach
-                                                    </select> </div>  <div> <label
+                                                    </select> </div> <div> <label
                                                         for="shift_edit_{{ $jadwal->id }}"
                                                         class="block mb-1 text-sm font-medium text-gray-700">Shift</label>
                                                     <select id="shift_edit_{{ $jadwal->id }}" name="shift"
@@ -225,7 +233,7 @@
                                                         <option value="malam"
                                                             {{ $jadwal->shift == 'malam' ? 'selected' : '' }}>Malam
                                                         </option>
-                                                    </select> </div>  <div> <label
+                                                    </select> </div> <div> <label
                                                         for="alasan_edit_{{ $jadwal->id }}"
                                                         class="block mb-1 text-sm font-medium text-gray-700">Alasan
                                                         Pergantian (Opsional)</label>
@@ -241,23 +249,6 @@
                                             </form>
                                         </div>
                                     </div>
-                                    
-                                    
-                                    <form action="{{ route('jadwal-patroli.destroy', $jadwal->id) }}" method="POST"
-                                        class="inline-block">
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button type="button"
-                                            class="w-5 h-5 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded btn-hapus"
-                                            data-nama="{{ $jadwal->user->nama }}" title="Hapus Jadwal">
-                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </form>
                                 </div>
                             @endforeach
                         @else
@@ -266,20 +257,19 @@
 
                     </div>
                 @endfor
-                
+
                 @php
                     $totalCells = $startDayOfWeek + $daysInMonth;
                     $remainingCells = 7 - ($totalCells % 7);
                     if ($remainingCells < 7) {
                         for ($i = 0; $i < $remainingCells; $i++) {
-                            echo '<div class="border border-gray-200 h-24 bg-gray-100"></div>';
+                            echo '<div class="border border-gray-200 min-h-[6rem] bg-gray-100"></div>';
                         }
                     }
                 @endphp
             </div>
         </div>
 
-        
         <div class="mt-4 bg-white p-2">
             <h2 class="text-lg font-bold text-gray-800 mb-2">Rekap Jumlah Patroli Bulan
                 {{ $currentMonth->translatedFormat('F Y') }}</h2>
@@ -310,7 +300,6 @@
             </div>
         </div>
 
-        
         @if ($historiPergantian->isNotEmpty())
             <div class="mt-4 bg-white p-2">
                 <h2 class="text-lg font-bold text-gray-800 mb-2">Histori Pergantian Petugas Bulan

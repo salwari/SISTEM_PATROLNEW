@@ -3,7 +3,7 @@
     @php
         $kartu = [
             [
-                'modul' => 'Cabang',
+                'modul' => 'Unit Kerja',
                 'label' => 'Jumlah Unit Kerja',
                 'route' => 'data-cabang.index',
                 'value' => $jumlahCabang,
@@ -127,7 +127,7 @@
             <div class="mt-4 px-6 py-3 text-center rounded-xl md:mt-0"
                 style="background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.25);">
                 <p class="text-3xl font-bold" style="color: #ffffff;">{{ $jumlahCabang }}</p>
-                <p class="text-xs font-medium uppercase tracking-wide" style="color: rgba(255, 255, 255, 0.85);">Cabang Aktif</p>
+                <p class="text-xs font-medium uppercase tracking-wide" style="color: rgba(255, 255, 255, 0.85);">Unit Kerja Aktif</p>
             </div>
         </div>
     </div>

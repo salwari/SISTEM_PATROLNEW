@@ -531,6 +531,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
     <script>
         const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
         const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
@@ -554,6 +555,53 @@
                 localStorage.setItem('theme', 'dark');
             }
         });
+
+        document.addEventListener('submit', function (e) {
+            const form = e.target;
+            
+            const method = form.getAttribute('method');
+            if (!method || method.toUpperCase() !== 'POST') return;
+
+            if (form.querySelector('input[name="_method"][value="DELETE"]')) return;
+            if (form.getAttribute('target') === '_blank') return;
+            if (!form.checkValidity()) return;
+
+            if (form.dataset.submitting === 'true') {
+                e.preventDefault();
+                return;
+            }
+
+            const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+            if (submitBtn) {
+                form.dataset.submitting = 'true';
+
+                const btnText = (submitBtn.innerText || submitBtn.value || '').trim().toLowerCase();
+                let loadingText = 'Memproses...';
+
+                if (btnText.includes('tambah')) {
+                    loadingText = 'Menambahkan...';
+                } else if (btnText.includes('perbarui') || btnText.includes('update')) {
+                    loadingText = 'Memperbarui...';
+                } else if (btnText.includes('simpan') || btnText.includes('save')) {
+                    loadingText = 'Menyimpan...';
+                } else if (btnText.includes('generate')) {
+                    loadingText = 'Meng-generate...';
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed', 'pointer-events-none');
+
+                submitBtn.innerHTML = `
+                    <span class="inline-flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>${loadingText}</span>
+                    </span>
+                `;
+            }
+        }, true);
     </script>
 </body>
 

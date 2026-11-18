@@ -3,7 +3,7 @@
     @php
         $kartu = [
             [
-                'modul' => 'Cabang',
+                'modul' => 'Unit Kerja',
                 'label' => 'Jumlah Unit Kerja',
                 'route' => 'data-cabang.index',
                 'value' => $jumlahCabang,

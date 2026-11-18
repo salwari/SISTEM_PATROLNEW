@@ -63,7 +63,7 @@
                 @if (in_array(auth()->user()->role, ['admin', 'petugas_security', 'kabid_dukbis', 'sopir', 'ob']))
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Cabang</label>
+                        <label class="block text-sm font-medium text-gray-700">Unit Kerja</label>
                         <input type="text" value="{{ auth()->user()->cabang->nama_cabang ?? '-' }}" readonly
                             class="w-full mt-1 border border-gray-300 rounded-md p-2 text-gray-700 bg-gray-100 cursor-not-allowed">
                     </div>

@@ -88,6 +88,8 @@
         <nav class="flex gap-6" aria-label="Tab Dashboard">
             <button type="button" onclick="switchDashboardTab('patroli')" id="tab-btn-patroli"
                 class="dashboard-tab-btn aktif focus:outline-none">Patroli</button>
+            <button type="button" onclick="switchDashboardTab('kendaraan')" id="tab-btn-kendaraan"
+                class="dashboard-tab-btn focus:outline-none">Kendaraan</button>
             <button type="button" onclick="switchDashboardTab('kebersihan')" id="tab-btn-kebersihan"
                 class="dashboard-tab-btn focus:outline-none">Kebersihan</button>
         </nav>
@@ -157,6 +159,138 @@
                 <canvas id="patroliChart" class="w-full h-full"></canvas>
             </div>
         </div>
+    </div>
+
+    <div id="tab-content-kendaraan" class="hidden">
+        @if ($kendaraan['belumDipatroliHariIni']->count() > 0)
+            <div class="mt-4 px-4 py-3 text-sm rounded-xl"
+                style="background: #FFFBEB; border: 1px solid #FDE68A; border-left: 4px solid #F59E0B; color: #92400E;">
+                Terdapat {{ $kendaraan['belumDipatroliHariIni']->count() }} kendaraan aktif yang belum dipatroli hari ini:
+                <span class="font-semibold">{{ $kendaraan['belumDipatroliHariIni']->pluck('plat_nomor')->join(', ') }}</span>.
+            </div>
+        @endif
+        @if ($kendaraan['laporanTerbuka']->count() > 0)
+            <div class="mt-2 px-4 py-3 text-sm rounded-xl"
+                style="background: #FEF2F2; border: 1px solid #FECACA; border-left: 4px solid #EF4444; color: #991B1B;">
+                Terdapat {{ $kendaraan['laporanTerbuka']->count() }} laporan darurat kendaraan yang <span class="font-semibold">belum selesai ditangani</span>.
+            </div>
+        @endif
+
+        <div class="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
+            <a href="{{ route('kabid-dukbis.absen-kendaraan') }}" class="block">
+                <div class="ad-stat flex items-center p-4" style="border-top: 4px solid #035CA8;">
+                    <div class="flex items-center justify-center shrink-0 rounded-xl"
+                        style="width: 2.75rem; height: 2.75rem; background: linear-gradient(135deg, #1B4A82 0%, #035CA8 100%); box-shadow: 0 6px 14px rgba(3, 92, 168, 0.25);">
+                        <svg style="width: 1.25rem; height: 1.25rem; color: #ffffff;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M5 11l1.5-4.5A2 2 0 018.4 5h7.2a2 2 0 011.9 1.5L19 11h.5a1.5 1.5 0 011.5 1.5V17a1 1 0 01-1 1h-1a2 2 0 01-4 0H9a2 2 0 01-4 0H4a1 1 0 01-1-1v-4.5A1.5 1.5 0 014.5 11H5z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-xs font-medium" style="color: #64748B;">Kendaraan Aktif</h3>
+                        <p class="text-2xl font-bold" style="color: #1B4A82;">{{ $kendaraan['jumlahAktif'] }}</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ route('kabid-dukbis.absen-kendaraan', ['tanggal' => now()->toDateString()]) }}" class="block">
+                <div class="ad-stat flex items-center p-4" style="border-top: 4px solid #16A34A;">
+                    <div class="flex items-center justify-center shrink-0 rounded-xl"
+                        style="width: 2.75rem; height: 2.75rem; background: linear-gradient(135deg, #15803D 0%, #22C55E 100%); box-shadow: 0 6px 14px rgba(22, 163, 74, 0.25);">
+                        <svg style="width: 1.25rem; height: 1.25rem; color: #ffffff;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-4 w-full">
+                        <h3 class="text-xs font-medium" style="color: #64748B;">Sudah Dipatroli Hari Ini</h3>
+                        <p class="text-2xl font-bold" style="color: #16A34A;">
+                            {{ $kendaraan['sudahDipatroli'] }} / {{ $kendaraan['jumlahAktif'] }}
+                        </p>
+                        @php
+                            $persenKendaraan = $kendaraan['jumlahAktif'] > 0 ? round($kendaraan['sudahDipatroli'] / $kendaraan['jumlahAktif'] * 100) : 0;
+                        @endphp
+                        <div class="w-full rounded-full mt-1 overflow-hidden" style="height: 0.375rem; background: #E6F3FB;">
+                            <div class="rounded-full" style="height: 0.375rem; width: {{ $persenKendaraan }}%; background: linear-gradient(90deg, #035CA8 0%, #05A2E4 100%);"></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ route('kabid-dukbis.absen-kendaraan') }}" class="block">
+                <div class="ad-stat flex items-center p-4" style="border-top: 4px solid #DC2626;">
+                    <div class="flex items-center justify-center shrink-0 rounded-xl"
+                        style="width: 2.75rem; height: 2.75rem; background: linear-gradient(135deg, #B91C1C 0%, #EF4444 100%); box-shadow: 0 6px 14px rgba(220, 38, 38, 0.25);">
+                        <svg style="width: 1.25rem; height: 1.25rem; color: #ffffff;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-xs font-medium" style="color: #64748B;">Laporan Darurat Belum Selesai</h3>
+                        <p class="text-2xl font-bold" style="color: #DC2626;">{{ $kendaraan['laporanTerbuka']->count() }}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
+            <div class="ad-card p-5" style="border-top: 4px solid #0780C9;">
+                <h3 class="text-sm font-semibold mb-3" style="color: #1B4A82;">Patroli Kendaraan 7 Hari Terakhir</h3>
+                <div class="relative h-56">
+                    <canvas id="cekKendaraanChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+            <div class="ad-card p-5" style="border-top: 4px solid #05A2E4;">
+                <h3 class="text-sm font-semibold mb-3" style="color: #1B4A82;">Kondisi Kendaraan Terkini</h3>
+                <div class="relative w-full max-w-[16rem] mx-auto h-56">
+                    <canvas id="kondisiKendaraanChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        @if ($kendaraan['laporanTerbuka']->count() > 0)
+            <div class="ad-card p-5 mt-4 mb-4">
+                <h3 class="text-sm font-semibold mb-3" style="color: #1B4A82;">Laporan Darurat Kendaraan Belum Selesai</h3>
+                <div class="overflow-x-auto rounded-xl" style="border: 1px solid #e2e8f0;">
+                    <table class="table-auto w-full text-xs" style="color: #334155;">
+                        <thead class="uppercase" style="background: #E6F3FB; color: #1B4A82;">
+                            <tr>
+                                <th class="px-3 py-3 text-left">Kendaraan</th>
+                                <th class="px-3 py-3 text-left">Dilaporkan oleh</th>
+                                <th class="px-3 py-3 text-center">Tanggal</th>
+                                <th class="px-3 py-3 text-left">Kondisi</th>
+                                <th class="px-3 py-3 text-center">Penanganan</th>
+                                <th class="px-3 py-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y" style="background: #ffffff; border-color: #e2e8f0;">
+                            @foreach ($kendaraan['laporanTerbuka'] as $l)
+                                <tr class="ad-row">
+                                    <td class="px-3 py-3 whitespace-nowrap">
+                                        <span class="font-semibold" style="color: #035CA8;">{{ $l->kendaraan->plat_nomor ?? '-' }}</span>
+                                        <div class="text-xs" style="color: #64748B;">{{ $l->kendaraan->jenis ?? '' }}</div>
+                                    </td>
+                                    <td class="px-3 py-3">{{ $l->nama_sopir }}</td>
+                                    <td class="px-3 py-3 text-center whitespace-nowrap">{{ $l->tanggal->format('d-m-Y') }}</td>
+                                    <td class="px-3 py-3">
+                                        <div class="font-semibold" style="color: #1B4A82;">{{ $l->kategoriKejadian->nama_kategori ?? '-' }}</div>
+                                        <div class="text-xs" style="color: #64748B;">{{ \Illuminate\Support\Str::limit($l->keterangan ?: '-', 60) }}</div>
+                                    </td>
+                                    <td class="px-3 py-3 text-center">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                                            style="{{ $l->status_penanganan === 'proses' ? 'background: #FEF3C7; color: #B45309;' : 'background: #FEE2E2; color: #B91C1C;' }}">
+                                            {{ $l->penanganan_label }}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3 text-center">
+                                        <a href="{{ route('kabid-dukbis.absen-kendaraan', ['tanggal' => $l->tanggal->toDateString()]) }}"
+                                            class="ad-btn inline-flex items-center px-3 py-1 text-xs font-semibold rounded-lg">Detail</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
     </div>
 
     <div id="tab-content-kebersihan" class="hidden">
@@ -293,30 +427,21 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
         function switchDashboardTab(tabName) {
-            const contentPatroli = document.getElementById('tab-content-patroli');
-            const contentKebersihan = document.getElementById('tab-content-kebersihan');
-            const btnPatroli = document.getElementById('tab-btn-patroli');
-            const btnKebersihan = document.getElementById('tab-btn-kebersihan');
+            const tabs = ['patroli', 'kendaraan', 'kebersihan'];
 
-            if (tabName === 'patroli') {
-                contentPatroli.classList.remove('hidden');
-                contentKebersihan.classList.add('hidden');
+            tabs.forEach(function(name) {
+                document.getElementById('tab-content-' + name).classList.toggle('hidden', name !== tabName);
+                document.getElementById('tab-btn-' + name).classList.toggle('aktif', name === tabName);
+            });
 
-                btnPatroli.classList.add('aktif');
-                btnKebersihan.classList.remove('aktif');
-
-                if (typeof patroliChart !== 'undefined') {
-                    setTimeout(() => { patroliChart.resize(); }, 50);
-                }
-            } else if (tabName === 'kebersihan') {
-                contentPatroli.classList.add('hidden');
-                contentKebersihan.classList.remove('hidden');
-
-                btnKebersihan.classList.add('aktif');
-                btnPatroli.classList.remove('aktif');
-            }
+            setTimeout(() => {
+                Object.values(Chart.instances).forEach(function(chart) {
+                    chart.resize();
+                });
+            }, 50);
         }
 
         const ctx = document.getElementById('patroliChart').getContext('2d');
@@ -396,6 +521,73 @@
             patroliChart.data.labels = dataSet[selected].labels;
             patroliChart.data.datasets[0].data = dataSet[selected].data;
             patroliChart.update();
+        });
+
+        new Chart(document.getElementById('cekKendaraanChart'), {
+            type: 'bar',
+            data: {
+                labels: @json($kendaraan['mingguLabels']),
+                datasets: [{
+                    label: 'Jumlah Patroli Kendaraan',
+                    data: @json($kendaraan['mingguData']),
+                    backgroundColor: 'rgba(7, 128, 201, 0.65)',
+                    borderColor: 'rgba(7, 128, 201, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    maxBarThickness: 32
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: { color: chartTextColor, font: { size: 11 } },
+                        grid: { color: chartGridColor }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, color: chartTextColor, font: { size: 11 } },
+                        grid: { color: chartGridColor }
+                    }
+                },
+                plugins: { legend: { labels: { color: chartTextColor, boxWidth: 12 } } }
+            }
+        });
+
+        new Chart(document.getElementById('kondisiKendaraanChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Aman', 'Ada Laporan Darurat', 'Belum Pernah Dipatroli'],
+                datasets: [{
+                    data: [
+                        {{ $kendaraan['kondisi']['aman'] }},
+                        {{ $kendaraan['kondisi']['darurat'] }},
+                        {{ $kendaraan['kondisi']['belum_pernah'] }}
+                    ],
+                    backgroundColor: ['rgba(34,197,94,0.85)', 'rgba(239,68,68,0.85)', 'rgba(148,163,184,0.85)'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '55%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: chartTextColor, boxWidth: 12 } },
+                    datalabels: {
+                        color: '#fff',
+                        display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0,
+                        formatter: (value, ctx) => {
+                            const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            return total ? ((value / total) * 100).toFixed(0) + '%' : '';
+                        },
+                        font: { weight: 'bold', size: 12 }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
         });
     </script>
 </x-app-layout>

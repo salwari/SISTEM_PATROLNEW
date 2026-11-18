@@ -66,10 +66,36 @@
             fallbackEl.classList.remove('hidden');
         }
 
+        function perkecil(file, maks) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    const skala = Math.min(1, maks / Math.max(img.width, img.height));
+                    const c = document.createElement('canvas');
+                    c.width = Math.round(img.width * skala);
+                    c.height = Math.round(img.height * skala);
+                    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                    URL.revokeObjectURL(url);
+                    c.toBlob(b => b ? resolve(new File([b], 'qr.png', { type: 'image/png' })) : reject(), 'image/png');
+                };
+                img.onerror = reject;
+                img.src = url;
+            });
+        }
+
+        function bacaFoto(file) {
+            let p = Promise.reject();
+            [500, 400, 600, 300, 700, 900, 1200].forEach(u => {
+                p = p.catch(() => perkecil(file, u).then(f => html5QrCode.scanFile(f, false)));
+            });
+            return p;
+        }
+
         fileInput.addEventListener('change', function() {
             if (!this.files.length) return;
 
-            html5QrCode.scanFile(this.files[0], false)
+            bacaFoto(this.files[0])
                 .then(prosesHasil)
                 .catch(() => {
                     alert('QR tidak terbaca. Pastikan QR terlihat jelas pada foto, lalu coba lagi.');
@@ -77,6 +103,11 @@
 
             this.value = '';
         });
+
+        if (!window.isSecureContext || !navigator.mediaDevices) {
+            tampilkanFallback();
+            return;
+        }
 
         Html5Qrcode.getCameras().then(devices => {
             if (devices && devices.length) {

@@ -99,11 +99,6 @@ class PatroliController extends Controller
             'foto' => $fotoPath,
         ]);
 
-        // Kirim notifikasi hanya jika kategori daruratnya memang butuh dikirim
-        // if ($patroli->status === 'darurat' && $patroli->kategoriKejadian && $patroli->kategoriKejadian->kirim_notifikasi) {
-        //     $this->kirimNotifikasiDarurat($patroli);
-        // }
-
         return redirect()->route('petugas-security.dashboard')
             ->with('success', 'Data patroli berhasil disimpan.');
     }

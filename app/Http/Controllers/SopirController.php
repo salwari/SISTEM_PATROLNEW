@@ -7,10 +7,6 @@ use Illuminate\Support\Facades\Auth;
 
 class SopirController extends Controller
 {
-    /**
-     * Dashboard sopir. Status tiap kendaraan memakai Kendaraan::statusHarian():
-     * aman (sudah dipatroli aman hari ini), darurat (laporan darurat belum selesai), atau belum.
-     */
     public function dashboard()
     {
         $user = Auth::user();

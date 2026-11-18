@@ -204,6 +204,7 @@ Route::middleware('auth')->group(function () {
     // OB ROUTES
     Route::middleware('role:ob')->prefix('ob')->name('ob.')->group(function () {
         Route::get('/dashboard', [ObController::class, 'dashboard'])->name('dashboard');
+        Route::get('/jadwal', [ObController::class, 'jadwal'])->name('jadwal');
         Route::get('/scan-qr', [ObController::class, 'scanQr'])->name('scan-qr');
 
         Route::get('/kamar-mandi/{kamarMandi}/periksa', [ObController::class, 'periksa'])->name('kamar-mandi.periksa');

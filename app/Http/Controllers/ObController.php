@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\KamarMandi;
 use App\Models\ChecklistKamarMandi;
 use App\Models\PemeriksaanKamarMandi;
 use App\Models\DetailPemeriksaanKamarMandi;
+use App\Models\JadwalKebersihan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +40,10 @@ class ObController extends Controller
         $jumlahPerluTindakan = $pemeriksaanHariIni->where('status_kondisi', 'perlu_tindakan')->count();
         $jumlahBaik          = $pemeriksaanHariIni->where('status_kondisi', 'baik')->count();
 
+        $jadwalHariIni = JadwalKebersihan::where('user_id', $user->id)
+         ->whereDate('tanggal', $today)
+         ->get();
+
         return view('ob.dashboard', compact(
             'kamarMandiList',
             'pemeriksaanHariIni',
@@ -47,8 +53,35 @@ class ObController extends Controller
             'persentaseSelesai',
             'jumlahPerluTindakan',
             'jumlahBaik',
-            'today'
+            'today',
+            'jadwalHariIni'
         ));
+    }
+
+    public function jadwal(Request $request)
+    {
+        $user = Auth::user();
+        $cabangId = $user->cabang_id;
+        $monthParam = $request->input('month');
+        $currentMonth = $monthParam ? Carbon::parse($monthParam . '-01') : Carbon::now();
+
+        // Ambil jadwal kebersihan cabang untuk bulan ini
+        $jadwalRaw = JadwalKebersihan::with('user')
+            ->whereYear('tanggal', $currentMonth->year)
+            ->whereMonth('tanggal', $currentMonth->month)
+            ->whereHas('user', function ($q) use ($cabangId) {
+                $q->where('cabang_id', $cabangId);
+            })
+            ->get();
+
+        $jadwalKebersihan = $jadwalRaw->groupBy(fn($item) => Carbon::parse($item->tanggal)->format('Y-m-d'));
+
+        $users = User::where('role', 'ob')
+            ->where('cabang_id', $cabangId)
+            ->orderBy('nama')
+            ->get();
+
+        return view('ob.jadwal', compact('jadwalKebersihan', 'currentMonth', 'users'));
     }
 
     public function scanQr()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Patroli;
 use App\Models\LokasiPatroli;
 use App\Models\JadwalPatroli;
@@ -17,12 +18,13 @@ class PetugasSecurityController extends Controller
         $userId = $user->id;
         $cabangId = $user->cabang_id; $today = Carbon::today()->toDateString();
 
-        $dijadwalkan = JadwalPatroli::where('user_id', $userId)
+        $jadwalHariIni = JadwalPatroli::where('user_id', $userId)
             ->whereDate('tanggal', $today)
             ->whereHas('user', function ($query) use ($cabangId) {
                 $query->where('cabang_id', $cabangId);
             })
-            ->exists();
+            ->get();
+        $dijadwalkan = $jadwalHariIni->isNotEmpty();
 
         if (!$dijadwalkan) {
             return view('petugas-security.dashboard', [
@@ -31,7 +33,8 @@ class PetugasSecurityController extends Controller
                 'jumlahBelum' => 0,
                 'persentase' => 0,
                 'belumDipatroli' => collect(),
-                'aktivitasTerakhir' => collect()
+                'aktivitasTerakhir' => collect(),
+                'jadwalHariIni' => $jadwalHariIni,
             ]);
         }
 
@@ -62,8 +65,30 @@ class PetugasSecurityController extends Controller
             'jumlahBelum',
             'persentase',
             'belumDipatroli',
-            'aktivitasTerakhir'
+            'aktivitasTerakhir',
+            'jadwalHariIni'
         ));
+    }
+
+    public function jadwal(Request $request)
+    {
+        $user = Auth::user();
+        $cabangId = $user->cabang_id;
+        $monthParam = $request->input('month');
+        $currentMonth = $monthParam ? Carbon::parse($monthParam . '-01') : Carbon::now();
+        $jadwalRaw = JadwalPatroli::with('user')
+            ->whereYear('tanggal', $currentMonth->year)
+            ->whereMonth('tanggal', $currentMonth->month)
+            ->whereHas('user', function ($q) use ($cabangId) {
+                $q->where('cabang_id', $cabangId);
+            })
+            ->get();
+        $jadwalPatroli = $jadwalRaw->groupBy(fn($item) => Carbon::parse($item->tanggal)->format('Y-m-d'));
+        $users = User::where('role', 'petugas_security')
+            ->where('cabang_id', $cabangId)
+            ->orderBy('nama')
+            ->get();
+        return view('petugas-security.jadwal', compact('jadwalPatroli', 'currentMonth', 'users'));
     }
 
     public function scanQr()

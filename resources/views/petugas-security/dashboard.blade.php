@@ -54,10 +54,48 @@
             </div>
         @endif
 
-        @if ($totalLokasi == 0)
-            <div class="p-4 rounded-xl"
-                style="background: #E6F3FB; border: 1px solid #B9D8EE; border-left: 4px solid #0780C9; color: #1B4A82;">
-                <strong>Informasi :</strong> Hari ini kamu tidak memiliki jadwal patroli.
+        @if (isset($jadwalHariIni) && $jadwalHariIni->isNotEmpty())
+            <div class="p-4 rounded-xl flex items-center justify-between flex-wrap gap-3 bg-blue-50 border border-blue-200 border-l-4 border-l-blue-600 text-blue-900 dark:bg-gray-800 dark:border-gray-700 dark:border-l-blue-500 dark:text-blue-300 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">Jadwal Patroli Hari Ini</p>
+                        <p class="text-sm font-bold text-gray-900 dark:text-white">
+                            Anda bertugas pada:
+                            <span class="inline-flex gap-1.5 ml-1">
+                                @foreach($jadwalHariIni as $j)
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200 uppercase">
+                                        Shift {{ $j->shift }}
+                                    </span>
+                                @endforeach
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <a href="{{ route('petugas-security.jadwal') }}" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold underline flex items-center gap-1">
+                    Lihat Jadwal Lengkap Bulan Ini &rarr;
+                </a>
+            </div>
+        @else
+            <div class="p-4 rounded-xl flex items-center justify-between flex-wrap gap-3 bg-slate-50 border border-slate-200 border-l-4 border-l-slate-400 text-slate-700 dark:bg-gray-800 dark:border-gray-700 dark:border-l-gray-500 dark:text-gray-300 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-400 dark:bg-gray-700 text-white flex items-center justify-center shadow-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-gray-400">Jadwal Patroli Hari Ini</p>
+                        <p class="text-sm font-bold text-gray-800 dark:text-white">Hari ini Anda tidak memiliki jadwal dinas patroli.</p>
+                    </div>
+                </div>
+                <a href="{{ route('petugas-security.jadwal') }}" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold underline flex items-center gap-1">
+                    Lihat Jadwal Lengkap Bulan Ini &rarr;
+                </a>
             </div>
         @endif
 

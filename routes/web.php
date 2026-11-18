@@ -163,6 +163,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:petugas_security')->prefix('petugas-security')->group(function () {
         Route::get('/dashboard', [PetugasSecurityController::class, 'dashboard'])->name('petugas-security.dashboard');
+        Route::get('/jadwal', [PetugasSecurityController::class, 'jadwal'])->name('petugas-security.jadwal');
         Route::get('/scan-qr', [PetugasSecurityController::class, 'scanQR'])->name('petugas-security.scan-qr');
         Route::get('/riwayat-patroli', [PetugasSecurityController::class, 'riwayatPatroli'])->name('petugas-security.riwayat-patroli');
 
